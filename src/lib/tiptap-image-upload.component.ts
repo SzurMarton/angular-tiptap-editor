@@ -1,5 +1,6 @@
 import { Component, input, output, signal, computed } from "@angular/core";
 import { TiptapButtonComponent } from "./tiptap-button.component";
+import { ImageUploadResult } from "./services/image.service";
 
 export interface ImageUploadConfig {
   maxSize?: number; // en MB
@@ -11,16 +12,6 @@ export interface ImageUploadConfig {
   multiple?: boolean;
   compressImages?: boolean; // compression automatique
   quality?: number; // qualité de compression (0-1)
-}
-
-export interface ImageUploadResult {
-  src: string;
-  name: string;
-  size: number;
-  type: string;
-  width?: number;
-  height?: number;
-  originalSize?: number;
 }
 
 @Component({

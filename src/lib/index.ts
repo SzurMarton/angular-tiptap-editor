@@ -10,6 +10,7 @@ export { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
 
 // Services
 export { ImageService } from "./services/image.service";
+export { EditorCommandsService } from "./services/editor-commands.service";
 
 // Extensions
 export { SlashCommands } from "./slash-commands.extension";
@@ -19,9 +20,10 @@ export { ResizableImage } from "./extensions/resizable-image.extension";
 export type { ToolbarConfig } from "./toolbar.component";
 export type { BubbleMenuConfig } from "./bubble-menu.component";
 export type { TiptapButtonConfig } from "./tiptap-button.component";
+export type { ImageUploadConfig } from "./tiptap-image-upload.component";
 export type {
-  ImageUploadConfig,
   ImageUploadResult,
-} from "./tiptap-image-upload.component";
-export type { ImageData, ResizeOptions } from "./services/image.service";
+  ImageData,
+  ResizeOptions,
+} from "./services/image.service";
 export type { ResizableImageOptions } from "./extensions/resizable-image.extension";

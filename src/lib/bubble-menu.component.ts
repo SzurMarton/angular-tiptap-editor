@@ -11,6 +11,7 @@ import {
 import { Editor } from "@tiptap/core";
 import { TiptapButtonComponent } from "./tiptap-button.component";
 import { TiptapSeparatorComponent } from "./tiptap-separator.component";
+import { EditorCommandsService } from "./services/editor-commands.service";
 
 export interface BubbleMenuConfig {
   bold?: boolean;
@@ -121,7 +122,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
 
   private updateInterval: number | null = null;
 
-  constructor() {
+  constructor(private editorCommands: EditorCommandsService) {
     // Mettre à jour la position toutes les 100ms quand visible
     effect(() => {
       if (this.isVisible()) {
@@ -198,14 +199,10 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
       Math.min(left, window.innerWidth - menuWidth - 10)
     );
 
-    // Si le menu sort en bas de l'écran, le positionner au-dessus du texte
-    let adjustedTop = top;
-    if (top + menuHeight > window.innerHeight - 10) {
-      adjustedTop = start.top - menuHeight - 10;
-    }
-
-    // S'assurer que le menu reste visible
-    adjustedTop = Math.max(10, adjustedTop);
+    const adjustedTop = Math.max(
+      10,
+      Math.min(top, window.innerHeight - menuHeight - 10)
+    );
 
     this.position.set({ x: adjustedLeft, y: adjustedTop });
   }
@@ -225,26 +222,26 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
   }
 
   isActive(name: string, attributes?: Record<string, any>): boolean {
-    return this.editor().isActive(name, attributes);
+    return this.editorCommands.isActive(this.editor(), name, attributes);
   }
 
   toggleBold() {
-    this.editor().chain().focus().toggleBold().run();
+    this.editorCommands.toggleBold(this.editor());
     this.commandExecuted.emit({ command: "bold", editor: this.editor() });
   }
 
   toggleItalic() {
-    this.editor().chain().focus().toggleItalic().run();
+    this.editorCommands.toggleItalic(this.editor());
     this.commandExecuted.emit({ command: "italic", editor: this.editor() });
   }
 
   toggleStrike() {
-    this.editor().chain().focus().toggleStrike().run();
+    this.editorCommands.toggleStrike(this.editor());
     this.commandExecuted.emit({ command: "strike", editor: this.editor() });
   }
 
   toggleCode() {
-    this.editor().chain().focus().toggleCode().run();
+    this.editorCommands.toggleCode(this.editor());
     this.commandExecuted.emit({ command: "code", editor: this.editor() });
   }
 }

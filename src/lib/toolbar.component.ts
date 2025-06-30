@@ -2,10 +2,9 @@ import { Component, input, output, signal } from "@angular/core";
 import { Editor } from "@tiptap/core";
 import { TiptapButtonComponent } from "./tiptap-button.component";
 import { TiptapSeparatorComponent } from "./tiptap-separator.component";
-import {
-  TiptapImageUploadComponent,
-  ImageUploadResult,
-} from "./tiptap-image-upload.component";
+import { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
+import { ImageUploadResult } from "./services/image.service";
+import { EditorCommandsService } from "./services/editor-commands.service";
 
 export interface ToolbarConfig {
   bold?: boolean;
@@ -166,76 +165,49 @@ export class TiptapToolbarComponent {
   imageUploaded = output<ImageUploadResult>();
   imageError = output<string>();
 
+  constructor(private editorCommands: EditorCommandsService) {}
+
   isActive(name: string, attributes?: Record<string, any>): boolean {
-    return this.editor().isActive(name, attributes);
+    return this.editorCommands.isActive(this.editor(), name, attributes);
   }
 
   canExecute(command: string): boolean {
-    const editor = this.editor();
-    if (!editor) return false;
-    switch (command) {
-      case "toggleBold":
-        return editor.can().chain().focus().toggleBold().run();
-      case "toggleItalic":
-        return editor.can().chain().focus().toggleItalic().run();
-      case "toggleStrike":
-        return editor.can().chain().focus().toggleStrike().run();
-      case "toggleCode":
-        return editor.can().chain().focus().toggleCode().run();
-      case "undo":
-        return editor.can().chain().focus().undo().run();
-      case "redo":
-        return editor.can().chain().focus().redo().run();
-      default:
-        return false;
-    }
+    return this.editorCommands.canExecute(this.editor(), command);
   }
 
   toggleBold() {
-    this.editor().chain().focus().toggleBold().run();
+    this.editorCommands.toggleBold(this.editor());
   }
   toggleItalic() {
-    this.editor().chain().focus().toggleItalic().run();
+    this.editorCommands.toggleItalic(this.editor());
   }
   toggleStrike() {
-    this.editor().chain().focus().toggleStrike().run();
+    this.editorCommands.toggleStrike(this.editor());
   }
   toggleCode() {
-    this.editor().chain().focus().toggleCode().run();
+    this.editorCommands.toggleCode(this.editor());
   }
   toggleHeading(level: 1 | 2 | 3) {
-    this.editor().chain().focus().toggleHeading({ level }).run();
+    this.editorCommands.toggleHeading(this.editor(), level);
   }
   toggleBulletList() {
-    this.editor().chain().focus().toggleBulletList().run();
+    this.editorCommands.toggleBulletList(this.editor());
   }
   toggleOrderedList() {
-    this.editor().chain().focus().toggleOrderedList().run();
+    this.editorCommands.toggleOrderedList(this.editor());
   }
   toggleBlockquote() {
-    this.editor().chain().focus().toggleBlockquote().run();
+    this.editorCommands.toggleBlockquote(this.editor());
   }
   undo() {
-    this.editor().chain().focus().undo().run();
+    this.editorCommands.undo(this.editor());
   }
   redo() {
-    this.editor().chain().focus().redo().run();
+    this.editorCommands.redo(this.editor());
   }
 
-  // Méthodes pour la gestion des images
+  // Méthodes pour les événements d'image
   onImageSelected(result: ImageUploadResult) {
-    // Insérer l'image dans l'éditeur
-    this.editor()
-      .chain()
-      .focus()
-      .setResizableImage({
-        src: result.src,
-        alt: result.name,
-        title: `${result.name} (${result.width}×${result.height})`,
-        width: result.width,
-        height: result.height,
-      })
-      .run();
     this.imageUploaded.emit(result);
   }
 

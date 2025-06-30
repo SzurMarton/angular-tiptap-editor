@@ -3,7 +3,11 @@ import { bootstrapApplication } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule, FormControl } from "@angular/forms";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { TiptapEditorComponent, ToolbarConfig, BubbleMenuConfig } from "./lib";
+import {
+  TiptapEditorComponent,
+  ToolbarConfig,
+  BubbleMenuConfig,
+} from "./lib/index";
 import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
 
 @Component({
