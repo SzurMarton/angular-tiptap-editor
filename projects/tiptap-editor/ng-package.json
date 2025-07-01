@@ -4,6 +4,10 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
+  "assets": [
+    "src/lib/styles/index.css",
+    "src/lib/styles/bubble-menu.global.css"
+  ],
   "allowedNonPeerDependencies": [
     "@tiptap/core",
     "@tiptap/starter-kit",

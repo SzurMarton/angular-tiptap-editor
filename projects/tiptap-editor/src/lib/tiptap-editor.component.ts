@@ -19,17 +19,17 @@ import { Editor, Extension, Node, Mark } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
-import BubbleMenu from "@tiptap/extension-bubble-menu";
+import { ImageBubbleMenu } from "./extensions/image-bubble-menu.extension";
+import { TextBubbleMenu } from "./extensions/text-bubble-menu.extension";
 import OfficePaste from "@intevation/tiptap-extension-office-paste";
 import { SlashCommands } from "./slash-commands.extension";
 import { ResizableImage } from "./extensions/resizable-image.extension";
-import { TiptapBubbleMenuComponent } from "./bubble-menu.component";
 import { TiptapToolbarComponent } from "./toolbar.component";
 import { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
 import { ImageService } from "./services/image.service";
 import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./toolbar.component";
-import { BubbleMenuConfig } from "./bubble-menu.component";
+import { BubbleMenuConfig } from "./models/bubble-menu.model";
 
 // Configuration par défaut de la toolbar
 export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
@@ -61,11 +61,7 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
 @Component({
   selector: "tiptap-editor",
   standalone: true,
-  imports: [
-    TiptapBubbleMenuComponent,
-    TiptapToolbarComponent,
-    TiptapImageUploadComponent,
-  ],
+  imports: [TiptapToolbarComponent, TiptapImageUploadComponent],
   template: `
     <div class="tiptap-editor">
       <!-- Toolbar -->
@@ -100,16 +96,6 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
       </div>
       }
     </div>
-
-    <!-- Bubble Menu Angular -->
-    @if (showBubbleMenu() && editor()) {
-    <tiptap-bubble-menu
-      [editor]="editor()!"
-      [config]="bubbleMenuConfig()"
-      (commandExecuted)="onBubbleMenuCommand($event)"
-    >
-    </tiptap-bubble-menu>
-    }
   `,
   providers: [
     {
@@ -511,8 +497,8 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
         opacity: 1;
       }
 
-      /* Menu contextuel des images - Design moderne */
-      :host ::ng-deep .image-menu {
+      /* Menu contextuel - Design moderne */
+      :host ::ng-deep .bubble-menu {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -537,7 +523,7 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
         }
       }
 
-      :host ::ng-deep .image-menu .tiptap-button {
+      :host ::ng-deep .bubble-menu .tiptap-button {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -553,7 +539,7 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
         overflow: hidden;
       }
 
-      :host ::ng-deep .image-menu .tiptap-button::before {
+      :host ::ng-deep .bubble-menu .tiptap-button::before {
         content: "";
         position: absolute;
         top: 0;
@@ -566,31 +552,40 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
         border-radius: 10px;
       }
 
-      :host ::ng-deep .image-menu .tiptap-button:hover {
+      :host ::ng-deep .bubble-menu .tiptap-button:hover {
         color: #6366f1;
         transform: translateY(-1px);
       }
 
-      :host ::ng-deep .image-menu .tiptap-button:hover::before {
+      :host ::ng-deep .bubble-menu .tiptap-button:hover::before {
         opacity: 0.1;
       }
 
-      :host ::ng-deep .image-menu .tiptap-button.danger:hover {
+      :host ::ng-deep .bubble-menu .tiptap-button.danger:hover {
         color: #ef4444;
       }
 
-      :host ::ng-deep .image-menu .tiptap-button.danger:hover::before {
+      :host ::ng-deep .bubble-menu .tiptap-button.danger:hover::before {
         background: linear-gradient(135deg, #ef4444, #dc2626);
         opacity: 0.1;
       }
 
-      :host ::ng-deep .image-menu .tiptap-button .material-symbols-outlined {
+      :host ::ng-deep .bubble-menu .tiptap-button.is-active {
+        color: #6366f1;
+        background: rgba(99, 102, 241, 0.1);
+      }
+
+      :host ::ng-deep .bubble-menu .tiptap-button.is-active::before {
+        opacity: 0.15;
+      }
+
+      :host ::ng-deep .bubble-menu .tiptap-button .material-symbols-outlined {
         font-size: 20px;
         position: relative;
         z-index: 1;
       }
 
-      :host ::ng-deep .image-menu .tiptap-separator {
+      :host ::ng-deep .bubble-menu .tiptap-separator {
         width: 1px;
         height: 28px;
         background: linear-gradient(
@@ -600,6 +595,17 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
           transparent
         );
         margin: 0 4px;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
     `,
   ],
@@ -771,12 +777,11 @@ export class TiptapEditorComponent
       );
     }
 
-    // Ajouter le Bubble Menu pour les images avec un nom unique
+    // Ajouter le Bubble Menu pour les images
     extensions.push(
-      BubbleMenu.configure({
-        pluginKey: "imageBubbleMenu", // Nom unique pour éviter les conflits
+      ImageBubbleMenu.configure({
         element: this.createImageMenuElement(),
-        shouldShow: ({ editor }) => {
+        shouldShow: ({ editor }: { editor: any }) => {
           // Afficher le menu image seulement quand une image est sélectionnée ET que l'éditeur est éditable
           return editor.isActive("resizableImage") && this.editable();
         },
@@ -786,6 +791,32 @@ export class TiptapEditorComponent
         },
       })
     );
+
+    // Ajouter le Bubble Menu pour le texte avec Tippy.js
+    if (this.showBubbleMenu()) {
+      extensions.push(
+        TextBubbleMenu.configure({
+          element: this.createTextBubbleMenuElement(),
+          shouldShow: ({ editor }: { editor: any }) => {
+            // Afficher le menu texte seulement quand du texte est sélectionné ET que l'éditeur est éditable
+            return (
+              editor.state.selection.from !== editor.state.selection.to &&
+              !editor.isActive("image") &&
+              !editor.isActive("resizableImage") &&
+              this.editable()
+            );
+          },
+          tippyOptions: {
+            placement: "top", // Positionner au-dessus par défaut
+            offset: [0, 8], // Décalage vers le haut
+            duration: [200, 150], // Durée d'entrée et de sortie
+            animation: "scale", // Animation d'échelle
+            interactive: true, // Permettre les interactions
+            appendTo: () => document.body, // Attacher au body
+          },
+        })
+      );
+    }
 
     if (this.showCharacterCount()) {
       extensions.push(
@@ -830,7 +861,7 @@ export class TiptapEditorComponent
 
   private createImageMenuElement(): HTMLElement {
     const imageMenuEl = document.createElement("div");
-    imageMenuEl.className = "image-menu";
+    imageMenuEl.className = "bubble-menu";
 
     // Bouton pour changer l'image
     const changeBtn = this.createImageMenuButton(
@@ -899,6 +930,83 @@ export class TiptapEditorComponent
   ): HTMLButtonElement {
     const button = document.createElement("button");
     button.className = `tiptap-button ${className || ""}`;
+    button.type = "button";
+    button.title = title;
+
+    // Créer l'icône Material Symbols
+    const icon = document.createElement("span");
+    icon.className = "material-symbols-outlined";
+    icon.textContent = iconName;
+    button.appendChild(icon);
+
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      onClick();
+    });
+
+    return button;
+  }
+
+  private createTextBubbleMenuElement(): HTMLElement {
+    const textMenuEl = document.createElement("div");
+    textMenuEl.className = "bubble-menu";
+
+    // Configuration du bubble menu
+    const config = this.bubbleMenuConfig();
+
+    // Bouton Bold
+    if (config.bold) {
+      const boldBtn = this.createTextMenuButton("format_bold", "Bold", () =>
+        this.editor()?.chain().focus().toggleBold().run()
+      );
+      textMenuEl.appendChild(boldBtn);
+    }
+
+    // Bouton Italic
+    if (config.italic) {
+      const italicBtn = this.createTextMenuButton(
+        "format_italic",
+        "Italic",
+        () => this.editor()?.chain().focus().toggleItalic().run()
+      );
+      textMenuEl.appendChild(italicBtn);
+    }
+
+    // Bouton Strike
+    if (config.strike) {
+      const strikeBtn = this.createTextMenuButton(
+        "strikethrough_s",
+        "Strikethrough",
+        () => this.editor()?.chain().focus().toggleStrike().run()
+      );
+      textMenuEl.appendChild(strikeBtn);
+    }
+
+    // Séparateur si on a du code
+    if (config.separator && config.code) {
+      const separator = document.createElement("div");
+      separator.className = "tiptap-separator";
+      textMenuEl.appendChild(separator);
+    }
+
+    // Bouton Code
+    if (config.code) {
+      const codeBtn = this.createTextMenuButton("code", "Code", () =>
+        this.editor()?.chain().focus().toggleCode().run()
+      );
+      textMenuEl.appendChild(codeBtn);
+    }
+
+    return textMenuEl;
+  }
+
+  private createTextMenuButton(
+    iconName: string,
+    title: string,
+    onClick: () => void
+  ): HTMLButtonElement {
+    const button = document.createElement("button");
+    button.className = "tiptap-button";
     button.type = "button";
     button.title = title;
 

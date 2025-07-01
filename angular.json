@@ -36,6 +36,7 @@
             "scripts": [],
             "styles": [
               "node_modules/@fontsource/material-symbols-outlined/index.css",
+              "dist/tiptap-editor/src/lib/styles/index.css",
               "src/global_styles.css"
             ],
             "tsConfig": "tsconfig.app.json"

@@ -31,6 +31,7 @@ This command will compile your project, and the build artifacts will be placed i
 Once the project is built, you can publish your library by following these steps:
 
 1. Navigate to the `dist` directory:
+
    ```bash
    cd dist/tiptap-editor
    ```
@@ -61,3 +62,38 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Installation
+
+```bash
+npm install tiptap-editor
+```
+
+## Intégration des styles globaux pour les menus contextuels
+
+Pour que les menus contextuels (bubble-menu) Tiptap (texte et image) aient le bon style, ajoutez le CSS global fourni par la librairie dans votre projet Angular.
+
+### Méthode recommandée : import dans le style global
+
+Ajoutez dans votre fichier `src/styles.scss` (ou `src/styles.css`) :
+
+```scss
+@import "~tiptap-editor/styles/index.css";
+```
+
+### Ou via angular.json
+
+Ajoutez dans la section `styles` de votre `angular.json` :
+
+```json
+"styles": [
+  "node_modules/tiptap-editor/styles/index.css",
+  "src/styles.scss"
+]
+```
+
+> **Note :** Ce CSS est nécessaire si vous utilisez l'option `appendTo: document.body` (recommandée) pour les menus contextuels Tiptap, car ceux-ci sont déplacés dans le `<body>` et n'héritent pas des styles encapsulés Angular.
+
+## Utilisation
+
+// ... (exemples d'utilisation du composant)
