@@ -230,21 +230,10 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       const { from, to } = ed.state.selection;
       const hasTextSelection = from !== to;
 
-      // Debug temporaire
-      console.log("Image menu debug:", {
-        isImageSelected,
-        hasTextSelection,
-        isEditable: ed.isEditable,
-        from,
-        to,
-      });
-
       // Ne montrer le menu image que si :
       // - Une image est sélectionnée
       // - L'éditeur est éditable
       const shouldShow = isImageSelected && ed.isEditable;
-
-      console.log("Image menu shouldShow:", shouldShow);
 
       if (shouldShow) {
         this.showTippy();

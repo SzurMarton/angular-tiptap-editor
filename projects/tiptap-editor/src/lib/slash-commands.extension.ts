@@ -2,6 +2,7 @@ import { Extension } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
+import tippy, { Instance as TippyInstance } from "tippy.js";
 
 export interface SlashCommandItem {
   title: string;
@@ -215,6 +216,7 @@ export const SlashCommands = Extension.create({
   addProseMirrorPlugins() {
     const commands = this.options.commands as SlashCommandItem[];
     let menuElement: HTMLElement | null = null;
+    let tippyInstance: TippyInstance | null = null;
 
     const filterCommands = (query: string): SlashCommandItem[] => {
       if (!query) return commands;
@@ -237,17 +239,14 @@ export const SlashCommands = Extension.create({
       menu.setAttribute("role", "listbox");
       menu.setAttribute("aria-label", "Commandes disponibles");
       menu.style.cssText = `
-        position: fixed;
         background: white;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         padding: 8px;
-        z-index: 1000;
         max-height: 300px;
         overflow-y: auto;
         min-width: 280px;
-        animation: fadeIn 0.2s ease-out;
         outline: none;
       `;
 
@@ -330,6 +329,65 @@ export const SlashCommands = Extension.create({
       return menu;
     };
 
+    const initTippy = (view: any) => {
+      if (!menuElement) return;
+
+      // Détruire l'ancienne instance si elle existe
+      if (tippyInstance) {
+        tippyInstance.destroy();
+      }
+
+      // Créer l'instance Tippy
+      const instance = tippy(view.dom, {
+        content: menuElement,
+        trigger: "manual",
+        placement: "bottom-start",
+        appendTo: () => document.body,
+        interactive: true,
+        arrow: false,
+        offset: [0, 8],
+        hideOnClick: false,
+        popperOptions: {
+          modifiers: [
+            {
+              name: "flip",
+              enabled: false, // Désactive complètement le flip - toujours en bas
+            },
+            {
+              name: "preventOverflow",
+              options: {
+                altAxis: true, // Permet le décalage horizontal si nécessaire
+                padding: 8,
+              },
+            },
+          ],
+        },
+        getReferenceClientRect: () => getCursorRect(view),
+      });
+
+      // tippy() peut retourner un tableau, on prend le premier élément
+      tippyInstance = Array.isArray(instance) ? instance[0] : instance;
+    };
+
+    const getCursorRect = (view: any): DOMRect => {
+      try {
+        const { selection } = view.state;
+        const { from } = selection;
+        const coords = view.coordsAtPos(from);
+
+        // Créer un DOMRect à partir des coordonnées ProseMirror
+        return new DOMRect(
+          coords.left,
+          coords.top,
+          0,
+          coords.bottom - coords.top
+        );
+      } catch (error) {
+        console.warn("Erreur lors du calcul des coordonnées:", error);
+        return new DOMRect(0, 0, 0, 0);
+      }
+    };
+
     const updateMenu = (view: any, state: SlashCommandsState) => {
       if (!state.active || state.filteredCommands.length === 0) {
         hideMenu();
@@ -338,7 +396,7 @@ export const SlashCommands = Extension.create({
 
       if (!menuElement) {
         menuElement = createMenu();
-        document.body.appendChild(menuElement);
+        initTippy(view);
       }
 
       // Vider le menu
@@ -399,8 +457,8 @@ export const SlashCommands = Extension.create({
         menuElement!.appendChild(item);
       });
 
-      // Positionner le menu
-      positionMenu(view, state);
+      // Afficher le menu avec Tippy
+      showMenu(view);
 
       // Faire défiler vers l'élément sélectionné si nécessaire
       const selectedItem = menuElement.querySelector(
@@ -411,41 +469,22 @@ export const SlashCommands = Extension.create({
       }
     };
 
-    const positionMenu = (view: any, state: SlashCommandsState) => {
-      if (!menuElement || !state.range) return;
+    const showMenu = (view: any) => {
+      if (!tippyInstance) return;
 
-      try {
-        const { from } = state.range;
-        const coords = view.coordsAtPos(from);
+      // Mettre à jour la position de référence
+      tippyInstance.setProps({
+        getReferenceClientRect: () => getCursorRect(view),
+      });
 
-        // Utiliser position fixed et ajuster selon la position dans la fenêtre
-        const rect = view.dom.getBoundingClientRect();
-        const left = coords.left;
-        const top = coords.bottom + 5;
-
-        menuElement.style.left = `${left}px`;
-        menuElement.style.top = `${top}px`;
-
-        // S'assurer que le menu reste dans la fenêtre
-        const menuRect = menuElement.getBoundingClientRect();
-        if (menuRect.right > window.innerWidth) {
-          menuElement.style.left = `${
-            window.innerWidth - menuRect.width - 10
-          }px`;
-        }
-        if (menuRect.bottom > window.innerHeight) {
-          menuElement.style.top = `${coords.top - menuRect.height - 5}px`;
-        }
-      } catch (error) {
-        console.warn("Erreur lors du positionnement du menu slash:", error);
-      }
+      tippyInstance.show();
     };
 
     const hideMenu = () => {
-      if (menuElement) {
-        menuElement.remove();
-        menuElement = null;
+      if (tippyInstance) {
+        tippyInstance.hide();
       }
+      // Ne pas détruire l'instance, juste la cacher
     };
 
     const executeCommand = (
@@ -675,6 +714,11 @@ export const SlashCommands = Extension.create({
             },
             destroy: () => {
               hideMenu();
+              if (tippyInstance) {
+                tippyInstance.destroy();
+                tippyInstance = null;
+              }
+              menuElement = null;
             },
           };
         },
