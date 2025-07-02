@@ -4,6 +4,8 @@
 
 // Composants principaux
 export * from "./lib/tiptap-editor.component";
+export * from "./lib/tiptap-bubble-menu.component";
+export * from "./lib/tiptap-image-bubble-menu.component";
 export * from "./lib/toolbar.component";
 export * from "./lib/tiptap-button.component";
 export * from "./lib/tiptap-image-upload.component";
@@ -19,7 +21,10 @@ export * from "./lib/slash-commands.extension";
 
 // Types et interfaces
 export type { ToolbarConfig } from "./lib/toolbar.component";
-export type { BubbleMenuConfig } from "./lib/models/bubble-menu.model";
+export type {
+  BubbleMenuConfig,
+  ImageBubbleMenuConfig,
+} from "./lib/models/bubble-menu.model";
 export type { TiptapButtonConfig } from "./lib/tiptap-button.component";
 export type {
   ImageUploadResult,

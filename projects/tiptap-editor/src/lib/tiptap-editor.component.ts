@@ -19,17 +19,20 @@ import { Editor, Extension, Node, Mark } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
-import { ImageBubbleMenu } from "./extensions/image-bubble-menu.extension";
 import OfficePaste from "@intevation/tiptap-extension-office-paste";
 import { SlashCommands } from "./slash-commands.extension";
 import { ResizableImage } from "./extensions/resizable-image.extension";
 import { TiptapToolbarComponent } from "./toolbar.component";
 import { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
 import { TiptapBubbleMenuComponent } from "./tiptap-bubble-menu.component";
+import { TiptapImageBubbleMenuComponent } from "./tiptap-image-bubble-menu.component";
 import { ImageService } from "./services/image.service";
 import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./toolbar.component";
-import { BubbleMenuConfig } from "./models/bubble-menu.model";
+import {
+  BubbleMenuConfig,
+  ImageBubbleMenuConfig,
+} from "./models/bubble-menu.model";
 
 // Configuration par défaut de la toolbar
 export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
@@ -58,6 +61,17 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
   separator: true,
 };
 
+// Configuration par défaut du bubble menu image
+export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
+  changeImage: true,
+  resizeSmall: true,
+  resizeMedium: true,
+  resizeLarge: true,
+  resizeOriginal: true,
+  deleteImage: true,
+  separator: true,
+};
+
 @Component({
   selector: "tiptap-editor",
   standalone: true,
@@ -65,6 +79,7 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
     TiptapToolbarComponent,
     TiptapImageUploadComponent,
     TiptapBubbleMenuComponent,
+    TiptapImageBubbleMenuComponent,
   ],
   template: `
     <div class="tiptap-editor">
@@ -90,12 +105,20 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
         (drop)="onDrop($event)"
       ></div>
 
-      <!-- Bubble Menu -->
+      <!-- Bubble Menu pour le texte -->
       @if (showBubbleMenu() && editor()) {
       <tiptap-bubble-menu
         [editor]="editor()!"
         [config]="bubbleMenuConfig()"
       ></tiptap-bubble-menu>
+      }
+
+      <!-- Bubble Menu pour les images -->
+      @if (showImageBubbleMenu() && editor()) {
+      <tiptap-image-bubble-menu
+        [editor]="editor()!"
+        [config]="imageBubbleMenuConfig()"
+      ></tiptap-image-bubble-menu>
       }
 
       <!-- Compteur de caractères -->
@@ -524,9 +547,13 @@ export class TiptapEditorComponent
   enableOfficePaste = input<boolean>(true);
   enableSlashCommands = input<boolean>(true);
 
-  // Nouveaux inputs pour le bubble menu
+  // Nouveaux inputs pour les bubble menus
   showBubbleMenu = input<boolean>(true);
   bubbleMenu = input<Partial<BubbleMenuConfig>>(DEFAULT_BUBBLE_MENU_CONFIG);
+  showImageBubbleMenu = input<boolean>(true);
+  imageBubbleMenu = input<Partial<ImageBubbleMenuConfig>>(
+    DEFAULT_IMAGE_BUBBLE_MENU_CONFIG
+  );
 
   // Nouveau input pour la configuration de la toolbar
   toolbar = input<Partial<ToolbarConfig>>({});
@@ -575,6 +602,20 @@ export class TiptapEditorComponent
     // Sinon, fusionner avec la configuration par défaut
     return {
       ...DEFAULT_BUBBLE_MENU_CONFIG,
+      ...userConfig,
+    };
+  });
+
+  // Computed pour la configuration du bubble menu image
+  imageBubbleMenuConfig = computed(() => {
+    const userConfig = this.imageBubbleMenu();
+    // Si aucune configuration n'est fournie, utiliser la configuration par défaut
+    if (Object.keys(userConfig).length === 0) {
+      return DEFAULT_IMAGE_BUBBLE_MENU_CONFIG;
+    }
+    // Sinon, fusionner avec la configuration par défaut
+    return {
+      ...DEFAULT_IMAGE_BUBBLE_MENU_CONFIG,
       ...userConfig,
     };
   });
@@ -678,23 +719,8 @@ export class TiptapEditorComponent
       );
     }
 
-    // Ajouter le Bubble Menu pour les images (garde l'ancienne approche pour les images)
-    extensions.push(
-      ImageBubbleMenu.configure({
-        element: this.createImageMenuElement(),
-        shouldShow: ({ editor }: { editor: any }) => {
-          // Afficher le menu image seulement quand une image est sélectionnée ET que l'éditeur est éditable
-          return editor.isActive("resizableImage") && this.editable();
-        },
-        tippyOptions: {
-          placement: "top-start", // Positionner en haut à gauche
-          offset: [0, 8], // Décalage vers le haut
-        },
-      })
-    );
-
-    // Note: Le bubble menu pour le texte est maintenant géré entièrement par TiptapBubbleMenuComponent
-    // Pas besoin d'extension BubbleMenu supplémentaire car le composant Angular gère la visibilité et le positionnement
+    // Note: Les bubble menus (texte et images) sont maintenant gérés entièrement par les composants Angular
+    // TiptapBubbleMenuComponent et TiptapImageBubbleMenuComponent
 
     if (this.showCharacterCount()) {
       extensions.push(
@@ -737,94 +763,6 @@ export class TiptapEditorComponent
     });
   }
 
-  private createImageMenuElement(): HTMLElement {
-    const imageMenuEl = document.createElement("div");
-    imageMenuEl.className = "bubble-menu";
-
-    // Bouton pour changer l'image
-    const changeBtn = this.createImageMenuButton(
-      "edit",
-      "Changer l'image",
-      () => this.changeImage()
-    );
-    imageMenuEl.appendChild(changeBtn);
-
-    // Séparateur
-    const separator1 = document.createElement("div");
-    separator1.className = "tiptap-separator";
-    imageMenuEl.appendChild(separator1);
-
-    // Boutons de redimensionnement
-    const resizeSmallBtn = this.createImageMenuButton(
-      "crop_square",
-      "Petite (300×200)",
-      () => this.imageService.resizeImageToSmall(this.editor()!)
-    );
-    imageMenuEl.appendChild(resizeSmallBtn);
-
-    const resizeMediumBtn = this.createImageMenuButton(
-      "crop_landscape",
-      "Moyenne (500×350)",
-      () => this.imageService.resizeImageToMedium(this.editor()!)
-    );
-    imageMenuEl.appendChild(resizeMediumBtn);
-
-    const resizeLargeBtn = this.createImageMenuButton(
-      "crop_free",
-      "Grande (800×600)",
-      () => this.imageService.resizeImageToLarge(this.editor()!)
-    );
-    imageMenuEl.appendChild(resizeLargeBtn);
-
-    const resizeOriginalBtn = this.createImageMenuButton(
-      "restore",
-      "Taille originale",
-      () => this.imageService.resizeImageToOriginal(this.editor()!)
-    );
-    imageMenuEl.appendChild(resizeOriginalBtn);
-
-    // Séparateur
-    const separator2 = document.createElement("div");
-    separator2.className = "tiptap-separator";
-    imageMenuEl.appendChild(separator2);
-
-    // Bouton pour supprimer l'image
-    const deleteBtn = this.createImageMenuButton(
-      "delete",
-      "Supprimer l'image",
-      () => this.deleteImage(),
-      "danger"
-    );
-    imageMenuEl.appendChild(deleteBtn);
-
-    return imageMenuEl;
-  }
-
-  private createImageMenuButton(
-    iconName: string,
-    title: string,
-    onClick: () => void,
-    className?: string
-  ): HTMLButtonElement {
-    const button = document.createElement("button");
-    button.className = `tiptap-button ${className || ""}`;
-    button.type = "button";
-    button.title = title;
-
-    // Créer l'icône Material Symbols
-    const icon = document.createElement("span");
-    icon.className = "material-symbols-outlined";
-    icon.textContent = iconName;
-    button.appendChild(icon);
-
-    button.addEventListener("click", (e) => {
-      e.preventDefault();
-      onClick();
-    });
-
-    return button;
-  }
-
   private updateCharacterCount(editor: Editor) {
     if (this.showCharacterCount() && editor.storage["characterCount"]) {
       const storage = editor.storage["characterCount"];
@@ -832,48 +770,6 @@ export class TiptapEditorComponent
         characters: storage.characters(),
         words: storage.words(),
       });
-    }
-  }
-
-  // Méthodes pour le menu contextuel des images
-  private changeImage() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.style.display = "none";
-
-    input.addEventListener("change", (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file && file.type.startsWith("image/")) {
-        const currentEditor = this.editor();
-        if (currentEditor) {
-          this.imageService
-            .uploadImage(file)
-            .then((result) => {
-              this.imageService.insertImage(currentEditor, {
-                src: result.src,
-                alt: result.name,
-                title: `${result.name} (${result.width}×${result.height})`,
-              });
-            })
-            .catch((error) => {
-              console.error("Erreur lors de l'upload:", error);
-            });
-        }
-      }
-    });
-
-    document.body.appendChild(input);
-    input.click();
-    document.body.removeChild(input);
-  }
-
-  private deleteImage() {
-    const currentEditor = this.editor();
-    if (!currentEditor) return;
-
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
-      this.imageService.deleteImage(currentEditor);
     }
   }
 

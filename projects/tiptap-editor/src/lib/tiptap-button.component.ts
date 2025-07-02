@@ -18,7 +18,7 @@ export interface TiptapButtonConfig {
       [class.is-active]="active()"
       [class.is-disabled]="disabled()"
       [class.text-button]="variant() === 'text'"
-      [class.danger-button]="variant() === 'danger'"
+      [class.danger]="variant() === 'danger'"
       [class.size-small]="size() === 'small'"
       [class.size-large]="size() === 'large'"
       [disabled]="disabled()"

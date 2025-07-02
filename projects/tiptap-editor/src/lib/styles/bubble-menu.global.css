@@ -13,68 +13,6 @@
   animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.bubble-menu .tiptap-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #64748b;
-  position: relative;
-  overflow: hidden;
-}
-
-.bubble-menu .tiptap-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  border-radius: 10px;
-}
-
-.bubble-menu .tiptap-button:hover {
-  color: #6366f1;
-  transform: translateY(-1px);
-}
-
-.bubble-menu .tiptap-button:hover::before {
-  opacity: 0.1;
-}
-
-.bubble-menu .tiptap-button.danger:hover {
-  color: #ef4444;
-}
-
-.bubble-menu .tiptap-button.danger:hover::before {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  opacity: 0.1;
-}
-
-.bubble-menu .tiptap-button.is-active {
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
-}
-
-.bubble-menu .tiptap-button.is-active::before {
-  opacity: 0.15;
-}
-
-.bubble-menu .tiptap-button .material-symbols-outlined {
-  font-size: 20px;
-  position: relative;
-  z-index: 1;
-}
-
 .bubble-menu .tiptap-separator {
   width: 1px;
   height: 28px;
