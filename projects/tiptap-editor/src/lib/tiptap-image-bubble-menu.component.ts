@@ -85,6 +85,7 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
 
   private tippyInstance: TippyInstance | null = null;
   private imageService = inject(ImageService);
+  private updateTimeout: any = null;
 
   imageBubbleMenuConfig = computed(() => ({
     changeImage: true,
@@ -115,19 +116,21 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       // Nettoyer les anciens listeners
       ed.off("selectionUpdate", this.updateMenu);
       ed.off("transaction", this.updateMenu);
+      ed.off("focus", this.updateMenu);
+      ed.off("blur", this.handleBlur);
 
       // Ajouter les nouveaux listeners
       ed.on("selectionUpdate", this.updateMenu);
       ed.on("transaction", this.updateMenu);
+      ed.on("focus", this.updateMenu);
+      ed.on("blur", this.handleBlur);
       this.updateMenu();
     });
   }
 
   ngOnInit() {
-    // Initialiser Tippy une fois que le component est ready
-    setTimeout(() => {
-      this.initTippy();
-    }, 100);
+    // Initialiser Tippy de manière synchrone après que le component soit ready
+    this.initTippy();
   }
 
   ngOnDestroy() {
@@ -135,17 +138,35 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
     if (ed) {
       ed.off("selectionUpdate", this.updateMenu);
       ed.off("transaction", this.updateMenu);
+      ed.off("focus", this.updateMenu);
+      ed.off("blur", this.handleBlur);
+    }
+
+    // Nettoyer les timeouts
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
     }
 
     // Nettoyer Tippy
     if (this.tippyInstance) {
       this.tippyInstance.destroy();
+      this.tippyInstance = null;
     }
   }
 
   private initTippy() {
-    const menuElement = this.menuRef?.nativeElement;
-    if (!menuElement) return;
+    // Attendre que l'élément soit disponible
+    if (!this.menuRef?.nativeElement) {
+      setTimeout(() => this.initTippy(), 50);
+      return;
+    }
+
+    const menuElement = this.menuRef.nativeElement;
+
+    // S'assurer qu'il n'y a pas déjà une instance
+    if (this.tippyInstance) {
+      this.tippyInstance.destroy();
+    }
 
     // Créer l'instance Tippy
     this.tippyInstance = tippy(document.body, {
@@ -157,6 +178,10 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       arrow: false,
       offset: [0, 8],
       hideOnClick: false,
+      onShow: (instance) => {
+        // S'assurer que les autres menus sont fermés
+        this.hideOtherMenus();
+      },
       getReferenceClientRect: () => this.getImageRect(),
     });
   }
@@ -191,18 +216,55 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
   }
 
   updateMenu = () => {
-    const ed = this.editor();
-    if (!ed) return;
-
-    const shouldShow =
-      (ed.isActive("resizableImage") || ed.isActive("image")) && ed.isEditable;
-
-    if (shouldShow) {
-      this.showTippy();
-    } else {
-      this.hideTippy();
+    // Debounce pour éviter les appels trop fréquents
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
     }
+
+    this.updateTimeout = setTimeout(() => {
+      const ed = this.editor();
+      if (!ed) return;
+
+      const isImageSelected =
+        ed.isActive("resizableImage") || ed.isActive("image");
+      const { from, to } = ed.state.selection;
+      const hasTextSelection = from !== to;
+
+      // Debug temporaire
+      console.log("Image menu debug:", {
+        isImageSelected,
+        hasTextSelection,
+        isEditable: ed.isEditable,
+        from,
+        to,
+      });
+
+      // Ne montrer le menu image que si :
+      // - Une image est sélectionnée
+      // - L'éditeur est éditable
+      const shouldShow = isImageSelected && ed.isEditable;
+
+      console.log("Image menu shouldShow:", shouldShow);
+
+      if (shouldShow) {
+        this.showTippy();
+      } else {
+        this.hideTippy();
+      }
+    }, 10);
   };
+
+  handleBlur = () => {
+    // Masquer le menu quand l'éditeur perd le focus
+    setTimeout(() => {
+      this.hideTippy();
+    }, 100);
+  };
+
+  private hideOtherMenus() {
+    // Cette méthode peut être étendue pour fermer d'autres menus si nécessaire
+    // Pour l'instant, elle sert de placeholder pour une future coordination entre menus
+  }
 
   private showTippy() {
     if (!this.tippyInstance) return;
