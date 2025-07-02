@@ -7,6 +7,7 @@ export interface TiptapButtonConfig {
   disabled?: boolean;
   variant?: "default" | "text" | "danger";
   size?: "small" | "medium" | "large";
+  iconSize?: "small" | "medium" | "large";
 }
 
 @Component({
@@ -19,15 +20,22 @@ export interface TiptapButtonConfig {
       [class.is-disabled]="disabled()"
       [class.text-button]="variant() === 'text'"
       [class.danger]="variant() === 'danger'"
-      [class.size-small]="size() === 'small'"
-      [class.size-large]="size() === 'large'"
+      [class.small]="size() === 'small'"
+      [class.medium]="size() === 'medium'"
+      [class.large]="size() === 'large'"
       [disabled]="disabled()"
       [attr.title]="title()"
       (mousedown)="onMouseDown($event)"
       (click)="onClick.emit($event)"
       type="button"
     >
-      <span class="material-symbols-outlined">{{ icon() }}</span>
+      <span
+        class="material-symbols-outlined"
+        [class.icon-small]="iconSize() === 'small'"
+        [class.icon-medium]="iconSize() === 'medium'"
+        [class.icon-large]="iconSize() === 'large'"
+        >{{ icon() }}</span
+      >
       <ng-content></ng-content>
     </button>
   `,
@@ -38,8 +46,8 @@ export interface TiptapButtonConfig {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border: none;
         background: transparent;
         border-radius: 8px;
@@ -111,6 +119,18 @@ export interface TiptapButtonConfig {
         z-index: 1;
       }
 
+      .tiptap-button .material-symbols-outlined.icon-small {
+        font-size: 16px;
+      }
+
+      .tiptap-button .material-symbols-outlined.icon-medium {
+        font-size: 20px;
+      }
+
+      .tiptap-button .material-symbols-outlined.icon-large {
+        font-size: 24px;
+      }
+
       /* Boutons avec texte */
       .tiptap-button.text-button {
         width: auto;
@@ -174,21 +194,18 @@ export interface TiptapButtonConfig {
 
       /* Boutons de taille différente */
       .tiptap-button.small {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
       }
 
-      .tiptap-button.small .material-symbols-outlined {
-        font-size: 16px;
+      .tiptap-button.medium {
+        width: 32px;
+        height: 32px;
       }
 
       .tiptap-button.large {
-        width: 44px;
-        height: 44px;
-      }
-
-      .tiptap-button.large .material-symbols-outlined {
-        font-size: 24px;
+        width: 40px;
+        height: 40px;
       }
 
       /* Boutons avec badge */
@@ -279,6 +296,7 @@ export class TiptapButtonComponent {
   disabled = input(false);
   variant = input<"default" | "text" | "danger">("default");
   size = input<"small" | "medium" | "large">("medium");
+  iconSize = input<"small" | "medium" | "large">("medium");
 
   // Outputs
   onClick = output<Event>();

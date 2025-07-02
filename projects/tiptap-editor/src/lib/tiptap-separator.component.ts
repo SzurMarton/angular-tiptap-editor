@@ -8,8 +8,9 @@ import { Component, input } from "@angular/core";
       class="tiptap-separator"
       [class.vertical]="orientation() === 'vertical'"
       [class.horizontal]="orientation() === 'horizontal'"
-      [class.size-small]="size() === 'small'"
-      [class.size-large]="size() === 'large'"
+      [class.small]="size() === 'small'"
+      [class.medium]="size() === 'medium'"
+      [class.large]="size() === 'large'"
     ></div>
   `,
   styles: [
@@ -31,21 +32,30 @@ import { Component, input } from "@angular/core";
         margin: 8px 0;
       }
 
-      .tiptap-separator.size-small.vertical {
+      .tiptap-separator.small.vertical {
         height: 16px;
         margin: 0 4px;
       }
 
-      .tiptap-separator.size-small.horizontal {
+      .tiptap-separator.small.horizontal {
         margin: 4px 0;
       }
 
-      .tiptap-separator.size-large.vertical {
+      .tiptap-separator.medium.vertical {
+        height: 24px;
+        margin: 0 8px;
+      }
+
+      .tiptap-separator.medium.horizontal {
+        margin: 8px 0;
+      }
+
+      .tiptap-separator.large.vertical {
         height: 32px;
         margin: 0 12px;
       }
 
-      .tiptap-separator.size-large.horizontal {
+      .tiptap-separator.large.horizontal {
         margin: 12px 0;
       }
     `,

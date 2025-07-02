@@ -24,7 +24,7 @@ import { ImageBubbleMenuConfig } from "./models/bubble-menu.model";
     <div #menuRef class="bubble-menu">
       @if (imageBubbleMenuConfig().changeImage) {
       <tiptap-button
-        icon="edit"
+        icon="drive_file_rename_outline"
         title="Changer l'image"
         (click)="onCommand('changeImage', $event)"
       ></tiptap-button>
@@ -33,24 +33,27 @@ import { ImageBubbleMenuConfig } from "./models/bubble-menu.model";
       } @if (imageBubbleMenuConfig().resizeSmall) {
       <tiptap-button
         icon="crop_square"
+        iconSize="small"
         title="Petite (300×200)"
         (click)="onCommand('resizeSmall', $event)"
       ></tiptap-button>
       } @if (imageBubbleMenuConfig().resizeMedium) {
       <tiptap-button
-        icon="crop_landscape"
+        icon="crop_square"
+        iconSize="medium"
         title="Moyenne (500×350)"
         (click)="onCommand('resizeMedium', $event)"
       ></tiptap-button>
       } @if (imageBubbleMenuConfig().resizeLarge) {
       <tiptap-button
-        icon="crop_free"
+        icon="crop_square"
+        iconSize="large"
         title="Grande (800×600)"
         (click)="onCommand('resizeLarge', $event)"
       ></tiptap-button>
       } @if (imageBubbleMenuConfig().resizeOriginal) {
       <tiptap-button
-        icon="restore"
+        icon="photo_size_select_actual"
         title="Taille originale"
         (click)="onCommand('resizeOriginal', $event)"
       ></tiptap-button>
