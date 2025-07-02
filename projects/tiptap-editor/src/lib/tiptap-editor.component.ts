@@ -103,6 +103,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
         [class.drag-over]="isDragOver()"
         (dragover)="onDragOver($event)"
         (drop)="onDrop($event)"
+        (click)="onEditorClick($event)"
       ></div>
 
       <!-- Bubble Menu pour le texte -->
@@ -192,6 +193,8 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
         outline: none;
         line-height: 1.6;
         color: #2d3748;
+        min-height: 100%;
+        height: 100%;
       }
 
       /* Titres */
@@ -903,6 +906,28 @@ export class TiptapEditorComponent
     const currentEditor = this.editor();
     if (currentEditor) {
       currentEditor.setEditable(!isDisabled);
+    }
+  }
+
+  onEditorClick(event: MouseEvent) {
+    const editor = this.editor();
+    if (!editor) return;
+
+    // Vérifier si on clique sur l'élément conteneur et non sur le contenu
+    const target = event.target as HTMLElement;
+    const editorElement = this.editorElement()?.nativeElement;
+
+    if (
+      target === editorElement ||
+      target.classList.contains("tiptap-content")
+    ) {
+      // On clique dans l'espace vide, positionner le curseur à la fin
+      setTimeout(() => {
+        const { doc } = editor.state;
+        const endPos = doc.content.size;
+        editor.commands.setTextSelection(endPos);
+        editor.commands.focus();
+      }, 0);
     }
   }
 }
