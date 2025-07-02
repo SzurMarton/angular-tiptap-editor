@@ -161,7 +161,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       /* Contenu de l'éditeur */
       .tiptap-content {
         padding: 16px;
-        min-height: 200px;
+        min-height: var(--editor-min-height, 300px);
         outline: none;
         position: relative;
       }
@@ -541,6 +541,7 @@ export class TiptapEditorComponent
   content = input<string>("");
   placeholder = input<string>("Start typing...");
   editable = input<boolean>(true);
+  minHeight = input<number>(300);
   showToolbar = input<boolean>(true);
   showCharacterCount = input<boolean>(true);
   maxCharacters = input<number | undefined>(undefined);
@@ -642,6 +643,24 @@ export class TiptapEditorComponent
   private onTouched = () => {};
 
   constructor(private imageService: ImageService) {
+    // Effet pour mettre à jour le contenu de l'éditeur
+    effect(() => {
+      const editor = this.editor();
+      const content = this.content();
+      if (editor && content !== editor.getHTML()) {
+        editor.commands.setContent(content, false);
+      }
+    });
+
+    // Effet pour mettre à jour la hauteur minimale
+    effect(() => {
+      const minHeight = this.minHeight();
+      const element = this.editorElement()?.nativeElement;
+      if (element) {
+        element.style.setProperty("--editor-min-height", `${minHeight}px`);
+      }
+    });
+
     // Effect pour surveiller les changements d'édition
     effect(() => {
       const currentEditor = this.editor();
