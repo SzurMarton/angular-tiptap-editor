@@ -200,21 +200,36 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
 
     // Trouver l'image sélectionnée dans le DOM
     const { from } = ed.state.selection;
-    const node = ed.view.domAtPos(from).node;
 
-    // Chercher l'élément image
-    let imageElement: HTMLElement | null = null;
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      imageElement = node as HTMLElement;
-      if (
-        !imageElement.tagName ||
-        imageElement.tagName.toLowerCase() !== "img"
-      ) {
-        imageElement = imageElement.querySelector("img");
+    // Fonction pour trouver toutes les images dans l'éditeur
+    const getAllImages = (): HTMLImageElement[] => {
+      const editorElement = ed.view.dom;
+      return Array.from(editorElement.querySelectorAll("img"));
+    };
+
+    // Fonction pour trouver l'image à la position spécifique
+    const findImageAtPosition = (): HTMLImageElement | null => {
+      const allImages = getAllImages();
+
+      for (const img of allImages) {
+        try {
+          // Obtenir la position ProseMirror de cette image
+          const imgPos = ed.view.posAtDOM(img, 0);
+          // Vérifier si cette image correspond à la position sélectionnée
+          if (Math.abs(imgPos - from) <= 1) {
+            return img;
+          }
+        } catch (error) {
+          // Continuer si on ne peut pas obtenir la position de cette image
+          continue;
+        }
       }
-    } else if (node.parentElement) {
-      imageElement = node.parentElement.querySelector("img");
-    }
+
+      return null;
+    };
+
+    // Chercher l'image à la position exacte
+    const imageElement = findImageAtPosition();
 
     if (imageElement) {
       return imageElement.getBoundingClientRect();
