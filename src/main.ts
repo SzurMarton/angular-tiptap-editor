@@ -10,6 +10,13 @@ import {
 } from "tiptap-editor";
 import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
 
+// Import des types pour les slash commands
+import {
+  SlashCommandsConfig,
+  SlashCommandItem,
+  DEFAULT_SLASH_COMMANDS,
+} from "tiptap-editor";
+
 @Component({
   selector: "app-root",
   standalone: true,
@@ -44,7 +51,7 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
               </span>
               <span class="stat-item" [class.active]="enableSlashCommands()">
                 <span class="material-symbols-outlined">flash_on</span>
-                Slash
+                Slash ({{ getSlashCommandsActiveCount() }})
               </span>
             </div>
           </div>
@@ -56,6 +63,7 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
               [bubbleMenu]="currentBubbleMenuConfig()"
               [showBubbleMenu]="showBubbleMenuDemo()"
               [enableSlashCommands]="enableSlashCommands()"
+              [slashCommandsConfig]="currentSlashCommandsConfig()"
               [showToolbar]="showToolbar()"
               [placeholder]="currentPlaceholder()"
               (contentChange)="onDemoContentChange($event)"
@@ -68,9 +76,22 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
         <aside class="controls">
           <div class="controls-header">
             <h3>Configuration</h3>
-            <button class="icon-btn" (click)="resetToDefaults()" title="Reset">
-              <span class="material-symbols-outlined">refresh</span>
-            </button>
+            <div class="header-actions">
+              <button
+                class="icon-btn"
+                (click)="resetToDefaults()"
+                title="Reset"
+              >
+                <span class="material-symbols-outlined">refresh</span>
+              </button>
+              <button
+                class="icon-btn"
+                (click)="clearContent()"
+                title="Vider l'éditeur"
+              >
+                <span class="material-symbols-outlined">clear</span>
+              </button>
+            </div>
           </div>
 
           <!-- Toolbar -->
@@ -90,43 +111,38 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
               </label>
             </div>
 
-            <div class="preset-grid">
+            <div class="menu-section">
               <button
-                class="preset-btn"
-                [class.active]="currentPreset() === 'minimal'"
-                (click)="setMinimalToolbar()"
-                title="Configuration minimale"
+                class="menu-trigger"
+                (click)="toggleToolbarMenu()"
+                [class.active]="showToolbarMenu()"
               >
-                <span class="material-symbols-outlined">minimize</span>
-                <span>Minimal</span>
+                <span class="material-symbols-outlined">tune</span>
+                <span>Personnaliser ({{ getToolbarActiveCount() }})</span>
+                <span
+                  class="material-symbols-outlined chevron"
+                  [class.rotated]="showToolbarMenu()"
+                >
+                  keyboard_arrow_down
+                </span>
               </button>
-              <button
-                class="preset-btn"
-                [class.active]="currentPreset() === 'writing'"
-                (click)="setWritingToolbar()"
-                title="Configuration pour l'écriture"
-              >
-                <span class="material-symbols-outlined">edit</span>
-                <span>Écriture</span>
-              </button>
-              <button
-                class="preset-btn"
-                [class.active]="currentPreset() === 'full'"
-                (click)="setFullToolbar()"
-                title="Configuration complète"
-              >
-                <span class="material-symbols-outlined">apps</span>
-                <span>Complet</span>
-              </button>
-              <button
-                class="preset-btn"
-                [class.active]="currentPreset() === 'super'"
-                (click)="setSuperToolbar()"
-                title="Configuration avancée"
-              >
-                <span class="material-symbols-outlined">rocket_launch</span>
-                <span>Pro</span>
-              </button>
+
+              <div class="menu-dropdown" [class.open]="showToolbarMenu()">
+                <div class="menu-grid">
+                  <label class="menu-item" *ngFor="let item of toolbarItems">
+                    <input
+                      type="checkbox"
+                      [checked]="isToolbarItemActive(item.key)"
+                      (change)="toggleToolbarItem(item.key)"
+                    />
+                    <span class="checkbox-custom"></span>
+                    <span class="material-symbols-outlined">{{
+                      item.icon
+                    }}</span>
+                    <span>{{ item.label }}</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -147,97 +163,93 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
               </label>
             </div>
 
-            <div class="preset-grid two-cols">
+            <div class="menu-section">
               <button
-                class="preset-btn"
-                [class.active]="currentBubblePreset() === 'minimal'"
-                (click)="setBubbleMenuMinimal()"
-                title="Bubble menu minimal"
+                class="menu-trigger"
+                (click)="toggleBubbleMenuMenu()"
+                [class.active]="showBubbleMenuMenu()"
               >
-                <span class="material-symbols-outlined">minimize</span>
-                <span>Minimal</span>
-              </button>
-              <button
-                class="preset-btn"
-                [class.active]="currentBubblePreset() === 'complete'"
-                (click)="setBubbleMenuComplete()"
-                title="Bubble menu complet"
-              >
-                <span class="material-symbols-outlined">apps</span>
-                <span>Complet</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Fonctionnalités -->
-          <div class="control-group">
-            <div class="group-header">
-              <div class="group-title">
                 <span class="material-symbols-outlined">tune</span>
-                <h4>Fonctionnalités</h4>
-              </div>
-            </div>
+                <span>Personnaliser ({{ getBubbleMenuActiveCount() }})</span>
+                <span
+                  class="material-symbols-outlined chevron"
+                  [class.rotated]="showBubbleMenuMenu()"
+                >
+                  keyboard_arrow_down
+                </span>
+              </button>
 
-            <div class="feature-list">
-              <div class="feature-item">
-                <div class="feature-info">
-                  <span class="material-symbols-outlined">flash_on</span>
-                  <span>Slash Commands</span>
+              <div class="menu-dropdown" [class.open]="showBubbleMenuMenu()">
+                <div class="menu-grid">
+                  <label class="menu-item" *ngFor="let item of bubbleMenuItems">
+                    <input
+                      type="checkbox"
+                      [checked]="isBubbleMenuItemActive(item.key)"
+                      (change)="toggleBubbleMenuItem(item.key)"
+                    />
+                    <span class="checkbox-custom"></span>
+                    <span class="material-symbols-outlined">{{
+                      item.icon
+                    }}</span>
+                    <span>{{ item.label }}</span>
+                  </label>
                 </div>
-                <label class="toggle">
-                  <input
-                    type="checkbox"
-                    [checked]="enableSlashCommands()"
-                    (change)="toggleSlashCommands()"
-                  />
-                  <span></span>
-                </label>
               </div>
             </div>
           </div>
 
-          <!-- Contenu -->
+          <!-- Slash Commands -->
           <div class="control-group">
             <div class="group-header">
               <div class="group-title">
-                <span class="material-symbols-outlined">description</span>
-                <h4>Contenu de Test</h4>
+                <span class="material-symbols-outlined">flash_on</span>
+                <h4>Slash Commands</h4>
               </div>
+              <label class="toggle">
+                <input
+                  type="checkbox"
+                  [checked]="enableSlashCommands()"
+                  (change)="toggleSlashCommands()"
+                />
+                <span></span>
+              </label>
             </div>
 
-            <div class="content-grid">
+            <div class="menu-section">
               <button
-                class="content-btn"
-                (click)="loadBasicContent()"
-                title="Contenu simple"
+                class="menu-trigger"
+                (click)="toggleSlashCommandsMenu()"
+                [class.active]="showSlashCommandsMenu()"
               >
-                <span class="material-symbols-outlined">article</span>
-                <span>Basique</span>
+                <span class="material-symbols-outlined">tune</span>
+                <span>Personnaliser ({{ getSlashCommandsActiveCount() }})</span>
+                <span
+                  class="material-symbols-outlined chevron"
+                  [class.rotated]="showSlashCommandsMenu()"
+                >
+                  keyboard_arrow_down
+                </span>
               </button>
-              <button
-                class="content-btn"
-                (click)="loadRichContent()"
-                title="Contenu avec formatage"
-              >
-                <span class="material-symbols-outlined">auto_awesome</span>
-                <span>Riche</span>
-              </button>
-              <button
-                class="content-btn"
-                (click)="loadImageContent()"
-                title="Contenu avec images"
-              >
-                <span class="material-symbols-outlined">image</span>
-                <span>Images</span>
-              </button>
-              <button
-                class="content-btn danger"
-                (click)="clearContent()"
-                title="Vider l'éditeur"
-              >
-                <span class="material-symbols-outlined">clear</span>
-                <span>Vider</span>
-              </button>
+
+              <div class="menu-dropdown" [class.open]="showSlashCommandsMenu()">
+                <div class="menu-grid">
+                  <label
+                    class="menu-item"
+                    *ngFor="let item of slashCommandItems"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="isSlashCommandActive(item.key)"
+                      (change)="toggleSlashCommand(item.key)"
+                    />
+                    <span class="checkbox-custom"></span>
+                    <span class="material-symbols-outlined">{{
+                      item.icon
+                    }}</span>
+                    <span>{{ item.label }}</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -261,6 +273,7 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
               <pre><code>&lt;tiptap-editor
   [toolbar]="config"
   [bubbleMenu]="bubble"
+  [slashCommands]="slash"
   [enableSlashCommands]="true"
 /&gt;</code></pre>
             </div>
@@ -316,7 +329,7 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
         margin: 0 auto;
         padding: 1.5rem;
         display: grid;
-        grid-template-columns: 1fr 300px;
+        grid-template-columns: 1fr 320px;
         gap: 1.5rem;
       }
 
@@ -396,6 +409,11 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
         font-size: 0.875rem;
         font-weight: 600;
         color: #1e293b;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.5rem;
       }
 
       .icon-btn {
@@ -506,125 +524,138 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
         transform: translateX(14px);
       }
 
-      /* Grilles de boutons */
-      .preset-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.375rem;
+      /* Menu déroulant */
+      .menu-section {
+        position: relative;
       }
 
-      .preset-grid.two-cols {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .content-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.375rem;
-      }
-
-      /* Boutons preset */
-      .preset-btn {
+      .menu-trigger {
+        width: 100%;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 0.25rem;
-        padding: 0.5rem 0.375rem;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        font-size: 0.75rem;
+        border-radius: 6px;
         cursor: pointer;
         transition: all 0.15s;
         color: #64748b;
+        font-size: 0.875rem;
       }
 
-      .preset-btn:hover {
+      .menu-trigger:hover {
         background: #f1f5f9;
         border-color: #cbd5e1;
         color: #1e293b;
       }
 
-      .preset-btn.active {
+      .menu-trigger.active {
         background: #dbeafe;
         border-color: #3b82f6;
         color: #1d4ed8;
       }
 
-      .preset-btn .material-symbols-outlined {
+      .menu-trigger .material-symbols-outlined:first-child {
         font-size: 16px;
       }
 
-      .preset-btn span:last-child {
-        font-weight: 500;
+      .menu-trigger span:nth-child(2) {
+        flex: 1;
+        text-align: left;
       }
 
-      /* Boutons de contenu */
-      .content-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.5rem 0.375rem;
-        background: #f8fafc;
+      .chevron {
+        font-size: 20px !important;
+        transition: transform 0.2s;
+      }
+
+      .chevron.rotated {
+        transform: rotate(180deg);
+      }
+
+      .menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
         border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.2s;
+        margin-top: 0.25rem;
+      }
+
+      .menu-dropdown.open {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .menu-grid {
+        padding: 0.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
         border-radius: 4px;
-        font-size: 0.75rem;
         cursor: pointer;
         transition: all 0.15s;
-        color: #64748b;
-      }
-
-      .content-btn:hover {
-        background: #f1f5f9;
-        border-color: #cbd5e1;
-        color: #1e293b;
-      }
-
-      .content-btn.danger {
-        color: #dc2626;
-        border-color: #fecaca;
-      }
-
-      .content-btn.danger:hover {
-        background: #fef2f2;
-        border-color: #fca5a5;
-        color: #b91c1c;
-      }
-
-      .content-btn .material-symbols-outlined {
-        font-size: 16px;
-      }
-
-      .content-btn span:last-child {
-        font-weight: 500;
-      }
-
-      /* Feature list */
-      .feature-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .feature-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-      }
-
-      .feature-info {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
         font-size: 0.875rem;
         color: #1e293b;
       }
 
-      .feature-info .material-symbols-outlined {
+      .menu-item:hover {
+        background: #f8fafc;
+      }
+
+      .menu-item input {
+        display: none;
+      }
+
+      .checkbox-custom {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #cbd5e1;
+        border-radius: 3px;
+        position: relative;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+
+      .menu-item input:checked + .checkbox-custom {
+        background: #3b82f6;
+        border-color: #3b82f6;
+      }
+
+      .menu-item input:checked + .checkbox-custom:after {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      .menu-item .material-symbols-outlined {
         font-size: 16px;
         color: #64748b;
+      }
+
+      .menu-item span:last-child {
+        flex: 1;
       }
 
       /* Code block */
@@ -657,11 +688,6 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
           position: static;
         }
 
-        .preset-grid,
-        .content-grid {
-          grid-template-columns: 1fr;
-        }
-
         .stats {
           flex-direction: column;
           gap: 0.25rem;
@@ -670,6 +696,10 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
         .stat-item {
           justify-content: center;
         }
+
+        .menu-dropdown.open {
+          max-height: 300px;
+        }
       }
     `,
   ],
@@ -677,14 +707,57 @@ import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
 export class App {
   // Signals pour l'état de la démo
   demoContent = signal(`
-    <h2>Bienvenue dans l'éditeur Tiptap</h2>
-    <p>Un éditeur de texte moderne et simple pour Angular.</p>
-    <p>Utilisez le panneau de droite pour tester les différentes configurations.</p>
+    <h1>Guide Complet de l'Éditeur Tiptap</h1>
+    <p>Découvrez toutes les fonctionnalités de cet éditeur de texte <strong>moderne</strong> et <em>puissant</em> pour Angular.</p>
+    
+    <h2>Fonctionnalités de Base</h2>
+    <p>L'éditeur supporte une large gamme de formatages :</p>
     <ul>
-      <li>Tapez <strong>/</strong> pour les slash commands</li>
-      <li>Sélectionnez du texte pour le bubble menu</li>
-      <li>Cliquez sur une image pour son menu contextuel</li>
+      <li><strong>Texte en gras</strong> pour mettre en évidence</li>
+      <li><em>Texte en italique</em> pour l'emphase</li>
+      <li><u>Texte souligné</u> pour l'importance</li>
+      <li><s>Texte barré</s> pour les corrections</li>
+      <li><code>Code inline</code> pour les extraits techniques</li>
     </ul>
+    
+    <h2>Listes et Organisation</h2>
+    <p>Créez des listes ordonnées et non ordonnées :</p>
+    <ol>
+      <li>Premier élément important</li>
+      <li>Deuxième élément avec <strong>formatage</strong></li>
+      <li>Troisième élément avec <a href="https://tiptap.dev">lien vers Tiptap</a></li>
+    </ol>
+    
+    <blockquote>
+      <p>Les citations permettent de mettre en valeur des passages importants ou des témoignages clients.</p>
+    </blockquote>
+    
+    <h2>Contenu Multimédia</h2>
+    <p>Intégrez facilement des images dans vos contenus :</p>
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop" class="tiptap-image" alt="Paysage montagneux avec lac">
+    <p><em>Cliquez sur l'image ci-dessus pour accéder au menu contextuel et la redimensionner.</em></p>
+    
+    <h2>Commandes Rapides</h2>
+    <p>Utilisez les raccourcis pour une édition efficace :</p>
+    <ul>
+      <li>Tapez <strong>/</strong> pour ouvrir le menu des slash commands</li>
+      <li>Sélectionnez du texte pour voir apparaître le bubble menu</li>
+      <li>Utilisez <strong>Ctrl+B</strong> pour mettre en gras</li>
+      <li>Utilisez <strong>Ctrl+I</strong> pour mettre en italique</li>
+    </ul>
+    
+    <hr>
+    
+    <h3>Personnalisation</h3>
+    <p>Utilisez le panneau de droite pour :</p>
+    <ul>
+      <li>Activer/désactiver la toolbar</li>
+      <li>Personnaliser les boutons disponibles</li>
+      <li>Configurer le bubble menu</li>
+      <li>Activer les slash commands</li>
+    </ul>
+    
+    <p>Cet éditeur est parfait pour créer du contenu riche et interactif ! 🚀</p>
   `);
 
   // Configuration states
@@ -714,121 +787,206 @@ export class App {
     separator: true,
   });
 
+  // Configuration des slash commands
+  currentSlashCommandsConfig = signal<SlashCommandsConfig>({
+    commands: DEFAULT_SLASH_COMMANDS,
+  });
+
+  // État des slash commands actifs
+  activeSlashCommands = signal<Set<string>>(
+    new Set([
+      "heading1",
+      "heading2",
+      "heading3",
+      "bulletList",
+      "orderedList",
+      "blockquote",
+      "code",
+      "image",
+      "horizontalRule",
+    ])
+  );
+
   showBubbleMenuDemo = signal(true);
   enableSlashCommands = signal(true);
   showToolbar = signal(true);
   currentPlaceholder = signal("Commencez à écrire...");
-  currentPreset = signal<string>("full");
-  currentBubblePreset = signal<string>("complete");
+
+  // Menu states
+  showToolbarMenu = signal(false);
+  showBubbleMenuMenu = signal(false);
+  showSlashCommandsMenu = signal(false);
+
+  // Configuration des éléments disponibles
+  toolbarItems = [
+    { key: "bold", label: "Gras", icon: "format_bold" },
+    { key: "italic", label: "Italique", icon: "format_italic" },
+    { key: "underline", label: "Souligné", icon: "format_underlined" },
+    { key: "strike", label: "Barré", icon: "format_strikethrough" },
+    { key: "code", label: "Code", icon: "code" },
+    { key: "superscript", label: "Exposant", icon: "superscript" },
+    { key: "subscript", label: "Indice", icon: "subscript" },
+    { key: "highlight", label: "Surligner", icon: "highlight" },
+    { key: "heading1", label: "Titre 1", icon: "title" },
+    { key: "heading2", label: "Titre 2", icon: "title" },
+    { key: "heading3", label: "Titre 3", icon: "title" },
+    { key: "bulletList", label: "Liste à puces", icon: "format_list_bulleted" },
+    {
+      key: "orderedList",
+      label: "Liste numérotée",
+      icon: "format_list_numbered",
+    },
+    { key: "blockquote", label: "Citation", icon: "format_quote" },
+    { key: "alignLeft", label: "Aligner à gauche", icon: "format_align_left" },
+    { key: "alignCenter", label: "Centrer", icon: "format_align_center" },
+    {
+      key: "alignRight",
+      label: "Aligner à droite",
+      icon: "format_align_right",
+    },
+    { key: "alignJustify", label: "Justifier", icon: "format_align_justify" },
+    { key: "link", label: "Lien", icon: "link" },
+    { key: "image", label: "Image", icon: "image" },
+    {
+      key: "horizontalRule",
+      label: "Ligne horizontale",
+      icon: "horizontal_rule",
+    },
+    { key: "undo", label: "Annuler", icon: "undo" },
+    { key: "redo", label: "Refaire", icon: "redo" },
+    { key: "separator", label: "Séparateur", icon: "more_vert" },
+  ];
+
+  bubbleMenuItems = [
+    { key: "bold", label: "Gras", icon: "format_bold" },
+    { key: "italic", label: "Italique", icon: "format_italic" },
+    { key: "underline", label: "Souligné", icon: "format_underlined" },
+    { key: "strike", label: "Barré", icon: "format_strikethrough" },
+    { key: "code", label: "Code", icon: "code" },
+    { key: "superscript", label: "Exposant", icon: "superscript" },
+    { key: "subscript", label: "Indice", icon: "subscript" },
+    { key: "highlight", label: "Surligner", icon: "highlight" },
+    { key: "link", label: "Lien", icon: "link" },
+    { key: "separator", label: "Séparateur", icon: "more_vert" },
+  ];
+
+  // Configuration des slash commands disponibles
+  slashCommandItems = [
+    { key: "heading1", label: "Titre 1", icon: "format_h1" },
+    { key: "heading2", label: "Titre 2", icon: "format_h2" },
+    { key: "heading3", label: "Titre 3", icon: "format_h3" },
+    { key: "bulletList", label: "Liste à puces", icon: "format_list_bulleted" },
+    {
+      key: "orderedList",
+      label: "Liste numérotée",
+      icon: "format_list_numbered",
+    },
+    { key: "blockquote", label: "Citation", icon: "format_quote" },
+    { key: "code", label: "Code", icon: "code" },
+    { key: "image", label: "Image", icon: "image" },
+    {
+      key: "horizontalRule",
+      label: "Ligne horizontale",
+      icon: "horizontal_rule",
+    },
+  ];
+
+  constructor() {
+    // Initialiser la configuration des slash commands
+    this.updateSlashCommandsConfig();
+  }
 
   // Methods for demo content changes
   onDemoContentChange(content: string) {
     this.demoContent.set(content);
   }
 
+  // Menu toggle methods
+  toggleToolbarMenu() {
+    this.showToolbarMenu.update((show) => !show);
+    // Fermer les autres menus
+    this.showBubbleMenuMenu.set(false);
+    this.showSlashCommandsMenu.set(false);
+  }
+
+  toggleBubbleMenuMenu() {
+    this.showBubbleMenuMenu.update((show) => !show);
+    // Fermer les autres menus
+    this.showToolbarMenu.set(false);
+    this.showSlashCommandsMenu.set(false);
+  }
+
+  toggleSlashCommandsMenu() {
+    this.showSlashCommandsMenu.update((show) => !show);
+    // Fermer les autres menus
+    this.showToolbarMenu.set(false);
+    this.showBubbleMenuMenu.set(false);
+  }
+
   // Toolbar configuration methods
-  setMinimalToolbar() {
-    this.currentToolbarConfig.set({
-      bold: true,
-      italic: true,
-      separator: false,
-    });
-    this.currentPreset.set("minimal");
-  }
-
-  setWritingToolbar() {
-    this.currentToolbarConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      heading1: true,
-      heading2: true,
-      blockquote: true,
-      undo: true,
-      redo: true,
-      separator: true,
-    });
-    this.currentPreset.set("writing");
-  }
-
-  setFullToolbar() {
-    this.currentToolbarConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      code: true,
-      heading1: true,
-      heading2: true,
-      heading3: true,
-      bulletList: true,
-      orderedList: true,
-      blockquote: true,
-      link: true,
-      image: true,
-      horizontalRule: true,
-      undo: true,
-      redo: true,
-      separator: true,
-    });
-    this.currentPreset.set("full");
-  }
-
-  setSuperToolbar() {
-    this.currentToolbarConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      code: true,
-      superscript: true,
-      subscript: true,
-      highlight: true,
-      heading1: true,
-      heading2: true,
-      heading3: true,
-      bulletList: true,
-      orderedList: true,
-      blockquote: true,
-      alignLeft: true,
-      alignCenter: true,
-      alignRight: true,
-      alignJustify: true,
-      link: true,
-      image: true,
-      horizontalRule: true,
-      undo: true,
-      redo: true,
-      separator: true,
-    });
-    this.currentPreset.set("super");
+  toggleToolbarItem(key: string) {
+    this.currentToolbarConfig.update((config) => ({
+      ...config,
+      [key]: !(config as any)[key],
+    }));
   }
 
   // Bubble menu configuration methods
-  setBubbleMenuMinimal() {
-    this.currentBubbleMenuConfig.set({
-      bold: true,
-      italic: true,
-      separator: false,
-    });
-    this.currentBubblePreset.set("minimal");
+  toggleBubbleMenuItem(key: string) {
+    this.currentBubbleMenuConfig.update((config) => ({
+      ...config,
+      [key]: !(config as any)[key],
+    }));
   }
 
-  setBubbleMenuComplete() {
-    this.currentBubbleMenuConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      code: true,
-      superscript: true,
-      subscript: true,
-      highlight: true,
-      link: true,
-      separator: true,
+  // Slash commands configuration methods
+  toggleSlashCommand(key: string) {
+    this.activeSlashCommands.update((active) => {
+      const newActive = new Set(active);
+      if (newActive.has(key)) {
+        newActive.delete(key);
+      } else {
+        newActive.add(key);
+      }
+      return newActive;
     });
-    this.currentBubblePreset.set("complete");
+
+    // Mettre à jour la configuration des slash commands
+    this.updateSlashCommandsConfig();
+  }
+
+  private updateSlashCommandsConfig() {
+    const activeCommands = this.activeSlashCommands();
+    const filteredCommands = DEFAULT_SLASH_COMMANDS.filter((command) => {
+      // Mapper les commandes aux clés
+      const commandKey = this.getSlashCommandKey(command);
+      return activeCommands.has(commandKey);
+    });
+
+    console.log("Updating slash commands config:", {
+      activeCommands: Array.from(activeCommands),
+      filteredCommands: filteredCommands.map((c) => c.title),
+    });
+
+    this.currentSlashCommandsConfig.set({
+      commands: filteredCommands,
+    });
+  }
+
+  private getSlashCommandKey(command: SlashCommandItem): string {
+    // Mapper les titres aux clés
+    const keyMap: { [key: string]: string } = {
+      "Titre 1": "heading1",
+      "Titre 2": "heading2",
+      "Titre 3": "heading3",
+      "Liste à puces": "bulletList",
+      "Liste numérotée": "orderedList",
+      Citation: "blockquote",
+      Code: "code",
+      Image: "image",
+      "Ligne horizontale": "horizontalRule",
+    };
+    return keyMap[command.title] || command.title.toLowerCase();
   }
 
   // Toggle methods
@@ -846,62 +1004,50 @@ export class App {
 
   // Reset to defaults
   resetToDefaults() {
-    this.setFullToolbar();
-    this.setBubbleMenuComplete();
+    this.currentToolbarConfig.set({
+      bold: true,
+      italic: true,
+      underline: true,
+      heading1: true,
+      heading2: true,
+      bulletList: true,
+      orderedList: true,
+      link: true,
+      image: true,
+      undo: true,
+      redo: true,
+      separator: true,
+    });
+    this.currentBubbleMenuConfig.set({
+      bold: true,
+      italic: true,
+      underline: true,
+      strike: true,
+      code: true,
+      highlight: true,
+      link: true,
+      separator: true,
+    });
+    this.activeSlashCommands.set(
+      new Set([
+        "heading1",
+        "heading2",
+        "heading3",
+        "bulletList",
+        "orderedList",
+        "blockquote",
+        "code",
+        "image",
+        "horizontalRule",
+      ])
+    );
+    this.updateSlashCommandsConfig();
     this.showToolbar.set(true);
     this.showBubbleMenuDemo.set(true);
     this.enableSlashCommands.set(true);
-    this.demoContent.set(`
-      <h2>Bienvenue dans l'éditeur Tiptap</h2>
-      <p>Un éditeur de texte moderne et simple pour Angular.</p>
-      <p>Utilisez le panneau de droite pour tester les différentes configurations.</p>
-      <ul>
-        <li>Tapez <strong>/</strong> pour les slash commands</li>
-        <li>Sélectionnez du texte pour le bubble menu</li>
-        <li>Cliquez sur une image pour son menu contextuel</li>
-      </ul>
-    `);
-  }
-
-  // Content preset methods
-  loadBasicContent() {
-    this.demoContent.set(`
-      <h2>Contenu de Base</h2>
-      <p>Voici un exemple simple avec du texte <strong>gras</strong> et <em>italique</em>.</p>
-      <ul>
-        <li>Premier point</li>
-        <li>Deuxième point</li>
-      </ul>
-    `);
-  }
-
-  loadRichContent() {
-    this.demoContent.set(`
-      <h1>Contenu Riche</h1>
-      <p>Démonstration des formatages : <strong>gras</strong>, <em>italique</em>, <u>souligné</u>, <s>barré</s>, <code>code</code>.</p>
-      <h2>Listes</h2>
-      <ul>
-        <li>Liste à puces</li>
-        <li>Avec plusieurs éléments</li>
-      </ul>
-      <ol>
-        <li>Liste numérotée</li>
-        <li>Dans l'ordre</li>
-      </ol>
-      <blockquote>
-        <p>Une citation avec du style</p>
-      </blockquote>
-      <p>Et un <a href="https://tiptap.dev">lien vers Tiptap</a>.</p>
-    `);
-  }
-
-  loadImageContent() {
-    this.demoContent.set(`
-      <h2>Images</h2>
-      <p>Voici une image d'exemple :</p>
-      <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" class="tiptap-image" alt="Image de test">
-      <p>Cliquez sur l'image pour voir le menu contextuel.</p>
-    `);
+    this.showToolbarMenu.set(false);
+    this.showBubbleMenuMenu.set(false);
+    this.showSlashCommandsMenu.set(false);
   }
 
   clearContent() {
@@ -913,12 +1059,27 @@ export class App {
     const code = `<tiptap-editor
   [toolbar]="config"
   [bubbleMenu]="bubble"
+  [slashCommands]="slash"
   [enableSlashCommands]="true"
 />`;
     navigator.clipboard.writeText(code);
   }
 
   // Utility methods
+  isToolbarItemActive(key: string): boolean {
+    const config = this.currentToolbarConfig();
+    return !!(config as any)[key];
+  }
+
+  isBubbleMenuItemActive(key: string): boolean {
+    const config = this.currentBubbleMenuConfig();
+    return !!(config as any)[key];
+  }
+
+  isSlashCommandActive(key: string): boolean {
+    return this.activeSlashCommands().has(key);
+  }
+
   getToolbarActiveCount(): number {
     const config = this.currentToolbarConfig();
     return Object.values(config).filter(Boolean).length;
@@ -927,6 +1088,10 @@ export class App {
   getBubbleMenuActiveCount(): number {
     const config = this.currentBubbleMenuConfig();
     return Object.values(config).filter(Boolean).length;
+  }
+
+  getSlashCommandsActiveCount(): number {
+    return this.activeSlashCommands().size;
   }
 
   // Utility for JSON display

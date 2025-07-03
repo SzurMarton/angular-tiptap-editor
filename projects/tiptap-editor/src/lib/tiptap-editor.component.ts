@@ -33,7 +33,10 @@ import { TiptapToolbarComponent } from "./toolbar.component";
 import { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
 import { TiptapBubbleMenuComponent } from "./tiptap-bubble-menu.component";
 import { TiptapImageBubbleMenuComponent } from "./tiptap-image-bubble-menu.component";
-import { TiptapSlashCommandsComponent } from "./tiptap-slash-commands.component";
+import {
+  TiptapSlashCommandsComponent,
+  SlashCommandsConfig,
+} from "./tiptap-slash-commands.component";
 import { ImageService } from "./services/image.service";
 
 import { ImageUploadResult } from "./services/image.service";
@@ -153,6 +156,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       @if (enableSlashCommands() && editor()) {
       <tiptap-slash-commands
         [editor]="editor()!"
+        [config]="slashCommandsConfigComputed()"
         [style.display]="editorFullyInitialized() ? 'block' : 'none'"
         (imageUploadRequested)="onSlashCommandImageUpload($event)"
       ></tiptap-slash-commands>
@@ -586,6 +590,7 @@ export class TiptapEditorComponent
   maxCharacters = input<number | undefined>(undefined);
   enableOfficePaste = input<boolean>(true);
   enableSlashCommands = input<boolean>(true);
+  slashCommandsConfig = input<SlashCommandsConfig | undefined>(undefined);
 
   // Nouveaux inputs pour les bubble menus
   showBubbleMenu = input<boolean>(true);
@@ -676,6 +681,16 @@ export class TiptapEditorComponent
       quality: 0.8,
       ...userConfig,
     };
+  });
+
+  // Computed pour la configuration des slash commands
+  slashCommandsConfigComputed = computed(() => {
+    const userConfig = this.slashCommandsConfig();
+    if (userConfig) {
+      return userConfig;
+    }
+    // Configuration par défaut si aucune n'est fournie
+    return { commands: undefined }; // Le composant utilisera DEFAULT_SLASH_COMMANDS
   });
 
   // ControlValueAccessor implementation
