@@ -21,6 +21,7 @@ export interface BubbleMenuConfig {
   code?: boolean;
   superscript?: boolean;
   subscript?: boolean;
+  highlight?: boolean;
   link?: boolean;
   separator?: boolean;
 }
@@ -73,6 +74,13 @@ export interface BubbleMenuConfig {
         [active]="isActive('subscript')"
         (click)="onCommand('subscript', $event)"
       ></tiptap-button>
+      } @if (bubbleMenuConfig().highlight) {
+      <tiptap-button
+        icon="highlight"
+        title="Surbrillance"
+        [active]="isActive('highlight')"
+        (click)="onCommand('highlight', $event)"
+      ></tiptap-button>
       } @if (bubbleMenuConfig().separator && (bubbleMenuConfig().code ||
       bubbleMenuConfig().link)) {
       <div class="tiptap-separator"></div>
@@ -105,6 +113,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
     code: true,
     superscript: false,
     subscript: false,
+    highlight: true,
     link: true,
     separator: true,
   });
@@ -122,6 +131,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
     code: true,
     superscript: false,
     subscript: false,
+    highlight: true,
     link: true,
     separator: true,
     ...this.config(),
@@ -310,6 +320,9 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
         break;
       case "subscript":
         ed.chain().focus().toggleSubscript().run();
+        break;
+      case "highlight":
+        ed.chain().focus().toggleHighlight().run();
         break;
       case "link":
         const href = window.prompt("URL du lien:");

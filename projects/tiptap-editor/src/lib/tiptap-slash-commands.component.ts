@@ -111,6 +111,13 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandItem[] = [
     command: (editor) => editor.chain().focus().toggleStrike().run(),
   },
   {
+    title: "Surbrillance",
+    description: "Texte surligné",
+    icon: "highlight",
+    keywords: ["highlight", "surbrillance", "surligner", "mark"],
+    command: (editor) => editor.chain().focus().toggleHighlight().run(),
+  },
+  {
     title: "Exposant",
     description: "Texte en exposant",
     icon: "superscript",

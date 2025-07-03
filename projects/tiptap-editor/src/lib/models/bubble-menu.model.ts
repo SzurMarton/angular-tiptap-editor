@@ -6,6 +6,7 @@ export interface BubbleMenuConfig {
   code?: boolean;
   superscript?: boolean;
   subscript?: boolean;
+  highlight?: boolean;
   link?: boolean;
   separator?: boolean;
 }

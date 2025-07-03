@@ -24,6 +24,7 @@ import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
+import Highlight from "@tiptap/extension-highlight";
 import OfficePaste from "@intevation/tiptap-extension-office-paste";
 
 import { ResizableImage } from "./extensions/resizable-image.extension";
@@ -51,6 +52,7 @@ export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
   code: true,
   superscript: false,
   subscript: false,
+  highlight: true,
   heading1: true,
   heading2: true,
   heading3: true,
@@ -78,6 +80,7 @@ export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
   code: true,
   superscript: false,
   subscript: false,
+  highlight: true,
   link: true,
   separator: true,
 };
@@ -744,6 +747,12 @@ export class TiptapEditorComponent
         openOnClick: false,
         HTMLAttributes: {
           class: "tiptap-link",
+        },
+      }),
+      Highlight.configure({
+        multicolor: true,
+        HTMLAttributes: {
+          class: "tiptap-highlight",
         },
       }),
       ResizableImage.configure({

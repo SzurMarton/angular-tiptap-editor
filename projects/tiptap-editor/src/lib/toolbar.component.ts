@@ -13,6 +13,7 @@ export interface ToolbarConfig {
   code?: boolean;
   superscript?: boolean;
   subscript?: boolean;
+  highlight?: boolean;
   heading1?: boolean;
   heading2?: boolean;
   heading3?: boolean;
@@ -92,6 +93,14 @@ export interface ToolbarConfig {
         [active]="isActive('subscript')"
         [disabled]="!canExecute('toggleSubscript')"
         (onClick)="toggleSubscript()"
+      />
+      } @if (config().highlight) {
+      <tiptap-button
+        icon="highlight"
+        title="Highlight"
+        [active]="isActive('highlight')"
+        [disabled]="!canExecute('toggleHighlight')"
+        (onClick)="toggleHighlight()"
       />
       } @if (config().separator && (config().heading1 || config().heading2 ||
       config().heading3)) {
@@ -347,6 +356,9 @@ export class TiptapToolbarComponent {
   }
   insertHorizontalRule() {
     this.editorCommands.insertHorizontalRule(this.editor());
+  }
+  toggleHighlight() {
+    this.editorCommands.toggleHighlight(this.editor());
   }
 
   // Méthode pour insérer une image

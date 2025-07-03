@@ -39,6 +39,8 @@ export class EditorCommandsService {
         return editor.can().chain().focus().toggleLink({ href: "" }).run();
       case "insertHorizontalRule":
         return editor.can().chain().focus().setHorizontalRule().run();
+      case "toggleHighlight":
+        return editor.can().chain().focus().toggleHighlight().run();
       case "undo":
         return editor.can().chain().focus().undo().run();
       case "redo":
@@ -123,5 +125,13 @@ export class EditorCommandsService {
 
   insertHorizontalRule(editor: Editor): void {
     editor.chain().focus().setHorizontalRule().run();
+  }
+
+  toggleHighlight(editor: Editor, color?: string): void {
+    if (color) {
+      editor.chain().focus().toggleHighlight({ color }).run();
+    } else {
+      editor.chain().focus().toggleHighlight().run();
+    }
   }
 }
