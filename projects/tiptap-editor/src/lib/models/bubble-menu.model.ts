@@ -1,8 +1,12 @@
 export interface BubbleMenuConfig {
   bold?: boolean;
   italic?: boolean;
+  underline?: boolean;
   strike?: boolean;
   code?: boolean;
+  superscript?: boolean;
+  subscript?: boolean;
+  link?: boolean;
   separator?: boolean;
 }
 

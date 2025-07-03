@@ -27,6 +27,18 @@ export class EditorCommandsService {
         return editor.can().chain().focus().toggleStrike().run();
       case "toggleCode":
         return editor.can().chain().focus().toggleCode().run();
+      case "toggleUnderline":
+        return editor.can().chain().focus().toggleUnderline().run();
+      case "toggleSuperscript":
+        return editor.can().chain().focus().toggleSuperscript().run();
+      case "toggleSubscript":
+        return editor.can().chain().focus().toggleSubscript().run();
+      case "setTextAlign":
+        return editor.can().chain().focus().setTextAlign("left").run();
+      case "toggleLink":
+        return editor.can().chain().focus().toggleLink({ href: "" }).run();
+      case "insertHorizontalRule":
+        return editor.can().chain().focus().setHorizontalRule().run();
       case "undo":
         return editor.can().chain().focus().undo().run();
       case "redo":
@@ -75,5 +87,41 @@ export class EditorCommandsService {
 
   redo(editor: Editor): void {
     editor.chain().focus().redo().run();
+  }
+
+  // Nouvelles méthodes pour les formatages supplémentaires
+  toggleUnderline(editor: Editor): void {
+    editor.chain().focus().toggleUnderline().run();
+  }
+
+  toggleSuperscript(editor: Editor): void {
+    editor.chain().focus().toggleSuperscript().run();
+  }
+
+  toggleSubscript(editor: Editor): void {
+    editor.chain().focus().toggleSubscript().run();
+  }
+
+  setTextAlign(
+    editor: Editor,
+    alignment: "left" | "center" | "right" | "justify"
+  ): void {
+    editor.chain().focus().setTextAlign(alignment).run();
+  }
+
+  toggleLink(editor: Editor, url?: string): void {
+    if (url) {
+      editor.chain().focus().toggleLink({ href: url }).run();
+    } else {
+      // Si pas d'URL fournie, on demande à l'utilisateur
+      const href = window.prompt("URL du lien:");
+      if (href) {
+        editor.chain().focus().toggleLink({ href }).run();
+      }
+    }
+  }
+
+  insertHorizontalRule(editor: Editor): void {
+    editor.chain().focus().setHorizontalRule().run();
   }
 }

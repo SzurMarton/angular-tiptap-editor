@@ -16,8 +16,12 @@ import { TiptapButtonComponent } from "./tiptap-button.component";
 export interface BubbleMenuConfig {
   bold?: boolean;
   italic?: boolean;
+  underline?: boolean;
   strike?: boolean;
   code?: boolean;
+  superscript?: boolean;
+  subscript?: boolean;
+  link?: boolean;
   separator?: boolean;
 }
 
@@ -41,6 +45,13 @@ export interface BubbleMenuConfig {
         [active]="isActive('italic')"
         (click)="onCommand('italic', $event)"
       ></tiptap-button>
+      } @if (bubbleMenuConfig().underline) {
+      <tiptap-button
+        icon="format_underlined"
+        title="Souligné"
+        [active]="isActive('underline')"
+        (click)="onCommand('underline', $event)"
+      ></tiptap-button>
       } @if (bubbleMenuConfig().strike) {
       <tiptap-button
         icon="strikethrough_s"
@@ -48,7 +59,22 @@ export interface BubbleMenuConfig {
         [active]="isActive('strike')"
         (click)="onCommand('strike', $event)"
       ></tiptap-button>
-      } @if (bubbleMenuConfig().separator && bubbleMenuConfig().code) {
+      } @if (bubbleMenuConfig().superscript) {
+      <tiptap-button
+        icon="superscript"
+        title="Exposant"
+        [active]="isActive('superscript')"
+        (click)="onCommand('superscript', $event)"
+      ></tiptap-button>
+      } @if (bubbleMenuConfig().subscript) {
+      <tiptap-button
+        icon="subscript"
+        title="Indice"
+        [active]="isActive('subscript')"
+        (click)="onCommand('subscript', $event)"
+      ></tiptap-button>
+      } @if (bubbleMenuConfig().separator && (bubbleMenuConfig().code ||
+      bubbleMenuConfig().link)) {
       <div class="tiptap-separator"></div>
       } @if (bubbleMenuConfig().code) {
       <tiptap-button
@@ -56,6 +82,13 @@ export interface BubbleMenuConfig {
         title="Code"
         [active]="isActive('code')"
         (click)="onCommand('code', $event)"
+      ></tiptap-button>
+      } @if (bubbleMenuConfig().link) {
+      <tiptap-button
+        icon="link"
+        title="Lien"
+        [active]="isActive('link')"
+        (click)="onCommand('link', $event)"
       ></tiptap-button>
       }
     </div>
@@ -67,8 +100,12 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
   config = input<BubbleMenuConfig>({
     bold: true,
     italic: true,
+    underline: true,
     strike: true,
     code: true,
+    superscript: false,
+    subscript: false,
+    link: true,
     separator: true,
   });
 
@@ -80,8 +117,12 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
   bubbleMenuConfig = computed(() => ({
     bold: true,
     italic: true,
+    underline: true,
     strike: true,
     code: true,
+    superscript: false,
+    subscript: false,
+    link: true,
     separator: true,
     ...this.config(),
   }));
@@ -255,11 +296,26 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
       case "italic":
         ed.chain().focus().toggleItalic().run();
         break;
+      case "underline":
+        ed.chain().focus().toggleUnderline().run();
+        break;
       case "strike":
         ed.chain().focus().toggleStrike().run();
         break;
       case "code":
         ed.chain().focus().toggleCode().run();
+        break;
+      case "superscript":
+        ed.chain().focus().toggleSuperscript().run();
+        break;
+      case "subscript":
+        ed.chain().focus().toggleSubscript().run();
+        break;
+      case "link":
+        const href = window.prompt("URL du lien:");
+        if (href) {
+          ed.chain().focus().toggleLink({ href }).run();
+        }
         break;
     }
   }

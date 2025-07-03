@@ -19,6 +19,11 @@ import { Editor, Extension, Node, Mark } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
+import Underline from "@tiptap/extension-underline";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import TextAlign from "@tiptap/extension-text-align";
+import Link from "@tiptap/extension-link";
 import OfficePaste from "@intevation/tiptap-extension-office-paste";
 
 import { ResizableImage } from "./extensions/resizable-image.extension";
@@ -41,15 +46,24 @@ import {
 export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
   bold: true,
   italic: true,
+  underline: true,
   strike: true,
   code: true,
+  superscript: false,
+  subscript: false,
   heading1: true,
   heading2: true,
   heading3: true,
   bulletList: true,
   orderedList: true,
   blockquote: true,
+  alignLeft: false,
+  alignCenter: false,
+  alignRight: false,
+  alignJustify: false,
+  link: true,
   image: true,
+  horizontalRule: true,
   undo: true,
   redo: true,
   separator: true,
@@ -59,8 +73,12 @@ export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
 export const DEFAULT_BUBBLE_MENU_CONFIG: BubbleMenuConfig = {
   bold: true,
   italic: true,
+  underline: true,
   strike: true,
   code: true,
+  superscript: false,
+  subscript: false,
+  link: true,
   separator: true,
 };
 
@@ -715,6 +733,18 @@ export class TiptapEditorComponent
       StarterKit,
       Placeholder.configure({
         placeholder: this.placeholder(),
+      }),
+      Underline,
+      Superscript,
+      Subscript,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "tiptap-link",
+        },
       }),
       ResizableImage.configure({
         inline: false,

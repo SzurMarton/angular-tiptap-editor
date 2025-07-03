@@ -8,15 +8,24 @@ import { EditorCommandsService } from "./services/editor-commands.service";
 export interface ToolbarConfig {
   bold?: boolean;
   italic?: boolean;
+  underline?: boolean;
   strike?: boolean;
   code?: boolean;
+  superscript?: boolean;
+  subscript?: boolean;
   heading1?: boolean;
   heading2?: boolean;
   heading3?: boolean;
   bulletList?: boolean;
   orderedList?: boolean;
   blockquote?: boolean;
+  alignLeft?: boolean;
+  alignCenter?: boolean;
+  alignRight?: boolean;
+  alignJustify?: boolean;
+  link?: boolean;
   image?: boolean;
+  horizontalRule?: boolean;
   undo?: boolean;
   redo?: boolean;
   separator?: boolean;
@@ -44,6 +53,14 @@ export interface ToolbarConfig {
         [disabled]="!canExecute('toggleItalic')"
         (onClick)="toggleItalic()"
       />
+      } @if (config().underline) {
+      <tiptap-button
+        icon="format_underlined"
+        title="Underline"
+        [active]="isActive('underline')"
+        [disabled]="!canExecute('toggleUnderline')"
+        (onClick)="toggleUnderline()"
+      />
       } @if (config().strike) {
       <tiptap-button
         icon="strikethrough_s"
@@ -59,6 +76,22 @@ export interface ToolbarConfig {
         [active]="isActive('code')"
         [disabled]="!canExecute('toggleCode')"
         (onClick)="toggleCode()"
+      />
+      } @if (config().superscript) {
+      <tiptap-button
+        icon="superscript"
+        title="Superscript"
+        [active]="isActive('superscript')"
+        [disabled]="!canExecute('toggleSuperscript')"
+        (onClick)="toggleSuperscript()"
+      />
+      } @if (config().subscript) {
+      <tiptap-button
+        icon="subscript"
+        title="Subscript"
+        [active]="isActive('subscript')"
+        [disabled]="!canExecute('toggleSubscript')"
+        (onClick)="toggleSubscript()"
       />
       } @if (config().separator && (config().heading1 || config().heading2 ||
       config().heading3)) {
@@ -110,6 +143,52 @@ export interface ToolbarConfig {
         title="Blockquote"
         [active]="isActive('blockquote')"
         (onClick)="toggleBlockquote()"
+      />
+      } @if (config().separator && (config().alignLeft || config().alignCenter
+      || config().alignRight || config().alignJustify)) {
+      <tiptap-separator />
+      } @if (config().alignLeft) {
+      <tiptap-button
+        icon="format_align_left"
+        title="Align Left"
+        [active]="isActive('textAlign', { textAlign: 'left' })"
+        (onClick)="setTextAlign('left')"
+      />
+      } @if (config().alignCenter) {
+      <tiptap-button
+        icon="format_align_center"
+        title="Align Center"
+        [active]="isActive('textAlign', { textAlign: 'center' })"
+        (onClick)="setTextAlign('center')"
+      />
+      } @if (config().alignRight) {
+      <tiptap-button
+        icon="format_align_right"
+        title="Align Right"
+        [active]="isActive('textAlign', { textAlign: 'right' })"
+        (onClick)="setTextAlign('right')"
+      />
+      } @if (config().alignJustify) {
+      <tiptap-button
+        icon="format_align_justify"
+        title="Align Justify"
+        [active]="isActive('textAlign', { textAlign: 'justify' })"
+        (onClick)="setTextAlign('justify')"
+      />
+      } @if (config().separator && (config().link || config().horizontalRule)) {
+      <tiptap-separator />
+      } @if (config().link) {
+      <tiptap-button
+        icon="link"
+        title="Add Link"
+        [active]="isActive('link')"
+        (onClick)="toggleLink()"
+      />
+      } @if (config().horizontalRule) {
+      <tiptap-button
+        icon="horizontal_rule"
+        title="Horizontal Rule"
+        (onClick)="insertHorizontalRule()"
       />
       } @if (config().separator && config().image) {
       <tiptap-separator />
@@ -248,6 +327,26 @@ export class TiptapToolbarComponent {
   }
   redo() {
     this.editorCommands.redo(this.editor());
+  }
+
+  // Nouvelles méthodes pour les formatages supplémentaires
+  toggleUnderline() {
+    this.editorCommands.toggleUnderline(this.editor());
+  }
+  toggleSuperscript() {
+    this.editorCommands.toggleSuperscript(this.editor());
+  }
+  toggleSubscript() {
+    this.editorCommands.toggleSubscript(this.editor());
+  }
+  setTextAlign(alignment: "left" | "center" | "right" | "justify") {
+    this.editorCommands.setTextAlign(this.editor(), alignment);
+  }
+  toggleLink() {
+    this.editorCommands.toggleLink(this.editor());
+  }
+  insertHorizontalRule() {
+    this.editorCommands.insertHorizontalRule(this.editor());
   }
 
   // Méthode pour insérer une image

@@ -1,1 +1,45 @@
 @import "./bubble-menu.global.css";
+
+/* Styles pour les liens */
+.tiptap-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.tiptap-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Styles pour les alignements de texte */
+.tiptap-editor p[style*="text-align: center"] {
+  text-align: center;
+}
+
+.tiptap-editor p[style*="text-align: right"] {
+  text-align: right;
+}
+
+.tiptap-editor p[style*="text-align: justify"] {
+  text-align: justify;
+}
+
+.tiptap-editor h1[style*="text-align: center"],
+.tiptap-editor h2[style*="text-align: center"],
+.tiptap-editor h3[style*="text-align: center"] {
+  text-align: center;
+}
+
+.tiptap-editor h1[style*="text-align: right"],
+.tiptap-editor h2[style*="text-align: right"],
+.tiptap-editor h3[style*="text-align: right"] {
+  text-align: right;
+}
+
+.tiptap-editor h1[style*="text-align: justify"],
+.tiptap-editor h2[style*="text-align: justify"],
+.tiptap-editor h3[style*="text-align: justify"] {
+  text-align: justify;
+}
