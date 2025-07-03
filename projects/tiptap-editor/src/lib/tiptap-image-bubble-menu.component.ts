@@ -307,36 +307,21 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  private changeImage() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
+  private async changeImage() {
+    const ed = this.editor();
+    if (!ed) return;
 
-    input.addEventListener("change", async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      try {
-        const result = await this.imageService.compressImage(file);
-        const ed = this.editor();
-        if (ed) {
-          // Remplacer l'image existante
-          ed.chain()
-            .focus()
-            .updateAttributes("resizableImage", {
-              src: result.src,
-              alt: result.name,
-              width: result.width,
-              height: result.height,
-            })
-            .run();
-        }
-      } catch (error) {
-        console.error("Erreur lors du changement d'image:", error);
-      }
-    });
-
-    input.click();
+    try {
+      // Utiliser la méthode spécifique pour remplacer une image existante
+      await this.imageService.selectAndReplaceImage(ed, {
+        quality: 0.8,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        accept: "image/*",
+      });
+    } catch (error) {
+      console.error("Erreur lors du changement d'image:", error);
+    }
   }
 
   private deleteImage() {

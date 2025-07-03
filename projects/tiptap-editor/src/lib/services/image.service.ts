@@ -312,10 +312,12 @@ export class ImageService {
     });
   }
 
-  // Méthode unifiée pour uploader et insérer une image
-  async uploadAndInsertImage(
+  // Méthode privée générique pour uploader avec progression
+  private async uploadImageWithProgress(
     editor: Editor,
     file: File,
+    insertionStrategy: (editor: Editor, result: ImageUploadResult) => void,
+    actionMessage: string,
     options?: {
       quality?: number;
       maxWidth?: number;
@@ -352,21 +354,16 @@ export class ImageService {
       );
 
       this.uploadProgress.set(80);
-      this.uploadMessage.set("Insertion dans l'éditeur...");
+      this.uploadMessage.set(actionMessage);
       this.forceEditorUpdate();
 
-      // Petit délai pour l'insertion
+      // Petit délai pour l'action
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      this.insertImage(editor, {
-        src: result.src,
-        alt: result.name,
-        title: `${result.name} (${result.width}×${result.height})`,
-        width: result.width,
-        height: result.height,
-      });
+      // Exécuter la stratégie d'insertion
+      insertionStrategy(editor, result);
 
-      // L'image est insérée, maintenant on peut cacher l'indicateur
+      // L'action est terminée, maintenant on peut cacher l'indicateur
       this.isUploading.set(false);
       this.uploadProgress.set(0);
       this.uploadMessage.set("");
@@ -383,6 +380,33 @@ export class ImageService {
     }
   }
 
+  // Méthode unifiée pour uploader et insérer une image
+  async uploadAndInsertImage(
+    editor: Editor,
+    file: File,
+    options?: {
+      quality?: number;
+      maxWidth?: number;
+      maxHeight?: number;
+    }
+  ): Promise<void> {
+    return this.uploadImageWithProgress(
+      editor,
+      file,
+      (editor, result) => {
+        this.insertImage(editor, {
+          src: result.src,
+          alt: result.name,
+          title: `${result.name} (${result.width}×${result.height})`,
+          width: result.width,
+          height: result.height,
+        });
+      },
+      "Insertion dans l'éditeur...",
+      options
+    );
+  }
+
   // Méthode pour forcer la mise à jour de l'éditeur
   private forceEditorUpdate() {
     if (this.currentEditor) {
@@ -392,9 +416,10 @@ export class ImageService {
     }
   }
 
-  // Méthode pour créer un sélecteur de fichier et uploader une image
-  async selectAndUploadImage(
+  // Méthode privée générique pour créer un sélecteur de fichier
+  private async selectFileAndProcess(
     editor: Editor,
+    uploadMethod: (editor: Editor, file: File, options?: any) => Promise<void>,
     options?: {
       quality?: number;
       maxWidth?: number;
@@ -412,7 +437,7 @@ export class ImageService {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file && file.type.startsWith("image/")) {
           try {
-            await this.uploadAndInsertImage(editor, file, options);
+            await uploadMethod(editor, file, options);
             resolve();
           } catch (error) {
             reject(error);
@@ -431,5 +456,129 @@ export class ImageService {
       document.body.appendChild(input);
       input.click();
     });
+  }
+
+  // Méthode pour créer un sélecteur de fichier et uploader une image
+  async selectAndUploadImage(
+    editor: Editor,
+    options?: {
+      quality?: number;
+      maxWidth?: number;
+      maxHeight?: number;
+      accept?: string;
+    }
+  ): Promise<void> {
+    return this.selectFileAndProcess(
+      editor,
+      this.uploadAndInsertImage.bind(this),
+      options
+    );
+  }
+
+  // Méthode pour sélectionner et remplacer une image existante
+  async selectAndReplaceImage(
+    editor: Editor,
+    options?: {
+      quality?: number;
+      maxWidth?: number;
+      maxHeight?: number;
+      accept?: string;
+    }
+  ): Promise<void> {
+    return this.selectFileAndProcess(
+      editor,
+      this.uploadAndReplaceImage.bind(this),
+      options
+    );
+  }
+
+  // Méthode pour remplacer une image existante avec indicateur de progression
+  async uploadAndReplaceImage(
+    editor: Editor,
+    file: File,
+    options?: {
+      quality?: number;
+      maxWidth?: number;
+      maxHeight?: number;
+    }
+  ): Promise<void> {
+    // Sauvegarder les attributs de l'image actuelle pour restauration en cas d'échec
+    const currentImageAttrs = editor.getAttributes("resizableImage");
+    const backupImage = { ...currentImageAttrs };
+
+    try {
+      // Supprimer visuellement l'ancienne image immédiatement
+      editor.chain().focus().deleteSelection().run();
+
+      // Stocker la référence à l'éditeur
+      this.currentEditor = editor;
+
+      this.isUploading.set(true);
+      this.uploadProgress.set(0);
+      this.uploadMessage.set("Validation du fichier...");
+      this.forceEditorUpdate();
+
+      // Validation
+      const validation = this.validateImage(file);
+      if (!validation.valid) {
+        throw new Error(validation.error);
+      }
+
+      this.uploadProgress.set(20);
+      this.uploadMessage.set("Compression en cours...");
+      this.forceEditorUpdate();
+
+      // Petit délai pour permettre à l'utilisateur de voir la progression
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const result = await this.compressImage(
+        file,
+        options?.quality || 0.8,
+        options?.maxWidth || 1920,
+        options?.maxHeight || 1080
+      );
+
+      this.uploadProgress.set(80);
+      this.uploadMessage.set("Remplacement de l'image...");
+      this.forceEditorUpdate();
+
+      // Petit délai pour le remplacement
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Insérer la nouvelle image à la position actuelle
+      this.insertImage(editor, {
+        src: result.src,
+        alt: result.name,
+        title: `${result.name} (${result.width}×${result.height})`,
+        width: result.width,
+        height: result.height,
+      });
+
+      // L'image est remplacée, maintenant on peut cacher l'indicateur
+      this.isUploading.set(false);
+      this.uploadProgress.set(0);
+      this.uploadMessage.set("");
+      this.forceEditorUpdate();
+      this.currentEditor = null;
+    } catch (error) {
+      // En cas d'erreur, restaurer l'image originale
+      if (backupImage["src"]) {
+        this.insertImage(editor, {
+          src: backupImage["src"] as string,
+          alt: backupImage["alt"] as string,
+          title: backupImage["title"] as string,
+          width: backupImage["width"] as number,
+          height: backupImage["height"] as number,
+        });
+      }
+
+      this.isUploading.set(false);
+      this.uploadProgress.set(0);
+      this.uploadMessage.set("");
+      this.forceEditorUpdate();
+      this.currentEditor = null;
+      console.error("Erreur lors du remplacement d'image:", error);
+      throw error;
+    }
   }
 }
