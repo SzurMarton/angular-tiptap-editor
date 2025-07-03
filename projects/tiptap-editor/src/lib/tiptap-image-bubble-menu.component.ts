@@ -127,7 +127,9 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       ed.on("transaction", this.updateMenu);
       ed.on("focus", this.updateMenu);
       ed.on("blur", this.handleBlur);
-      this.updateMenu();
+
+      // Ne pas appeler updateMenu() ici pour éviter l'affichage prématuré
+      // Il sera appelé automatiquement quand l'éditeur sera prêt
     });
   }
 
@@ -187,6 +189,9 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       },
       getReferenceClientRect: () => this.getImageRect(),
     });
+
+    // Maintenant que Tippy est initialisé, faire un premier check
+    this.updateMenu();
   }
 
   private getImageRect(): DOMRect {

@@ -113,6 +113,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       <tiptap-bubble-menu
         [editor]="editor()!"
         [config]="bubbleMenuConfig()"
+        [style.display]="editorFullyInitialized() ? 'block' : 'none'"
       ></tiptap-bubble-menu>
       }
 
@@ -121,12 +122,16 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       <tiptap-image-bubble-menu
         [editor]="editor()!"
         [config]="imageBubbleMenuConfig()"
+        [style.display]="editorFullyInitialized() ? 'block' : 'none'"
       ></tiptap-image-bubble-menu>
       }
 
       <!-- Slash Commands -->
       @if (enableSlashCommands() && editor()) {
-      <tiptap-slash-commands [editor]="editor()!"></tiptap-slash-commands>
+      <tiptap-slash-commands
+        [editor]="editor()!"
+        [style.display]="editorFullyInitialized() ? 'block' : 'none'"
+      ></tiptap-slash-commands>
       }
 
       <!-- Compteur de caractères -->
@@ -588,6 +593,7 @@ export class TiptapEditorComponent
     null
   );
   isDragOver = signal<boolean>(false);
+  editorFullyInitialized = signal<boolean>(false);
 
   // Computed pour les états de l'éditeur
   isEditorReady = computed(() => this.editor() !== null);
@@ -698,6 +704,7 @@ export class TiptapEditorComponent
     if (currentEditor) {
       currentEditor.destroy();
     }
+    this.editorFullyInitialized.set(false);
   }
 
   private initEditor() {
@@ -778,6 +785,12 @@ export class TiptapEditorComponent
         this.editor.set(editor);
         this.editorCreated.emit(editor);
         this.updateCharacterCount(editor);
+
+        // Marquer l'éditeur comme complètement initialisé après un court délai
+        // pour s'assurer que tous les plugins et extensions sont prêts
+        setTimeout(() => {
+          this.editorFullyInitialized.set(true);
+        }, 100);
       },
       onFocus: ({ editor, event }) => {
         this.editorFocus.emit({ editor, event });

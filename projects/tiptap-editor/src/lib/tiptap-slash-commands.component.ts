@@ -285,7 +285,8 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
       // Utiliser le système de plugins ProseMirror pour intercepter les touches
       this.addKeyboardPlugin(ed);
 
-      this.updateMenu();
+      // Ne pas appeler updateMenu() ici pour éviter l'affichage prématuré
+      // Il sera appelé automatiquement quand l'éditeur sera prêt
     });
   }
 
@@ -331,6 +332,9 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
       hideOnClick: true,
       getReferenceClientRect: () => this.getSlashRect(),
     });
+
+    // Maintenant que Tippy est initialisé, faire un premier check
+    this.updateMenu();
   }
 
   private getSlashRect(): DOMRect {
@@ -407,15 +411,6 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log(
-      "Key pressed:",
-      event.key,
-      "Active:",
-      this.isActive,
-      "Commands:",
-      this.filteredCommands().length
-    );
-
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
@@ -438,10 +433,6 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
         break;
 
       case "Enter":
-        console.log(
-          "Enter pressed, executing command:",
-          this.filteredCommands()[this.selectedIndex()]
-        );
         event.preventDefault();
         event.stopPropagation();
         const selectedCommand = this.filteredCommands()[this.selectedIndex()];
@@ -508,22 +499,6 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
     }, 10);
   }
 
-  handleGlobalKeyDown = (event: KeyboardEvent) => {
-    // Seulement intercepter si le menu est actif et que l'événement vient de l'éditeur
-    if (!this.isActive || this.filteredCommands().length === 0) {
-      return;
-    }
-
-    // Vérifier si l'événement vient de l'éditeur ou de ses enfants
-    const ed = this.editor();
-    if (!ed || !ed.view.dom.contains(event.target as Node)) {
-      return;
-    }
-
-    console.log("Global key pressed:", event.key, "Active:", this.isActive);
-    this.handleKeyDown(event);
-  };
-
   private addKeyboardPlugin(ed: Editor) {
     // Ajouter un plugin ProseMirror pour intercepter les événements clavier
     const keyboardPlugin = new Plugin({
@@ -534,13 +509,6 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
           if (!this.isActive || this.filteredCommands().length === 0) {
             return false;
           }
-
-          console.log(
-            "ProseMirror key pressed:",
-            event.key,
-            "Active:",
-            this.isActive
-          );
 
           switch (event.key) {
             case "ArrowDown":
@@ -562,10 +530,6 @@ export class TiptapSlashCommandsComponent implements OnInit, OnDestroy {
               return true;
 
             case "Enter":
-              console.log(
-                "ProseMirror Enter pressed, executing command:",
-                this.filteredCommands()[this.selectedIndex()]
-              );
               event.preventDefault();
               const selectedCommand =
                 this.filteredCommands()[this.selectedIndex()];
