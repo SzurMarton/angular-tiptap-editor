@@ -1932,60 +1932,57 @@ export class App {
   showCodeMode = signal(false);
   isTransitioning = signal(false);
   demoContent = signal(`
-    <h1>Guide d'utilisation de l'éditeur Tiptap</h1>
+    <h1>Guide Complet de l'Éditeur Tiptap</h1>
+    <p>Découvrez toutes les fonctionnalités de cet éditeur de texte <strong>moderne</strong> et <em>puissant</em> pour Angular.</p>
     
-    <p>Bienvenue dans cette démonstration interactive de l'éditeur Tiptap pour Angular. Cet éditeur offre une expérience d'édition riche et moderne.</p>
-    
-    <h2>Fonctionnalités principales</h2>
-    
-    <p><strong>Formatage de texte :</strong> Vous pouvez mettre en <strong>gras</strong>, <em>italique</em>, <u>souligné</u>, <s>barré</s>, ou encore utiliser du <code>code inline</code>.</p>
-    
-    <p>Vous pouvez également utiliser des exposants comme E=mc<sup>2</sup> ou des indices comme H<sub>2</sub>O.</p>
-    
-    <p><mark>Le surlignage</mark> permet de mettre en évidence des passages importants.</p>
-    
-    <h3>Listes et organisation</h3>
-    
+    <h2>Fonctionnalités de Base</h2>
+    <p>L'éditeur supporte une large gamme de formatages :</p>
     <ul>
-      <li>Listes à puces</li>
-      <li>Parfaites pour organiser les idées</li>
-      <li>Faciles à créer et modifier</li>
+      <li><strong>Texte en gras</strong> pour mettre en évidence</li>
+      <li><em>Texte en italique</em> pour l'emphase</li>
+      <li><u>Texte souligné</u> pour l'importance</li>
+      <li><s>Texte barré</s> pour les corrections</li>
+      <li><code>Code inline</code> pour les extraits techniques</li>
     </ul>
     
+    <h2>Listes et Organisation</h2>
+    <p>Créez des listes ordonnées et non ordonnées :</p>
     <ol>
-      <li>Listes numérotées</li>
-      <li>Pour les étapes séquentielles</li>
-      <li>Ou les instructions</li>
+      <li>Premier élément important</li>
+      <li>Deuxième élément avec <strong>formatage</strong></li>
+      <li>Troisième élément avec <a href="https://tiptap.dev">lien vers Tiptap</a></li>
     </ol>
     
     <blockquote>
-      <p>Les citations permettent de mettre en valeur des passages importants ou des témoignages.</p>
+      <p>Les citations permettent de mettre en valeur des passages importants ou des témoignages clients.</p>
     </blockquote>
     
-    <h3>Alignement du texte</h3>
+    <h2>Contenu Multimédia</h2>
+    <p>Intégrez facilement des images dans vos contenus :</p>
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop" class="tiptap-image" alt="Paysage montagneux avec lac">
+    <p><em>Cliquez sur l'image ci-dessus pour accéder au menu contextuel et la redimensionner.</em></p>
     
-    <p style="text-align: center">Ce texte est centré</p>
-    
-    <p style="text-align: right">Ce texte est aligné à droite</p>
-    
-    <p style="text-align: justify">Ce texte est justifié. Il s'étend sur toute la largeur disponible, créant des lignes de longueur égale pour une présentation uniforme et professionnelle.</p>
-    
-    <h3>Commandes slash</h3>
-    
-    <p>Tapez <code>/</code> n'importe où dans l'éditeur pour accéder rapidement aux commandes :</p>
-    
+    <h2>Commandes Rapides</h2>
+    <p>Utilisez les raccourcis pour une édition efficace :</p>
     <ul>
-      <li><code>/h1</code>, <code>/h2</code>, <code>/h3</code> pour les titres</li>
-      <li><code>/ul</code> pour les listes à puces</li>
-      <li><code>/ol</code> pour les listes numérotées</li>
-      <li><code>/quote</code> pour les citations</li>
-      <li><code>/code</code> pour les blocs de code</li>
-      <li><code>/image</code> pour insérer une image</li>
+      <li>Tapez <strong>/</strong> pour ouvrir le menu des slash commands</li>
+      <li>Sélectionnez du texte pour voir apparaître le bubble menu</li>
+      <li>Utilisez <strong>Ctrl+B</strong> pour mettre en gras</li>
+      <li>Utilisez <strong>Ctrl+I</strong> pour mettre en italique</li>
     </ul>
     
     <hr>
     
-    <p><em>Explorez les options de configuration dans le panneau de droite pour personnaliser votre éditeur !</em></p>
+    <h3>Personnalisation</h3>
+    <p>Utilisez le panneau de droite pour :</p>
+    <ul>
+      <li>Activer/désactiver la toolbar</li>
+      <li>Personnaliser les boutons disponibles</li>
+      <li>Configurer le bubble menu</li>
+      <li>Activer les slash commands</li>
+    </ul>
+    
+    <p>Cet éditeur est parfait pour créer du contenu riche et interactif ! 🚀</p>
   `);
 
   // Configuration states
