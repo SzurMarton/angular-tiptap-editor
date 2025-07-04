@@ -1,0 +1,123 @@
+import { ConfigItem } from "../types/editor-config.types";
+
+export const TOOLBAR_ITEMS: ConfigItem[] = [
+  { key: "bold", label: "Gras", icon: "format_bold" },
+  { key: "italic", label: "Italique", icon: "format_italic" },
+  { key: "underline", label: "Souligné", icon: "format_underlined" },
+  { key: "strike", label: "Barré", icon: "format_strikethrough" },
+  { key: "code", label: "Code", icon: "code" },
+  { key: "superscript", label: "Exposant", icon: "superscript" },
+  { key: "subscript", label: "Indice", icon: "subscript" },
+  { key: "highlight", label: "Surligner", icon: "highlight" },
+  { key: "heading1", label: "Titre 1", icon: "title" },
+  { key: "heading2", label: "Titre 2", icon: "title" },
+  { key: "heading3", label: "Titre 3", icon: "title" },
+  { key: "bulletList", label: "Liste à puces", icon: "format_list_bulleted" },
+  {
+    key: "orderedList",
+    label: "Liste numérotée",
+    icon: "format_list_numbered",
+  },
+  { key: "blockquote", label: "Citation", icon: "format_quote" },
+  { key: "alignLeft", label: "Aligner à gauche", icon: "format_align_left" },
+  { key: "alignCenter", label: "Centrer", icon: "format_align_center" },
+  { key: "alignRight", label: "Aligner à droite", icon: "format_align_right" },
+  { key: "alignJustify", label: "Justifier", icon: "format_align_justify" },
+  { key: "link", label: "Lien", icon: "link" },
+  { key: "image", label: "Image", icon: "image" },
+  {
+    key: "horizontalRule",
+    label: "Ligne horizontale",
+    icon: "horizontal_rule",
+  },
+  { key: "undo", label: "Annuler", icon: "undo" },
+  { key: "redo", label: "Refaire", icon: "redo" },
+  { key: "separator", label: "Séparateur", icon: "more_vert" },
+];
+
+export const BUBBLE_MENU_ITEMS: ConfigItem[] = [
+  { key: "bold", label: "Gras", icon: "format_bold" },
+  { key: "italic", label: "Italique", icon: "format_italic" },
+  { key: "underline", label: "Souligné", icon: "format_underlined" },
+  { key: "strike", label: "Barré", icon: "format_strikethrough" },
+  { key: "code", label: "Code", icon: "code" },
+  { key: "superscript", label: "Exposant", icon: "superscript" },
+  { key: "subscript", label: "Indice", icon: "subscript" },
+  { key: "highlight", label: "Surligner", icon: "highlight" },
+  { key: "link", label: "Lien", icon: "link" },
+  { key: "separator", label: "Séparateur", icon: "more_vert" },
+];
+
+export const SLASH_COMMAND_ITEMS: ConfigItem[] = [
+  { key: "heading1", label: "Titre 1", icon: "format_h1" },
+  { key: "heading2", label: "Titre 2", icon: "format_h2" },
+  { key: "heading3", label: "Titre 3", icon: "format_h3" },
+  { key: "bulletList", label: "Liste à puces", icon: "format_list_bulleted" },
+  {
+    key: "orderedList",
+    label: "Liste numérotée",
+    icon: "format_list_numbered",
+  },
+  { key: "blockquote", label: "Citation", icon: "format_quote" },
+  { key: "code", label: "Code", icon: "code" },
+  { key: "image", label: "Image", icon: "image" },
+  {
+    key: "horizontalRule",
+    label: "Ligne horizontale",
+    icon: "horizontal_rule",
+  },
+];
+
+export const DEFAULT_DEMO_CONTENT = `
+<h1>Guide Complet de l'Éditeur Tiptap</h1>
+<p>Découvrez toutes les fonctionnalités de cet éditeur de texte <strong>moderne</strong> et <em>puissant</em> pour Angular.</p>
+
+<h2>Fonctionnalités de Base</h2>
+<p>L'éditeur supporte une large gamme de formatages :</p>
+<ul>
+  <li><strong>Texte en gras</strong> pour mettre en évidence</li>
+  <li><em>Texte en italique</em> pour l'emphase</li>
+  <li><u>Texte souligné</u> pour l'importance</li>
+  <li><s>Texte barré</s> pour les corrections</li>
+  <li><code>Code inline</code> pour les extraits techniques</li>
+</ul>
+
+<h2>Listes et Organisation</h2>
+<p>Créez des listes ordonnées et non ordonnées :</p>
+<ol>
+  <li>Premier élément important</li>
+  <li>Deuxième élément avec <strong>formatage</strong></li>
+  <li>Troisième élément avec <a href="https://tiptap.dev">lien vers Tiptap</a></li>
+</ol>
+
+<blockquote>
+  <p>Les citations permettent de mettre en valeur des passages importants ou des témoignages clients.</p>
+</blockquote>
+
+<h2>Contenu Multimédia</h2>
+<p>Intégrez facilement des images dans vos contenus :</p>
+<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop" class="tiptap-image" alt="Paysage montagneux avec lac">
+<p><em>Cliquez sur l'image ci-dessus pour accéder au menu contextuel et la redimensionner.</em></p>
+
+<h2>Commandes Rapides</h2>
+<p>Utilisez les raccourcis pour une édition efficace :</p>
+<ul>
+  <li>Tapez <strong>/</strong> pour ouvrir le menu des slash commands</li>
+  <li>Sélectionnez du texte pour voir apparaître le bubble menu</li>
+  <li>Utilisez <strong>Ctrl+B</strong> pour mettre en gras</li>
+  <li>Utilisez <strong>Ctrl+I</strong> pour mettre en italique</li>
+</ul>
+
+<hr>
+
+<h3>Personnalisation</h3>
+<p>Utilisez le panneau de droite pour :</p>
+<ul>
+  <li>Activer/désactiver la toolbar</li>
+  <li>Personnaliser les boutons disponibles</li>
+  <li>Configurer le bubble menu</li>
+  <li>Activer les slash commands</li>
+</ul>
+
+<p>Cet éditeur est parfait pour créer du contenu riche et interactif ! 🚀</p>
+`;
