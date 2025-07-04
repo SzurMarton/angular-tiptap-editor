@@ -1,4 +1,4 @@
-import { Component, signal } from "@angular/core";
+import { Component, signal, effect, ElementRef, inject } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule, FormControl } from "@angular/forms";
@@ -27,7 +27,7 @@ import {
     TiptapEditorComponent,
   ],
   template: `
-    <div class="app">
+    <div class="app" #appRef>
       <!-- Header fin -->
       <header class="header">
         <h1>Tiptap Editor</h1>
@@ -41,9 +41,9 @@ import {
           <div class="editor-header">
             <h2>Éditeur</h2>
             <div class="stats">
-              <span class="stat-item">
+              <span class="stat-item" [class.active]="showToolbar()">
                 <span class="material-symbols-outlined">build</span>
-                {{ getToolbarActiveCount() }}
+                Toolbar ({{ getToolbarActiveCount() }})
               </span>
               <span class="stat-item" [class.active]="showBubbleMenuDemo()">
                 <span class="material-symbols-outlined">chat_bubble</span>
@@ -111,7 +111,7 @@ import {
               </label>
             </div>
 
-            <div class="menu-section">
+            <div class="menu-section" #toolbarMenuRef>
               <button
                 class="menu-trigger"
                 (click)="toggleToolbarMenu()"
@@ -163,7 +163,7 @@ import {
               </label>
             </div>
 
-            <div class="menu-section">
+            <div class="menu-section" #bubbleMenuRef>
               <button
                 class="menu-trigger"
                 (click)="toggleBubbleMenuMenu()"
@@ -215,7 +215,7 @@ import {
               </label>
             </div>
 
-            <div class="menu-section">
+            <div class="menu-section" #slashMenuRef>
               <button
                 class="menu-trigger"
                 (click)="toggleSlashCommandsMenu()"
@@ -580,7 +580,8 @@ import {
         left: 0;
         right: 0;
         background: white;
-        border: 1px solid #e2e8f0;
+        border-left: 1px solid #e2e8f0;
+        border-right: 1px solid #e2e8f0;
         border-radius: 6px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         z-index: 10;
@@ -705,6 +706,9 @@ import {
   ],
 })
 export class App {
+  // Injection des services
+  private elementRef = inject(ElementRef);
+
   // Signals pour l'état de la démo
   demoContent = signal(`
     <h1>Guide Complet de l'Éditeur Tiptap</h1>
@@ -894,6 +898,47 @@ export class App {
   constructor() {
     // Initialiser la configuration des slash commands
     this.updateSlashCommandsConfig();
+
+    // Ajouter le listener pour fermer les dropdowns
+    effect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as Element;
+        const appElement = this.elementRef.nativeElement;
+
+        if (!appElement.contains(target)) {
+          return;
+        }
+
+        // Vérifier si le clic est à l'intérieur d'un menu ouvert
+        const menuSections = appElement.querySelectorAll(".menu-section");
+        let isInsideAnyMenu = false;
+
+        menuSections.forEach((section: Element) => {
+          if (section.contains(target)) {
+            isInsideAnyMenu = true;
+          }
+        });
+
+        // Si le clic est à l'extérieur de tous les menus, les fermer
+        if (!isInsideAnyMenu) {
+          this.closeAllMenus();
+        }
+      };
+
+      document.addEventListener("click", handleClickOutside);
+
+      // Cleanup
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    });
+  }
+
+  // Méthode pour fermer tous les menus
+  private closeAllMenus() {
+    this.showToolbarMenu.set(false);
+    this.showBubbleMenuMenu.set(false);
+    this.showSlashCommandsMenu.set(false);
   }
 
   // Methods for demo content changes
@@ -1045,9 +1090,7 @@ export class App {
     this.showToolbar.set(true);
     this.showBubbleMenuDemo.set(true);
     this.enableSlashCommands.set(true);
-    this.showToolbarMenu.set(false);
-    this.showBubbleMenuMenu.set(false);
-    this.showSlashCommandsMenu.set(false);
+    this.closeAllMenus();
   }
 
   clearContent() {
