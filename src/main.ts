@@ -107,7 +107,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
         background: #fafafa;
         min-height: 100vh;
         position: relative;
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       /* Ajustement de l'éditeur quand le sidebar est ouvert */
@@ -118,12 +118,12 @@ import { CodeGeneratorService } from "./services/code-generator.service";
 
       /* Contenu principal */
       .main-content {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         padding-top: 60px; /* Espace pour les actions */
       }
 
       .editor-view {
-        animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       @keyframes fadeIn {

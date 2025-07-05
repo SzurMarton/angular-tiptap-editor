@@ -40,7 +40,7 @@ import { CodeGeneratorService } from "../services/code-generator.service";
         overflow: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         max-width: 100%;
-        animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       @keyframes fadeIn {

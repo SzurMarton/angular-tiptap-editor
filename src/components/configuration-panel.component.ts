@@ -456,7 +456,7 @@ import {
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -477,7 +477,7 @@ import {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.4s ease;
+        transition: all 0.2s ease;
       }
 
       .transition-element.expanding .transition-content {
@@ -488,14 +488,14 @@ import {
       .transition-icon {
         font-size: 24px;
         color: #64748b;
-        transition: all 0.3s ease;
+        transition: all 0.15s ease;
       }
 
       /* Contenu du panel dans la transition */
       .transition-panel-content {
         opacity: 0;
         transform: scale(0.8);
-        transition: all 0.4s ease 0.4s;
+        transition: all 0.2s ease 0.2s;
         width: 100%;
         height: 100%;
         display: flex;
@@ -575,7 +575,7 @@ export class ConfigurationPanelComponent {
           if (transitionElement) {
             transitionElement.classList.add("expanding");
           }
-        }, 50);
+        }, 25);
       }
     });
   }
@@ -666,7 +666,7 @@ export class ConfigurationPanelComponent {
           isTransitioning: false,
           showSidebar: true,
         });
-      }, 850);
+      }, 425);
     }
   }
 
