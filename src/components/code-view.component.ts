@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { CodeGeneratorService } from "../services/code-generator.service";
 
@@ -210,7 +210,9 @@ import { CodeGeneratorService } from "../services/code-generator.service";
 export class CodeViewComponent {
   private codeGeneratorService = inject(CodeGeneratorService);
 
-  readonly generatedCode = this.codeGeneratorService.generatedCode;
+  readonly generatedCode = computed(() =>
+    this.codeGeneratorService.generateCode()
+  );
 
   copyCode() {
     this.codeGeneratorService.copyCode();
