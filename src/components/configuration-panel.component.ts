@@ -2,7 +2,6 @@ import { Component, inject, ElementRef, effect, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigSectionComponent } from "./config-section.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
-import { CodeGeneratorService } from "../services/code-generator.service";
 import { TiptapI18nService } from "tiptap-editor";
 import { AppI18nService } from "../services/app-i18n.service";
 import {
@@ -58,7 +57,7 @@ import {
               [class.active]="editorState().showBubbleMenu"
             >
               <span class="material-symbols-outlined">chat_bubble</span>
-              <span>Bubble</span>
+              <span>{{ bubbleMenuActiveCount() }}</span>
             </div>
             <div
               class="status-item"
@@ -113,14 +112,6 @@ import {
             (toggleDropdown)="toggleSlashCommandsMenu()"
             (toggleItem)="toggleSlashCommand($event)"
           />
-        </div>
-
-        <!-- Footer -->
-        <div class="sidebar-footer">
-          <button class="copy-btn" (click)="copyCode()">
-            <span class="material-symbols-outlined">content_copy</span>
-            <span>{{ appI18n.ui().copyCode }}</span>
-          </button>
         </div>
       </div>
     </aside>
@@ -200,14 +191,6 @@ import {
             <div style="padding: 1rem; text-align: center; color: #64748b;">
               Configuration en cours de chargement...
             </div>
-          </div>
-
-          <!-- Footer -->
-          <div class="sidebar-footer">
-            <button class="copy-btn" (click)="copyCode()">
-              <span class="material-symbols-outlined">content_copy</span>
-              <span>Copier le code</span>
-            </button>
           </div>
         </div>
       </div>
@@ -349,30 +332,6 @@ import {
         display: none;
       }
 
-      .sidebar-footer {
-        padding: 1.5rem;
-        border-top: 1px solid #e2e8f0;
-        background: #f8f9fa;
-        border-radius: 0 0 16px 16px;
-      }
-
-      .copy-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0 12px;
-        height: 40px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
       .open-sidebar-btn {
         position: fixed;
         top: 2rem;
@@ -509,7 +468,6 @@ import {
 })
 export class ConfigurationPanelComponent {
   readonly configService = inject(EditorConfigurationService);
-  private codeGeneratorService = inject(CodeGeneratorService);
   private elementRef = inject(ElementRef);
   private i18nService = inject(TiptapI18nService);
   readonly appI18n = inject(AppI18nService);
@@ -677,9 +635,5 @@ export class ConfigurationPanelComponent {
 
   resetToDefaults() {
     this.configService.resetToDefaults();
-  }
-
-  copyCode() {
-    this.codeGeneratorService.copyCode();
   }
 }
