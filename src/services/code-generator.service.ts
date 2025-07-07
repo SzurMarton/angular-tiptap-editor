@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { EditorConfigurationService } from "./editor-configuration.service";
+import { TiptapI18nService } from "tiptap-editor";
 import {
   TOOLBAR_ITEMS,
   BUBBLE_MENU_ITEMS,
@@ -12,6 +13,7 @@ import { ConfigItem } from "../types/editor-config.types";
 })
 export class CodeGeneratorService {
   private configService = inject(EditorConfigurationService);
+  private i18nService = inject(TiptapI18nService);
 
   generateCode(): string {
     const editorState = this.configService.editorState();
@@ -19,6 +21,12 @@ export class CodeGeneratorService {
     const bubbleMenuConfig = this.configService.bubbleMenuConfig();
     const activeSlashCommands = this.configService.activeSlashCommands();
     const demoContent = this.configService.demoContent();
+    const currentLocale = this.i18nService.currentLocale();
+
+    // Générer l'input locale si une langue spécifique est sélectionnée
+    const localeInput = currentLocale
+      ? `\n      [locale]="${currentLocale}"`
+      : "";
 
     return `import { Component } from '@angular/core';
 import { TiptapEditorComponent } from 'tiptap-editor';
@@ -31,7 +39,7 @@ import { TiptapEditorComponent } from 'tiptap-editor';
     <tiptap-editor
       [content]="demoContent"
       [toolbar]="toolbarConfig"
-      [bubbleMenu]="bubbleMenuConfig"
+      [bubbleMenu]="bubbleMenuConfig"${localeInput}
       [showBubbleMenu]="${editorState.showBubbleMenu}"
       [enableSlashCommands]="${editorState.enableSlashCommands}"
       [slashCommandsConfig]="slashCommandsConfig"

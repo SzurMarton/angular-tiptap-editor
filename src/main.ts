@@ -3,7 +3,7 @@ import { bootstrapApplication } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { TiptapEditorComponent } from "tiptap-editor";
+import { TiptapEditorComponent, TiptapI18nService } from "tiptap-editor";
 import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
 
 // Import des composants
@@ -50,6 +50,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
                 [content]="demoContent()"
                 [toolbar]="toolbarConfig()"
                 [bubbleMenu]="bubbleMenuConfig()"
+                [locale]="currentLocale()"
                 [showBubbleMenu]="editorState().showBubbleMenu"
                 [enableSlashCommands]="editorState().enableSlashCommands"
                 [slashCommandsConfig]="slashCommandsConfig()"
@@ -212,6 +213,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
 export class App {
   // Injection des services
   private configService = inject(EditorConfigurationService);
+  private i18nService = inject(TiptapI18nService);
 
   // Signaux depuis le service
   readonly editorState = this.configService.editorState;
@@ -219,6 +221,7 @@ export class App {
   readonly toolbarConfig = this.configService.toolbarConfig;
   readonly bubbleMenuConfig = this.configService.bubbleMenuConfig;
   readonly slashCommandsConfig = this.configService.slashCommandsConfig;
+  readonly currentLocale = this.i18nService.currentLocale;
 
   // Méthode pour gérer les changements de contenu
   onContentChange(content: string) {

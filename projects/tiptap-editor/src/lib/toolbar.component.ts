@@ -4,6 +4,7 @@ import { TiptapButtonComponent } from "./tiptap-button.component";
 import { TiptapSeparatorComponent } from "./tiptap-separator.component";
 import { ImageUploadResult, ImageService } from "./services/image.service";
 import { EditorCommandsService } from "./services/editor-commands.service";
+import { TiptapI18nService } from "./services/i18n.service";
 
 export interface ToolbarConfig {
   bold?: boolean;
@@ -41,7 +42,7 @@ export interface ToolbarConfig {
       @if (config().bold) {
       <tiptap-button
         icon="format_bold"
-        title="Bold"
+        [title]="t().bold"
         [active]="isActive('bold')"
         [disabled]="!canExecute('toggleBold')"
         (onClick)="toggleBold()"
@@ -49,7 +50,7 @@ export interface ToolbarConfig {
       } @if (config().italic) {
       <tiptap-button
         icon="format_italic"
-        title="Italic"
+        [title]="t().italic"
         [active]="isActive('italic')"
         [disabled]="!canExecute('toggleItalic')"
         (onClick)="toggleItalic()"
@@ -57,7 +58,7 @@ export interface ToolbarConfig {
       } @if (config().underline) {
       <tiptap-button
         icon="format_underlined"
-        title="Underline"
+        [title]="t().underline"
         [active]="isActive('underline')"
         [disabled]="!canExecute('toggleUnderline')"
         (onClick)="toggleUnderline()"
@@ -65,7 +66,7 @@ export interface ToolbarConfig {
       } @if (config().strike) {
       <tiptap-button
         icon="strikethrough_s"
-        title="Strikethrough"
+        [title]="t().strike"
         [active]="isActive('strike')"
         [disabled]="!canExecute('toggleStrike')"
         (onClick)="toggleStrike()"
@@ -73,7 +74,7 @@ export interface ToolbarConfig {
       } @if (config().code) {
       <tiptap-button
         icon="code"
-        title="Code"
+        [title]="t().code"
         [active]="isActive('code')"
         [disabled]="!canExecute('toggleCode')"
         (onClick)="toggleCode()"
@@ -81,7 +82,7 @@ export interface ToolbarConfig {
       } @if (config().superscript) {
       <tiptap-button
         icon="superscript"
-        title="Superscript"
+        [title]="t().superscript"
         [active]="isActive('superscript')"
         [disabled]="!canExecute('toggleSuperscript')"
         (onClick)="toggleSuperscript()"
@@ -89,7 +90,7 @@ export interface ToolbarConfig {
       } @if (config().subscript) {
       <tiptap-button
         icon="subscript"
-        title="Subscript"
+        [title]="t().subscript"
         [active]="isActive('subscript')"
         [disabled]="!canExecute('toggleSubscript')"
         (onClick)="toggleSubscript()"
@@ -97,7 +98,7 @@ export interface ToolbarConfig {
       } @if (config().highlight) {
       <tiptap-button
         icon="highlight"
-        title="Highlight"
+        [title]="t().highlight"
         [active]="isActive('highlight')"
         [disabled]="!canExecute('toggleHighlight')"
         (onClick)="toggleHighlight()"
@@ -108,7 +109,7 @@ export interface ToolbarConfig {
       } @if (config().heading1) {
       <tiptap-button
         icon="format_h1"
-        title="Heading 1"
+        [title]="t().heading1"
         variant="text"
         [active]="isActive('heading', { level: 1 })"
         (onClick)="toggleHeading(1)"
@@ -116,7 +117,7 @@ export interface ToolbarConfig {
       } @if (config().heading2) {
       <tiptap-button
         icon="format_h2"
-        title="Heading 2"
+        [title]="t().heading2"
         variant="text"
         [active]="isActive('heading', { level: 2 })"
         (onClick)="toggleHeading(2)"
@@ -124,7 +125,7 @@ export interface ToolbarConfig {
       } @if (config().heading3) {
       <tiptap-button
         icon="format_h3"
-        title="Heading 3"
+        [title]="t().heading3"
         variant="text"
         [active]="isActive('heading', { level: 3 })"
         (onClick)="toggleHeading(3)"
@@ -135,21 +136,21 @@ export interface ToolbarConfig {
       } @if (config().bulletList) {
       <tiptap-button
         icon="format_list_bulleted"
-        title="Bullet List"
+        [title]="t().bulletList"
         [active]="isActive('bulletList')"
         (onClick)="toggleBulletList()"
       />
       } @if (config().orderedList) {
       <tiptap-button
         icon="format_list_numbered"
-        title="Ordered List"
+        [title]="t().orderedList"
         [active]="isActive('orderedList')"
         (onClick)="toggleOrderedList()"
       />
       } @if (config().blockquote) {
       <tiptap-button
         icon="format_quote"
-        title="Blockquote"
+        [title]="t().blockquote"
         [active]="isActive('blockquote')"
         (onClick)="toggleBlockquote()"
       />
@@ -159,28 +160,28 @@ export interface ToolbarConfig {
       } @if (config().alignLeft) {
       <tiptap-button
         icon="format_align_left"
-        title="Align Left"
+        [title]="t().alignLeft"
         [active]="isActive('textAlign', { textAlign: 'left' })"
         (onClick)="setTextAlign('left')"
       />
       } @if (config().alignCenter) {
       <tiptap-button
         icon="format_align_center"
-        title="Align Center"
+        [title]="t().alignCenter"
         [active]="isActive('textAlign', { textAlign: 'center' })"
         (onClick)="setTextAlign('center')"
       />
       } @if (config().alignRight) {
       <tiptap-button
         icon="format_align_right"
-        title="Align Right"
+        [title]="t().alignRight"
         [active]="isActive('textAlign', { textAlign: 'right' })"
         (onClick)="setTextAlign('right')"
       />
       } @if (config().alignJustify) {
       <tiptap-button
         icon="format_align_justify"
-        title="Align Justify"
+        [title]="t().alignJustify"
         [active]="isActive('textAlign', { textAlign: 'justify' })"
         (onClick)="setTextAlign('justify')"
       />
@@ -189,14 +190,14 @@ export interface ToolbarConfig {
       } @if (config().link) {
       <tiptap-button
         icon="link"
-        title="Add Link"
+        [title]="t().link"
         [active]="isActive('link')"
         (onClick)="toggleLink()"
       />
       } @if (config().horizontalRule) {
       <tiptap-button
         icon="horizontal_rule"
-        title="Horizontal Rule"
+        [title]="t().horizontalRule"
         (onClick)="insertHorizontalRule()"
       />
       } @if (config().separator && config().image) {
@@ -204,7 +205,7 @@ export interface ToolbarConfig {
       } @if (config().image) {
       <tiptap-button
         icon="image"
-        title="Ajouter une image"
+        [title]="t().image"
         (onClick)="insertImage()"
       />
       } @if (config().separator && (config().undo || config().redo)) {
@@ -212,14 +213,14 @@ export interface ToolbarConfig {
       } @if (config().undo) {
       <tiptap-button
         icon="undo"
-        title="Undo"
+        [title]="t().undo"
         [disabled]="!canExecute('undo')"
         (onClick)="undo()"
       />
       } @if (config().redo) {
       <tiptap-button
         icon="redo"
-        title="Redo"
+        [title]="t().redo"
         [disabled]="!canExecute('redo')"
         (onClick)="redo()"
       />
@@ -296,6 +297,10 @@ export class TiptapToolbarComponent {
   imageError = output<string>();
 
   private imageService = inject(ImageService);
+  private i18nService = inject(TiptapI18nService);
+
+  // Computed values pour les traductions
+  readonly t = this.i18nService.toolbar;
 
   constructor(private editorCommands: EditorCommandsService) {}
 

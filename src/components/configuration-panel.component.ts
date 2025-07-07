@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { ConfigSectionComponent } from "./config-section.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
 import { CodeGeneratorService } from "../services/code-generator.service";
+import { TiptapI18nService } from "tiptap-editor";
 import {
   TOOLBAR_ITEMS,
   BUBBLE_MENU_ITEMS,
@@ -120,6 +121,66 @@ import {
             (toggleDropdown)="toggleSlashCommandsMenu()"
             (toggleItem)="toggleSlashCommand($event)"
           />
+
+          <!-- Section Langue -->
+          <app-config-section title="Langue" icon="language">
+            <div class="config-controls">
+              <div class="language-switch-container">
+                <div class="language-switch-label">Langue de l'éditeur</div>
+                <div class="language-switch-wrapper">
+                  <div
+                    class="language-switch"
+                    [class.french]="currentLocale() === 'fr'"
+                  >
+                    <div class="language-options">
+                      <button
+                        class="language-option"
+                        [class.active]="currentLocale() === 'en'"
+                        (click)="setLanguage('en')"
+                        title="English"
+                      >
+                        <span class="flag-icon">🇺🇸</span>
+                        <span class="language-label">EN</span>
+                      </button>
+                      <button
+                        class="language-option"
+                        [class.active]="currentLocale() === 'fr'"
+                        (click)="setLanguage('fr')"
+                        title="Français"
+                      >
+                        <span class="flag-icon">🇫🇷</span>
+                        <span class="language-label">FR</span>
+                      </button>
+                    </div>
+                    <div
+                      class="language-slider"
+                      [class.slide-right]="currentLocale() === 'fr'"
+                    ></div>
+                  </div>
+                </div>
+                <div class="language-info">
+                  <span class="current-language">
+                    {{ currentLocale() === "fr" ? "Français" : "English" }}
+                  </span>
+                  <span class="auto-detect-note" *ngIf="isAutoDetected">
+                    (Détection automatique)
+                  </span>
+                </div>
+                <div class="auto-detect-button" *ngIf="!isAutoDetected">
+                  <button
+                    class="btn-auto-detect"
+                    (click)="autoDetectLanguage()"
+                    title="Détecter automatiquement la langue du navigateur"
+                  >
+                    <span class="material-symbols-outlined"
+                      >auto_detect_voice</span
+                    >
+                    <span>Détection automatique</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </app-config-section>
         </div>
 
         <!-- Footer -->
@@ -327,7 +388,7 @@ import {
       }
 
       .panel-btn:hover {
-        transform: translateY(-1px);
+        background: #f1f5f9;
       }
 
       .status-bar {
@@ -434,7 +495,6 @@ import {
 
       .open-sidebar-btn:hover {
         color: #6366f1;
-        transform: translateY(-2px) scale(1.05);
         box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
       }
 
@@ -494,7 +554,6 @@ import {
       /* Contenu du panel dans la transition */
       .transition-panel-content {
         opacity: 0;
-        transform: scale(0.8);
         transition: all 0.2s ease 0.2s;
         width: 100%;
         height: 100%;
@@ -504,15 +563,225 @@ import {
 
       .transition-element.expanding .transition-panel-content {
         opacity: 1;
-        transform: scale(1);
+      }
+
+      /* Styles pour les contrôles de configuration */
+      .config-controls {
+        padding: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        background: white;
+        color: #374151;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .form-select:hover {
+        border-color: #9ca3af;
+      }
+
+      .form-select option {
+        padding: 0.5rem;
+      }
+
+      /* Styles pour le switch de langue */
+      .language-switch-container {
+        padding: 1rem;
+      }
+
+      .language-switch-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.75rem;
+      }
+
+      .language-switch-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .language-switch {
+        position: relative;
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 12px;
+        padding: 4px;
+        width: 140px;
+        height: 48px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .language-options {
+        display: flex;
+        width: 100%;
+        z-index: 2;
+        position: relative;
+      }
+
+      .language-option {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        padding: 4px;
+        position: relative;
+      }
+
+      .language-option.active {
+        color: #6366f1;
+      }
+
+      .flag-icon {
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .language-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .language-slider {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: calc(50% - 4px);
+        height: calc(100% - 8px);
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        z-index: 1;
+      }
+
+      .language-slider.slide-right {
+        transform: translateX(100%);
+      }
+
+      .language-info {
+        text-align: center;
+        margin-top: 0.5rem;
+      }
+
+      .current-language {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6366f1;
+      }
+
+      .auto-detect-note {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-left: 0.5rem;
+      }
+
+      /* Animation au hover */
+      .language-option:hover {
+        background: #f1f5f9;
+      }
+
+      .language-option.active:hover {
+        background: #f1f5f9;
+      }
+
+      /* Effet de pulse sur le switch */
+      .language-switch:hover .language-slider {
+        box-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
+      }
+
+      /* Bouton de détection automatique */
+      .auto-detect-button {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.75rem;
+      }
+
+      .btn-auto-detect {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        color: #64748b;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-auto-detect:hover {
+        background: #e2e8f0;
+        color: #475569;
+      }
+
+      .btn-auto-detect .material-symbols-outlined {
+        font-size: 16px;
+      }
+
+      /* Responsive pour mobile */
+      @media (max-width: 480px) {
+        .language-switch {
+          width: 120px;
+          height: 42px;
+        }
+
+        .flag-icon {
+          font-size: 14px;
+        }
+
+        .language-label {
+          font-size: 0.7rem;
+        }
+
+        .btn-auto-detect {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.8rem;
+        }
       }
     `,
   ],
 })
 export class ConfigurationPanelComponent {
-  private configService = inject(EditorConfigurationService);
+  readonly configService = inject(EditorConfigurationService);
   private codeGeneratorService = inject(CodeGeneratorService);
   private elementRef = inject(ElementRef);
+  private i18nService = inject(TiptapI18nService);
 
   // Signaux depuis le service
   readonly editorState = this.configService.editorState;
@@ -521,13 +790,20 @@ export class ConfigurationPanelComponent {
   readonly bubbleMenuActiveCount = this.configService.bubbleMenuActiveCount;
   readonly slashCommandsActiveCount =
     this.configService.slashCommandsActiveCount;
+  readonly currentLocale = this.i18nService.currentLocale;
 
   // Configuration des items
   readonly toolbarItems = TOOLBAR_ITEMS;
   readonly bubbleMenuItems = BUBBLE_MENU_ITEMS;
   readonly slashCommandItems = SLASH_COMMAND_ITEMS;
 
+  // État pour la langue
+  isAutoDetected = false;
+
   constructor() {
+    // Initialiser l'état de détection automatique
+    this.isAutoDetected = true; // Par défaut, le service fait une détection automatique
+
     // Ajouter le listener pour fermer les dropdowns
     effect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -680,5 +956,20 @@ export class ConfigurationPanelComponent {
 
   copyCode() {
     this.codeGeneratorService.copyCode();
+  }
+
+  setLanguage(locale: "en" | "fr") {
+    this.i18nService.setLocale(locale);
+    this.isAutoDetected = false;
+  }
+
+  autoDetectLanguage() {
+    const browserLang = navigator.language.toLowerCase();
+    if (browserLang.startsWith("fr")) {
+      this.i18nService.setLocale("fr");
+    } else {
+      this.i18nService.setLocale("en");
+    }
+    this.isAutoDetected = true;
   }
 }

@@ -1,11 +1,12 @@
 import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
+import { LanguageSwitchComponent } from "./language-switch.component";
 
 @Component({
   selector: "app-editor-actions",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LanguageSwitchComponent],
   template: `
     <div class="editor-actions">
       <!-- Toggle Code/Éditeur -->
@@ -40,6 +41,11 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
         <span class="material-symbols-outlined">delete</span>
         <span>Vider</span>
       </button>
+
+      <div class="action-separator"></div>
+
+      <!-- Switch de langue -->
+      <app-language-switch></app-language-switch>
     </div>
   `,
   styles: [
@@ -166,15 +172,10 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
 
       .editor-action-btn:hover {
         color: #ef4444;
-        transform: translateY(-1px);
       }
 
       .editor-action-btn:hover::before {
         opacity: 0.1;
-      }
-
-      .editor-action-btn:active {
-        transform: translateY(0);
       }
 
       .editor-action-btn .material-symbols-outlined {

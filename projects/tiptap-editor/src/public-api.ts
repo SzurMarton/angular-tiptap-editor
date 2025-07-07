@@ -15,10 +15,14 @@ export * from "./lib/tiptap-separator.component";
 // Services
 export * from "./lib/services/image.service";
 export * from "./lib/services/editor-commands.service";
+export * from "./lib/services/i18n.service";
 
 // Extensions
 export * from "./lib/extensions/resizable-image.extension";
 export * from "./lib/extensions/upload-progress.extension";
+
+// Configuration i18n
+export * from "./lib/config/i18n-slash-commands";
 
 // Types et interfaces
 export type { ToolbarConfig } from "./lib/toolbar.component";

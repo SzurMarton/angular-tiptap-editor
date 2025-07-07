@@ -38,6 +38,7 @@ import {
   SlashCommandsConfig,
 } from "./tiptap-slash-commands.component";
 import { ImageService } from "./services/image.service";
+import { TiptapI18nService, SupportedLocale } from "./services/i18n.service";
 
 import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./toolbar.component";
@@ -165,8 +166,10 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       <!-- Compteur de caractères -->
       @if (showCharacterCount() && characterCountData()) {
       <div class="character-count">
-        {{ characterCountData()?.characters }} caractères,
-        {{ characterCountData()?.words }} mots @if (maxCharacters()) { /
+        {{ characterCountData()?.characters }}
+        {{ i18nService.editor().characters }},
+        {{ characterCountData()?.words }} {{ i18nService.editor().words }} @if
+        (maxCharacters()) { /
         {{ maxCharacters() }}
         }
       </div>
@@ -582,7 +585,7 @@ export class TiptapEditorComponent
 {
   // Nouveaux inputs avec signal
   content = input<string>("");
-  placeholder = input<string>("Start typing...");
+  placeholder = input<string>("");
   editable = input<boolean>(true);
   minHeight = input<number>(200);
   showToolbar = input<boolean>(true);
@@ -591,6 +594,7 @@ export class TiptapEditorComponent
   enableOfficePaste = input<boolean>(true);
   enableSlashCommands = input<boolean>(true);
   slashCommandsConfig = input<SlashCommandsConfig | undefined>(undefined);
+  locale = input<SupportedLocale | undefined>(undefined);
 
   // Nouveaux inputs pour les bubble menus
   showBubbleMenu = input<boolean>(true);
@@ -697,7 +701,17 @@ export class TiptapEditorComponent
   private onChange = (value: string) => {};
   private onTouched = () => {};
 
+  readonly i18nService = inject(TiptapI18nService);
+
   constructor(private imageService: ImageService) {
+    // Effet pour gérer le changement de langue
+    effect(() => {
+      const locale = this.locale();
+      if (locale) {
+        this.i18nService.setLocale(locale);
+      }
+    });
+
     // Effet pour mettre à jour le contenu de l'éditeur
     effect(() => {
       const editor = this.editor();
@@ -750,7 +764,8 @@ export class TiptapEditorComponent
     const extensions: (Extension | Node | Mark)[] = [
       StarterKit,
       Placeholder.configure({
-        placeholder: this.placeholder(),
+        placeholder:
+          this.placeholder() || this.i18nService.editor().placeholder,
       }),
       Underline,
       Superscript,

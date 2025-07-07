@@ -110,15 +110,10 @@ import { CodeGeneratorService } from "../services/code-generator.service";
 
       .copy-code-btn:hover {
         color: #6366f1;
-        transform: translateY(-1px);
       }
 
       .copy-code-btn:hover::before {
         opacity: 0.1;
-      }
-
-      .copy-code-btn:active {
-        transform: translateY(0);
       }
 
       .copy-code-btn .material-symbols-outlined {

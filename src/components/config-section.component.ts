@@ -173,7 +173,6 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
 
       .option:hover {
         color: #6366f1;
-        transform: translateY(-1px);
       }
 
       .option:hover::before {

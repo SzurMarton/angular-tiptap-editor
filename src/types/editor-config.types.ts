@@ -12,6 +12,7 @@ export interface EditorState {
   showBubbleMenu: boolean;
   enableSlashCommands: boolean;
   placeholder: string;
+  locale?: string;
 }
 
 export interface MenuState {

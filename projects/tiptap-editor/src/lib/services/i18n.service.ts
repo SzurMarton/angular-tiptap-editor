@@ -1,0 +1,476 @@
+import { Injectable, signal, computed } from "@angular/core";
+
+export type SupportedLocale = "en" | "fr";
+
+export interface TiptapTranslations {
+  // Toolbar
+  toolbar: {
+    bold: string;
+    italic: string;
+    underline: string;
+    strike: string;
+    code: string;
+    superscript: string;
+    subscript: string;
+    highlight: string;
+    heading1: string;
+    heading2: string;
+    heading3: string;
+    bulletList: string;
+    orderedList: string;
+    blockquote: string;
+    alignLeft: string;
+    alignCenter: string;
+    alignRight: string;
+    alignJustify: string;
+    link: string;
+    image: string;
+    horizontalRule: string;
+    undo: string;
+    redo: string;
+  };
+
+  // Bubble Menu
+  bubbleMenu: {
+    bold: string;
+    italic: string;
+    underline: string;
+    strike: string;
+    code: string;
+    superscript: string;
+    subscript: string;
+    highlight: string;
+    link: string;
+    addLink: string;
+    editLink: string;
+    removeLink: string;
+    linkUrl: string;
+    linkText: string;
+    openLink: string;
+  };
+
+  // Slash Commands
+  slashCommands: {
+    heading1: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    heading2: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    heading3: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    bulletList: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    orderedList: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    blockquote: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    code: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    image: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+    horizontalRule: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+  };
+
+  // Image Upload
+  imageUpload: {
+    selectImage: string;
+    uploadingImage: string;
+    uploadProgress: string;
+    uploadError: string;
+    uploadSuccess: string;
+    imageTooLarge: string;
+    invalidFileType: string;
+    dragDropText: string;
+    changeImage: string;
+    deleteImage: string;
+    resizeSmall: string;
+    resizeMedium: string;
+    resizeLarge: string;
+    resizeOriginal: string;
+  };
+
+  // Editor
+  editor: {
+    placeholder: string;
+    characters: string;
+    words: string;
+    imageLoadError: string;
+    linkPrompt: string;
+    linkUrlPrompt: string;
+    confirmDelete: string;
+  };
+
+  // Common
+  common: {
+    cancel: string;
+    confirm: string;
+    apply: string;
+    delete: string;
+    save: string;
+    close: string;
+    loading: string;
+    error: string;
+    success: string;
+  };
+}
+
+const ENGLISH_TRANSLATIONS: TiptapTranslations = {
+  toolbar: {
+    bold: "Bold",
+    italic: "Italic",
+    underline: "Underline",
+    strike: "Strikethrough",
+    code: "Code",
+    superscript: "Superscript",
+    subscript: "Subscript",
+    highlight: "Highlight",
+    heading1: "Heading 1",
+    heading2: "Heading 2",
+    heading3: "Heading 3",
+    bulletList: "Bullet List",
+    orderedList: "Ordered List",
+    blockquote: "Blockquote",
+    alignLeft: "Align Left",
+    alignCenter: "Align Center",
+    alignRight: "Align Right",
+    alignJustify: "Align Justify",
+    link: "Add Link",
+    image: "Add Image",
+    horizontalRule: "Horizontal Rule",
+    undo: "Undo",
+    redo: "Redo",
+  },
+  bubbleMenu: {
+    bold: "Bold",
+    italic: "Italic",
+    underline: "Underline",
+    strike: "Strikethrough",
+    code: "Code",
+    superscript: "Superscript",
+    subscript: "Subscript",
+    highlight: "Highlight",
+    link: "Link",
+    addLink: "Add Link",
+    editLink: "Edit Link",
+    removeLink: "Remove Link",
+    linkUrl: "Link URL",
+    linkText: "Link Text",
+    openLink: "Open Link",
+  },
+  slashCommands: {
+    heading1: {
+      title: "Heading 1",
+      description: "Large section heading",
+      keywords: ["heading", "h1", "title", "1", "header"],
+    },
+    heading2: {
+      title: "Heading 2",
+      description: "Medium section heading",
+      keywords: ["heading", "h2", "title", "2", "header"],
+    },
+    heading3: {
+      title: "Heading 3",
+      description: "Small section heading",
+      keywords: ["heading", "h3", "title", "3", "header"],
+    },
+    bulletList: {
+      title: "Bullet List",
+      description: "Create a bullet list",
+      keywords: ["bullet", "list", "ul", "unordered"],
+    },
+    orderedList: {
+      title: "Ordered List",
+      description: "Create an ordered list",
+      keywords: ["ordered", "list", "ol", "numbered"],
+    },
+    blockquote: {
+      title: "Blockquote",
+      description: "Add a blockquote",
+      keywords: ["quote", "blockquote", "citation"],
+    },
+    code: {
+      title: "Code Block",
+      description: "Add a code block",
+      keywords: ["code", "codeblock", "pre", "programming"],
+    },
+    image: {
+      title: "Image",
+      description: "Insert an image",
+      keywords: ["image", "photo", "picture", "img"],
+    },
+    horizontalRule: {
+      title: "Horizontal Rule",
+      description: "Add a horizontal line",
+      keywords: ["hr", "horizontal", "rule", "line", "separator"],
+    },
+  },
+  imageUpload: {
+    selectImage: "Select Image",
+    uploadingImage: "Uploading image...",
+    uploadProgress: "Upload Progress",
+    uploadError: "Upload Error",
+    uploadSuccess: "Upload Success",
+    imageTooLarge: "Image too large",
+    invalidFileType: "Invalid file type",
+    dragDropText: "Drag and drop images here",
+    changeImage: "Change Image",
+    deleteImage: "Delete Image",
+    resizeSmall: "Small",
+    resizeMedium: "Medium",
+    resizeLarge: "Large",
+    resizeOriginal: "Original",
+  },
+  editor: {
+    placeholder: "Start typing...",
+    characters: "characters",
+    words: "words",
+    imageLoadError: "Error loading image",
+    linkPrompt: "Enter link URL",
+    linkUrlPrompt: "Enter URL",
+    confirmDelete: "Are you sure you want to delete this?",
+  },
+  common: {
+    cancel: "Cancel",
+    confirm: "Confirm",
+    apply: "Apply",
+    delete: "Delete",
+    save: "Save",
+    close: "Close",
+    loading: "Loading",
+    error: "Error",
+    success: "Success",
+  },
+};
+
+const FRENCH_TRANSLATIONS: TiptapTranslations = {
+  toolbar: {
+    bold: "Gras",
+    italic: "Italique",
+    underline: "Souligné",
+    strike: "Barré",
+    code: "Code",
+    superscript: "Exposant",
+    subscript: "Indice",
+    highlight: "Surligner",
+    heading1: "Titre 1",
+    heading2: "Titre 2",
+    heading3: "Titre 3",
+    bulletList: "Liste à puces",
+    orderedList: "Liste numérotée",
+    blockquote: "Citation",
+    alignLeft: "Aligner à gauche",
+    alignCenter: "Centrer",
+    alignRight: "Aligner à droite",
+    alignJustify: "Justifier",
+    link: "Ajouter un lien",
+    image: "Ajouter une image",
+    horizontalRule: "Ligne horizontale",
+    undo: "Annuler",
+    redo: "Refaire",
+  },
+  bubbleMenu: {
+    bold: "Gras",
+    italic: "Italique",
+    underline: "Souligné",
+    strike: "Barré",
+    code: "Code",
+    superscript: "Exposant",
+    subscript: "Indice",
+    highlight: "Surligner",
+    link: "Lien",
+    addLink: "Ajouter un lien",
+    editLink: "Modifier le lien",
+    removeLink: "Supprimer le lien",
+    linkUrl: "URL du lien",
+    linkText: "Texte du lien",
+    openLink: "Ouvrir le lien",
+  },
+  slashCommands: {
+    heading1: {
+      title: "Titre 1",
+      description: "Grand titre de section",
+      keywords: ["heading", "h1", "titre", "title", "1", "header"],
+    },
+    heading2: {
+      title: "Titre 2",
+      description: "Titre de sous-section",
+      keywords: ["heading", "h2", "titre", "title", "2", "header"],
+    },
+    heading3: {
+      title: "Titre 3",
+      description: "Petit titre",
+      keywords: ["heading", "h3", "titre", "title", "3", "header"],
+    },
+    bulletList: {
+      title: "Liste à puces",
+      description: "Créer une liste à puces",
+      keywords: ["bullet", "list", "liste", "puces", "ul"],
+    },
+    orderedList: {
+      title: "Liste numérotée",
+      description: "Créer une liste numérotée",
+      keywords: ["numbered", "list", "liste", "numérotée", "ol", "ordered"],
+    },
+    blockquote: {
+      title: "Citation",
+      description: "Ajouter une citation",
+      keywords: ["quote", "blockquote", "citation"],
+    },
+    code: {
+      title: "Bloc de code",
+      description: "Ajouter un bloc de code",
+      keywords: ["code", "codeblock", "pre", "programmation"],
+    },
+    image: {
+      title: "Image",
+      description: "Insérer une image",
+      keywords: ["image", "photo", "picture", "img"],
+    },
+    horizontalRule: {
+      title: "Ligne horizontale",
+      description: "Ajouter une ligne de séparation",
+      keywords: ["hr", "horizontal", "rule", "ligne", "séparation"],
+    },
+  },
+  imageUpload: {
+    selectImage: "Sélectionner une image",
+    uploadingImage: "Téléchargement de l'image...",
+    uploadProgress: "Progression du téléchargement",
+    uploadError: "Erreur de téléchargement",
+    uploadSuccess: "Téléchargement réussi",
+    imageTooLarge: "Image trop volumineuse",
+    invalidFileType: "Type de fichier invalide",
+    dragDropText: "Glissez et déposez des images ici",
+    changeImage: "Changer l'image",
+    deleteImage: "Supprimer l'image",
+    resizeSmall: "Petit",
+    resizeMedium: "Moyen",
+    resizeLarge: "Grand",
+    resizeOriginal: "Original",
+  },
+  editor: {
+    placeholder: "Commencez à écrire...",
+    characters: "caractères",
+    words: "mots",
+    imageLoadError: "Erreur de chargement de l'image",
+    linkPrompt: "Entrez l'URL du lien",
+    linkUrlPrompt: "Entrez l'URL",
+    confirmDelete: "Êtes-vous sûr de vouloir supprimer ceci ?",
+  },
+  common: {
+    cancel: "Annuler",
+    confirm: "Confirmer",
+    apply: "Appliquer",
+    delete: "Supprimer",
+    save: "Sauvegarder",
+    close: "Fermer",
+    loading: "Chargement",
+    error: "Erreur",
+    success: "Succès",
+  },
+};
+
+@Injectable({
+  providedIn: "root",
+})
+export class TiptapI18nService {
+  private _currentLocale = signal<SupportedLocale>("en");
+  private _translations = signal<Record<SupportedLocale, TiptapTranslations>>({
+    en: ENGLISH_TRANSLATIONS,
+    fr: FRENCH_TRANSLATIONS,
+  });
+
+  // Signaux publics
+  readonly currentLocale = this._currentLocale.asReadonly();
+  readonly translations = computed(
+    () => this._translations()[this._currentLocale()]
+  );
+
+  // Méthodes de traduction rapides
+  readonly t = computed(() => this.translations());
+  readonly toolbar = computed(() => this.translations().toolbar);
+  readonly bubbleMenu = computed(() => this.translations().bubbleMenu);
+  readonly slashCommands = computed(() => this.translations().slashCommands);
+  readonly imageUpload = computed(() => this.translations().imageUpload);
+  readonly editor = computed(() => this.translations().editor);
+  readonly common = computed(() => this.translations().common);
+
+  constructor() {
+    // Détecter automatiquement la langue du navigateur
+    this.detectBrowserLanguage();
+  }
+
+  setLocale(locale: SupportedLocale): void {
+    this._currentLocale.set(locale);
+  }
+
+  autoDetectLocale(): void {
+    this.detectBrowserLanguage();
+  }
+
+  getSupportedLocales(): SupportedLocale[] {
+    return Object.keys(this._translations()) as SupportedLocale[];
+  }
+
+  addTranslations(
+    locale: SupportedLocale,
+    translations: Partial<TiptapTranslations>
+  ): void {
+    this._translations.update((current) => ({
+      ...current,
+      [locale]: {
+        ...current[locale],
+        ...translations,
+      },
+    }));
+  }
+
+  private detectBrowserLanguage(): void {
+    const browserLang = navigator.language.toLowerCase();
+    if (browserLang.startsWith("fr")) {
+      this._currentLocale.set("fr");
+    } else {
+      this._currentLocale.set("en");
+    }
+  }
+
+  // Méthodes utilitaires pour les composants
+  getToolbarTitle(key: keyof TiptapTranslations["toolbar"]): string {
+    return this.translations().toolbar[key];
+  }
+
+  getBubbleMenuTitle(key: keyof TiptapTranslations["bubbleMenu"]): string {
+    return this.translations().bubbleMenu[key];
+  }
+
+  getSlashCommand(key: keyof TiptapTranslations["slashCommands"]) {
+    return this.translations().slashCommands[key];
+  }
+}
