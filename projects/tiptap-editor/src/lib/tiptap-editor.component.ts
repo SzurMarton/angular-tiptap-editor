@@ -12,7 +12,6 @@ import {
   computed,
   AfterViewInit,
   inject,
-  Injector,
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 import { Editor, Extension, Node, Mark } from "@tiptap/core";
@@ -882,7 +881,6 @@ export class TiptapEditorComponent
   }
 
   onImageUploadError(error: string) {
-    console.error("Erreur upload image:", error);
     // Ici vous pourriez afficher une notification à l'utilisateur
   }
 
@@ -893,7 +891,7 @@ export class TiptapEditorComponent
       try {
         await this.imageService.uploadAndInsertImage(currentEditor, file);
       } catch (error) {
-        console.error("Erreur lors de l'upload d'image:", error);
+        // Gérer l'erreur silencieusement ou afficher une notification
       }
     }
   }
@@ -924,16 +922,9 @@ export class TiptapEditorComponent
       try {
         await this.imageService.uploadAndInsertImage(currentEditor, file);
       } catch (error) {
-        console.error("Erreur lors de l'upload:", error);
+        // Gérer l'erreur silencieusement ou afficher une notification
       }
     }
-  }
-
-  // Méthodes pour les événements du bubble menu
-  onBubbleMenuCommand(event: { command: string; editor: Editor }) {
-    // Cette méthode peut être utilisée pour des actions supplémentaires
-    // quand une commande du bubble menu est exécutée
-    console.log("Bubble menu command executed:", event.command);
   }
 
   // Public methods
