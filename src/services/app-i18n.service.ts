@@ -620,6 +620,7 @@ export class AppI18nService {
   // Générer le contenu HTML de démo selon la langue
   generateDemoContent(): string {
     const content = this.demoContent();
+    const isEnglish = this.currentLocale() === "en";
 
     return `
 <h1>${content.title}</h1>
@@ -627,12 +628,18 @@ export class AppI18nService {
 
 <h2>${content.basicFeaturesTitle}</h2>
 <ul>
-  <li><strong>${content.boldText}</strong>, <em>${content.italicText}</em>, <u>${content.underlineText}</u>, <s>${content.strikeText}</s>, <code>${content.codeText}</code></li>
+  <li><strong>${content.boldText}</strong>, <em>${
+      content.italicText
+    }</em>, <u>${content.underlineText}</u>, <s>${
+      content.strikeText
+    }</s>, <code>${content.codeText}</code></li>
 </ul>
 
 <h2>${content.listsTitle}</h2>
 <ul><li>${content.firstItem}</li></ul>
-<ol><li>${content.secondItem}</li><li>${content.thirdItem} <a href="https://tiptap.dev">Tiptap</a></li></ol>
+<ol><li>${content.secondItem}</li><li>${
+      content.thirdItem
+    } <a href="https://tiptap.dev">Tiptap</a></li></ol>
 
 <blockquote><p><em>${content.quote}</em></p></blockquote>
 
@@ -646,10 +653,30 @@ export class AppI18nService {
   <li>${content.boldShortcut} • ${content.italicShortcut}</li>
 </ul>
 
+<h3>${
+      isEnglish ? "Reactive Forms Integration" : "Intégration Reactive Forms"
+    }</h3>
+<p>${
+      isEnglish
+        ? "Use with Angular form controls:"
+        : "Utilisation avec les form controls Angular :"
+    }</p>
+<pre><code>// ${isEnglish ? "Component" : "Composant"}
+form = new FormGroup({
+  content: new FormControl('', [Validators.required])
+});
+
+// Template
+&lt;tiptap-editor formControlName="content"&gt;&lt;/tiptap-editor&gt;</code></pre>
+
 <h3>${content.customizationTitle}</h3>
 <ul>
-  <li>${content.customizationItems.toolbar} • ${content.customizationItems.buttons}</li>
-  <li>${content.customizationItems.bubbleMenu} • ${content.customizationItems.slashCommands}</li>
+  <li>${content.customizationItems.toolbar} • ${
+      content.customizationItems.buttons
+    }</li>
+  <li>${content.customizationItems.bubbleMenu} • ${
+      content.customizationItems.slashCommands
+    }</li>
 </ul>
 
 <p style="text-align: right;"><strong>${content.conclusion}</strong></p>

@@ -60,7 +60,6 @@ import { LanguageSwitchComponent } from "./language-switch.component";
         z-index: 50;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
         gap: 12px;
       }
 
@@ -184,45 +183,6 @@ import { LanguageSwitchComponent } from "./language-switch.component";
         position: relative;
         z-index: 1;
         flex-shrink: 0;
-      }
-
-      /* Responsive */
-      @media (max-width: 1024px) {
-        .editor-actions {
-          top: 1.5rem;
-          right: 1.5rem;
-          left: 1.5rem;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .editor-actions {
-          top: 1rem;
-          right: 1rem;
-          left: 1rem;
-          flex-direction: column;
-          gap: 8px;
-          align-items: flex-end;
-        }
-
-        .mode-toggle {
-          order: 1;
-        }
-
-        .action-separator {
-          display: none;
-        }
-
-        .editor-action-btn {
-          order: 2;
-          font-size: 13px;
-          padding: 0 10px;
-          height: 28px;
-        }
-
-        .editor-action-btn .material-symbols-outlined {
-          font-size: 18px;
-        }
       }
 
       @media (max-width: 480px) {
