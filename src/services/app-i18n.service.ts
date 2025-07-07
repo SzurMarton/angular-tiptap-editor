@@ -1,0 +1,574 @@
+import { Injectable, signal, computed, inject, effect } from "@angular/core";
+import { TiptapI18nService, SupportedLocale } from "tiptap-editor";
+
+export interface AppTranslations {
+  // Interface générale
+  ui: {
+    configuration: string;
+    close: string;
+    reset: string;
+    resetToDefaults: string;
+    copyCode: string;
+    clearEditor: string;
+    clear: string;
+    editor: string;
+    code: string;
+    copy: string;
+    language: string;
+    autoDetect: string;
+    autoDetection: string;
+    english: string;
+    french: string;
+    currentLanguage: string;
+    clickToChange: string;
+  };
+
+  // Sections de configuration
+  config: {
+    toolbar: string;
+    bubbleMenu: string;
+    slashCommands: string;
+    language: string;
+    editorLanguage: string;
+    showToolbar: string;
+    showBubbleMenu: string;
+    enableSlashCommands: string;
+    selectOptions: string;
+    hideOptions: string;
+    showOptions: string;
+    options: string;
+    active: string;
+    inactive: string;
+  };
+
+  // Messages et notifications
+  messages: {
+    configurationReset: string;
+    codeCopied: string;
+    editorCleared: string;
+    languageChanged: string;
+    autoDetected: string;
+    generateCode: string;
+    codeGenerated: string;
+    copyToClipboard: string;
+    copiedToClipboard: string;
+    errorCopying: string;
+    unsupportedBrowser: string;
+  };
+
+  // Tooltips
+  tooltips: {
+    toggleSidebar: string;
+    closeSidebar: string;
+    resetConfiguration: string;
+    copyGeneratedCode: string;
+    clearEditorContent: string;
+    switchToEditor: string;
+    switchToCode: string;
+    changeLanguage: string;
+    autoDetectLanguage: string;
+    showToolbarOptions: string;
+    showBubbleMenuOptions: string;
+    showSlashCommandOptions: string;
+  };
+
+  // Titres et sections
+  titles: {
+    editorDemo: string;
+    configurationPanel: string;
+    generatedCode: string;
+    editorSettings: string;
+    interfaceSettings: string;
+    languageSettings: string;
+    toolbarSettings: string;
+    bubbleMenuSettings: string;
+    slashCommandsSettings: string;
+  };
+
+  // Status
+  status: {
+    ready: string;
+    loading: string;
+    error: string;
+    success: string;
+    saved: string;
+    generating: string;
+    copying: string;
+    resetting: string;
+    clearing: string;
+    switching: string;
+  };
+
+  // Contenu de démo
+  demoContent: {
+    title: string;
+    subtitle: string;
+    basicFeaturesTitle: string;
+    basicFeaturesIntro: string;
+    boldText: string;
+    italicText: string;
+    underlineText: string;
+    strikeText: string;
+    codeText: string;
+    listsTitle: string;
+    listsIntro: string;
+    firstItem: string;
+    secondItem: string;
+    thirdItem: string;
+    quote: string;
+    multimediaTitle: string;
+    multimediaIntro: string;
+    imageCaption: string;
+    shortcutsTitle: string;
+    shortcutsIntro: string;
+    slashCommand: string;
+    bubbleMenu: string;
+    boldShortcut: string;
+    italicShortcut: string;
+    customizationTitle: string;
+    customizationIntro: string;
+    customizationItems: {
+      toolbar: string;
+      buttons: string;
+      bubbleMenu: string;
+      slashCommands: string;
+    };
+    conclusion: string;
+  };
+
+  // Code généré - Commentaires et noms de variables
+  codeGeneration: {
+    // Commentaires généraux
+    demoContentComment: string;
+    toolbarConfigComment: string;
+    bubbleMenuConfigComment: string;
+    slashCommandsConfigComment: string;
+    onContentChangeComment: string;
+
+    // Noms de variables
+    demoContentVar: string;
+    toolbarConfigVar: string;
+    bubbleMenuConfigVar: string;
+    slashCommandsConfigVar: string;
+    onContentChangeVar: string;
+
+    // Contenu du placeholder
+    placeholderContent: string;
+
+    // Logs et messages
+    contentChangedLog: string;
+    commandImplementation: string;
+    implementImageUpload: string;
+  };
+}
+
+const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
+  ui: {
+    configuration: "Configuration",
+    close: "Close",
+    reset: "Reset",
+    resetToDefaults: "Reset to defaults",
+    copyCode: "Copy code",
+    clearEditor: "Clear editor",
+    clear: "Clear",
+    editor: "Editor",
+    code: "Code",
+    copy: "Copy",
+    language: "Language",
+    autoDetect: "Auto-detect",
+    autoDetection: "Auto-detection",
+    english: "English",
+    french: "French",
+    currentLanguage: "Current language",
+    clickToChange: "Click to change language",
+  },
+  config: {
+    toolbar: "Toolbar",
+    bubbleMenu: "Bubble Menu",
+    slashCommands: "Slash Commands",
+    language: "Language",
+    editorLanguage: "Editor language",
+    showToolbar: "Show toolbar",
+    showBubbleMenu: "Show bubble menu",
+    enableSlashCommands: "Enable slash commands",
+    selectOptions: "Select options",
+    hideOptions: "Hide options",
+    showOptions: "Show options",
+    options: "options",
+    active: "active",
+    inactive: "inactive",
+  },
+  messages: {
+    configurationReset: "Configuration reset to defaults",
+    codeCopied: "Code copied to clipboard",
+    editorCleared: "Editor content cleared",
+    languageChanged: "Language changed",
+    autoDetected: "Language auto-detected",
+    generateCode: "Generate code",
+    codeGenerated: "Code generated successfully",
+    copyToClipboard: "Copy to clipboard",
+    copiedToClipboard: "Copied to clipboard",
+    errorCopying: "Error copying to clipboard",
+    unsupportedBrowser: "Clipboard not supported in this browser",
+  },
+  tooltips: {
+    toggleSidebar: "Toggle configuration panel",
+    closeSidebar: "Close configuration panel",
+    resetConfiguration: "Reset configuration to defaults",
+    copyGeneratedCode: "Copy generated code to clipboard",
+    clearEditorContent: "Clear editor content",
+    switchToEditor: "Switch to editor mode",
+    switchToCode: "Switch to code mode",
+    changeLanguage: "Change language",
+    autoDetectLanguage: "Auto-detect browser language",
+    showToolbarOptions: "Show toolbar options",
+    showBubbleMenuOptions: "Show bubble menu options",
+    showSlashCommandOptions: "Show slash command options",
+  },
+  titles: {
+    editorDemo: "Tiptap Editor Demo",
+    configurationPanel: "Configuration Panel",
+    generatedCode: "Generated Code",
+    editorSettings: "Editor Settings",
+    interfaceSettings: "Interface Settings",
+    languageSettings: "Language Settings",
+    toolbarSettings: "Toolbar Settings",
+    bubbleMenuSettings: "Bubble Menu Settings",
+    slashCommandsSettings: "Slash Commands Settings",
+  },
+  status: {
+    ready: "Ready",
+    loading: "Loading",
+    error: "Error",
+    success: "Success",
+    saved: "Saved",
+    generating: "Generating",
+    copying: "Copying",
+    resetting: "Resetting",
+    clearing: "Clearing",
+    switching: "Switching",
+  },
+  demoContent: {
+    title: "Angular Rich Text Editor",
+    subtitle: "Full-featured editor with customizable toolbar and shortcuts.",
+    basicFeaturesTitle: "Formatting",
+    basicFeaturesIntro: "",
+    boldText: "Bold",
+    italicText: "Italic",
+    underlineText: "Underlined",
+    strikeText: "Strikethrough",
+    codeText: "Code",
+    listsTitle: "Lists",
+    listsIntro: "",
+    firstItem: "Unordered item",
+    secondItem: "Ordered item",
+    thirdItem: "Link to Tiptap",
+    quote: "Sample blockquote with italic styling.",
+    multimediaTitle: "Media",
+    multimediaIntro: "",
+    imageCaption: "Resizable image support.",
+    shortcutsTitle: "Quick Actions",
+    shortcutsIntro: "",
+    slashCommand: "/ for commands",
+    bubbleMenu: "Select text for bubble menu",
+    boldShortcut: "Ctrl+B",
+    italicShortcut: "Ctrl+I",
+    customizationTitle: "Features",
+    customizationIntro: "",
+    customizationItems: {
+      toolbar: "Customizable toolbar",
+      buttons: "Toggle buttons",
+      bubbleMenu: "Bubble menu",
+      slashCommands: "Slash commands",
+    },
+    conclusion: "Try the configuration panel →",
+  },
+  codeGeneration: {
+    // Commentaires généraux
+    demoContentComment: "Demo content",
+    toolbarConfigComment: "Toolbar configuration",
+    bubbleMenuConfigComment: "Bubble menu configuration",
+    slashCommandsConfigComment: "Slash commands configuration",
+    onContentChangeComment: "Handle content changes",
+
+    // Noms de variables
+    demoContentVar: "demoContent",
+    toolbarConfigVar: "toolbarConfig",
+    bubbleMenuConfigVar: "bubbleMenuConfig",
+    slashCommandsConfigVar: "slashCommandsConfig",
+    onContentChangeVar: "onContentChange",
+
+    // Contenu du placeholder
+    placeholderContent: "Start typing your content here...",
+
+    // Logs et messages
+    contentChangedLog: "Content changed:",
+    commandImplementation: "Implementation for",
+    implementImageUpload: "Implement image upload",
+  },
+};
+
+const FRENCH_APP_TRANSLATIONS: AppTranslations = {
+  ui: {
+    configuration: "Configuration",
+    close: "Fermer",
+    reset: "Réinitialiser",
+    resetToDefaults: "Réinitialiser aux valeurs par défaut",
+    copyCode: "Copier le code",
+    clearEditor: "Vider l'éditeur",
+    clear: "Vider",
+    editor: "Éditeur",
+    code: "Code",
+    copy: "Copier",
+    language: "Langue",
+    autoDetect: "Détection automatique",
+    autoDetection: "Détection automatique",
+    english: "Anglais",
+    french: "Français",
+    currentLanguage: "Langue actuelle",
+    clickToChange: "Cliquer pour changer la langue",
+  },
+  config: {
+    toolbar: "Barre d'outils",
+    bubbleMenu: "Menu contextuel",
+    slashCommands: "Commandes slash",
+    language: "Langue",
+    editorLanguage: "Langue de l'éditeur",
+    showToolbar: "Afficher la barre d'outils",
+    showBubbleMenu: "Afficher le menu contextuel",
+    enableSlashCommands: "Activer les commandes slash",
+    selectOptions: "Sélectionner les options",
+    hideOptions: "Masquer les options",
+    showOptions: "Afficher les options",
+    options: "options",
+    active: "actif",
+    inactive: "inactif",
+  },
+  messages: {
+    configurationReset: "Configuration réinitialisée aux valeurs par défaut",
+    codeCopied: "Code copié dans le presse-papiers",
+    editorCleared: "Contenu de l'éditeur effacé",
+    languageChanged: "Langue changée",
+    autoDetected: "Langue détectée automatiquement",
+    generateCode: "Générer le code",
+    codeGenerated: "Code généré avec succès",
+    copyToClipboard: "Copier dans le presse-papiers",
+    copiedToClipboard: "Copié dans le presse-papiers",
+    errorCopying: "Erreur lors de la copie",
+    unsupportedBrowser: "Presse-papiers non pris en charge dans ce navigateur",
+  },
+  tooltips: {
+    toggleSidebar: "Basculer le panneau de configuration",
+    closeSidebar: "Fermer le panneau de configuration",
+    resetConfiguration: "Réinitialiser la configuration aux valeurs par défaut",
+    copyGeneratedCode: "Copier le code généré dans le presse-papiers",
+    clearEditorContent: "Effacer le contenu de l'éditeur",
+    switchToEditor: "Passer en mode éditeur",
+    switchToCode: "Passer en mode code",
+    changeLanguage: "Changer la langue",
+    autoDetectLanguage: "Détecter automatiquement la langue du navigateur",
+    showToolbarOptions: "Afficher les options de la barre d'outils",
+    showBubbleMenuOptions: "Afficher les options du menu contextuel",
+    showSlashCommandOptions: "Afficher les options des commandes slash",
+  },
+  titles: {
+    editorDemo: "Démo de l'éditeur Tiptap",
+    configurationPanel: "Panneau de configuration",
+    generatedCode: "Code généré",
+    editorSettings: "Paramètres de l'éditeur",
+    interfaceSettings: "Paramètres de l'interface",
+    languageSettings: "Paramètres de langue",
+    toolbarSettings: "Paramètres de la barre d'outils",
+    bubbleMenuSettings: "Paramètres du menu contextuel",
+    slashCommandsSettings: "Paramètres des commandes slash",
+  },
+  status: {
+    ready: "Prêt",
+    loading: "Chargement",
+    error: "Erreur",
+    success: "Succès",
+    saved: "Sauvegardé",
+    generating: "Génération",
+    copying: "Copie",
+    resetting: "Réinitialisation",
+    clearing: "Effacement",
+    switching: "Changement",
+  },
+  demoContent: {
+    title: "Éditeur de Texte Riche Angular",
+    subtitle:
+      "Éditeur complet avec barre d'outils personnalisable et raccourcis.",
+    basicFeaturesTitle: "Formatage",
+    basicFeaturesIntro: "",
+    boldText: "Gras",
+    italicText: "Italique",
+    underlineText: "Souligné",
+    strikeText: "Barré",
+    codeText: "Code",
+    listsTitle: "Listes",
+    listsIntro: "",
+    firstItem: "Élément non ordonné",
+    secondItem: "Élément ordonné",
+    thirdItem: "Lien vers Tiptap",
+    quote: "Citation exemple avec style italique.",
+    multimediaTitle: "Média",
+    multimediaIntro: "",
+    imageCaption: "Support d'images redimensionnables.",
+    shortcutsTitle: "Actions Rapides",
+    shortcutsIntro: "",
+    slashCommand: "/ pour commandes",
+    bubbleMenu: "Sélectionnez du texte pour bubble menu",
+    boldShortcut: "Ctrl+B",
+    italicShortcut: "Ctrl+I",
+    customizationTitle: "Fonctionnalités",
+    customizationIntro: "",
+    customizationItems: {
+      toolbar: "Barre d'outils personnalisable",
+      buttons: "Boutons configurables",
+      bubbleMenu: "Menu flottant",
+      slashCommands: "Commandes slash",
+    },
+    conclusion: "Testez le panneau de configuration →",
+  },
+  codeGeneration: {
+    // Commentaires généraux
+    demoContentComment: "Contenu de démo",
+    toolbarConfigComment: "Configuration de la toolbar",
+    bubbleMenuConfigComment: "Configuration du bubble menu",
+    slashCommandsConfigComment: "Configuration des slash commands",
+    onContentChangeComment: "Gérer les changements de contenu",
+
+    // Noms de variables
+    demoContentVar: "contenuDemo",
+    toolbarConfigVar: "configToolbar",
+    bubbleMenuConfigVar: "configBubbleMenu",
+    slashCommandsConfigVar: "configSlashCommands",
+    onContentChangeVar: "surChangementContenu",
+
+    // Contenu du placeholder
+    placeholderContent: "Commencez à taper votre contenu ici...",
+
+    // Logs et messages
+    contentChangedLog: "Contenu modifié :",
+    commandImplementation: "Implémentation pour",
+    implementImageUpload: "Implémenter l'upload d'image",
+  },
+};
+
+@Injectable({
+  providedIn: "root",
+})
+export class AppI18nService {
+  private tiptapI18nService = inject(TiptapI18nService);
+
+  private _translations = signal<Record<SupportedLocale, AppTranslations>>({
+    en: ENGLISH_APP_TRANSLATIONS,
+    fr: FRENCH_APP_TRANSLATIONS,
+  });
+
+  // Signaux publics - synchronisés avec le service Tiptap
+  readonly currentLocale = this.tiptapI18nService.currentLocale;
+  readonly translations = computed(
+    () => this._translations()[this.currentLocale()]
+  );
+
+  // Méthodes de traduction rapides
+  readonly t = computed(() => this.translations());
+  readonly ui = computed(() => this.translations().ui);
+  readonly config = computed(() => this.translations().config);
+  readonly messages = computed(() => this.translations().messages);
+  readonly tooltips = computed(() => this.translations().tooltips);
+  readonly titles = computed(() => this.translations().titles);
+  readonly status = computed(() => this.translations().status);
+  readonly demoContent = computed(() => this.translations().demoContent);
+  readonly codeGeneration = computed(() => this.translations().codeGeneration);
+
+  constructor() {
+    // Synchronisation avec le service Tiptap
+    effect(() => {
+      // Pas besoin de logique supplémentaire ici - la synchronisation se fait automatiquement
+      // via le currentLocale partagé
+    });
+  }
+
+  // Méthodes de changement de langue (délégation au service Tiptap)
+  setLocale(locale: SupportedLocale): void {
+    this.tiptapI18nService.setLocale(locale);
+  }
+
+  autoDetectLocale(): void {
+    this.tiptapI18nService.autoDetectLocale();
+  }
+
+  getSupportedLocales(): SupportedLocale[] {
+    return this.tiptapI18nService.getSupportedLocales();
+  }
+
+  // Méthodes utilitaires
+  addTranslations(
+    locale: SupportedLocale,
+    translations: Partial<AppTranslations>
+  ): void {
+    this._translations.update((current) => ({
+      ...current,
+      [locale]: {
+        ...current[locale],
+        ...translations,
+      },
+    }));
+  }
+
+  // Méthodes de traduction rapides avec valeurs par défaut
+  translate(key: string, defaultValue?: string): string {
+    const parts = key.split(".");
+    let value: any = this.translations();
+
+    for (const part of parts) {
+      value = value?.[part];
+      if (value === undefined) {
+        return defaultValue || key;
+      }
+    }
+
+    return value || defaultValue || key;
+  }
+
+  // Générer le contenu HTML de démo selon la langue
+  generateDemoContent(): string {
+    const content = this.demoContent();
+
+    return `
+<h1>${content.title}</h1>
+<p>${content.subtitle}</p>
+
+<h2>${content.basicFeaturesTitle}</h2>
+<ul>
+  <li><strong>${content.boldText}</strong>, <em>${content.italicText}</em>, <u>${content.underlineText}</u>, <s>${content.strikeText}</s>, <code>${content.codeText}</code></li>
+</ul>
+
+<h2>${content.listsTitle}</h2>
+<ul><li>${content.firstItem}</li></ul>
+<ol><li>${content.secondItem}</li><li>${content.thirdItem} <a href="https://tiptap.dev">Tiptap</a></li></ol>
+
+<blockquote><p><em>${content.quote}</em></p></blockquote>
+
+<h2>${content.multimediaTitle}</h2>
+<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop" class="tiptap-image" alt="Sample image">
+<p><em>${content.imageCaption}</em></p>
+
+<h2>${content.shortcutsTitle}</h2>
+<ul>
+  <li>${content.slashCommand} • ${content.bubbleMenu}</li>
+  <li>${content.boldShortcut} • ${content.italicShortcut}</li>
+</ul>
+
+<h3>${content.customizationTitle}</h3>
+<ul>
+  <li>${content.customizationItems.toolbar} • ${content.customizationItems.buttons}</li>
+  <li>${content.customizationItems.bubbleMenu} • ${content.customizationItems.slashCommands}</li>
+</ul>
+
+<p><strong>${content.conclusion}</strong></p>
+`.trim();
+  }
+}

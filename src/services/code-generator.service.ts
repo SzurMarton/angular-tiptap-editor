@@ -1,12 +1,13 @@
 import { Injectable, inject } from "@angular/core";
-import { EditorConfigurationService } from "./editor-configuration.service";
 import { TiptapI18nService } from "tiptap-editor";
+import { AppI18nService } from "./app-i18n.service";
 import {
   TOOLBAR_ITEMS,
   BUBBLE_MENU_ITEMS,
   SLASH_COMMAND_ITEMS,
 } from "../config/editor-items.config";
 import { ConfigItem } from "../types/editor-config.types";
+import { EditorConfigurationService } from "./editor-configuration.service";
 
 @Injectable({
   providedIn: "root",
@@ -14,75 +15,113 @@ import { ConfigItem } from "../types/editor-config.types";
 export class CodeGeneratorService {
   private configService = inject(EditorConfigurationService);
   private i18nService = inject(TiptapI18nService);
+  private appI18nService = inject(AppI18nService);
 
   generateCode(): string {
     const editorState = this.configService.editorState();
     const toolbarConfig = this.configService.toolbarConfig();
     const bubbleMenuConfig = this.configService.bubbleMenuConfig();
     const activeSlashCommands = this.configService.activeSlashCommands();
-    const demoContent = this.configService.demoContent();
     const currentLocale = this.i18nService.currentLocale();
+    const codeGen = this.appI18nService.codeGeneration();
 
     // Générer l'input locale si une langue spécifique est sélectionnée
     const localeInput = currentLocale
       ? `\n      [locale]="${currentLocale}"`
       : "";
 
-    return `import { Component } from '@angular/core';
-import { TiptapEditorComponent } from 'tiptap-editor';
+    return `${this.generateImports()}
 
-@Component({
+${this.generateComponentDecorator(editorState, localeInput)}
+export class TiptapDemoComponent {
+  
+  ${this.generateDemoContent(codeGen)}
+
+  ${this.generateToolbarConfig(toolbarConfig, codeGen)}
+
+  ${this.generateBubbleMenuConfig(bubbleMenuConfig, codeGen)}
+
+  ${this.generateSlashCommandsConfig(activeSlashCommands, codeGen)}
+
+  ${this.generateContentChangeHandler(codeGen)}
+}`;
+  }
+
+  private generateImports(): string {
+    return `import { Component } from '@angular/core';
+import { TiptapEditorComponent } from 'tiptap-editor';`;
+  }
+
+  private generateComponentDecorator(
+    editorState: any,
+    localeInput: string
+  ): string {
+    return `@Component({
   selector: 'app-tiptap-demo',
   standalone: true,
   imports: [TiptapEditorComponent],
   template: \`
     <tiptap-editor
-      [content]="demoContent"
-      [toolbar]="toolbarConfig"
-      [bubbleMenu]="bubbleMenuConfig"${localeInput}
+      [content]="${this.appI18nService.codeGeneration().demoContentVar}"
+      [toolbar]="${this.appI18nService.codeGeneration().toolbarConfigVar}"
+      [bubbleMenu]="${
+        this.appI18nService.codeGeneration().bubbleMenuConfigVar
+      }"${localeInput}
       [showBubbleMenu]="${editorState.showBubbleMenu}"
       [enableSlashCommands]="${editorState.enableSlashCommands}"
-      [slashCommandsConfig]="slashCommandsConfig"
+      [slashCommandsConfig]="${
+        this.appI18nService.codeGeneration().slashCommandsConfigVar
+      }"
       [showToolbar]="${editorState.showToolbar}"
       [placeholder]="${editorState.placeholder}"
-      (contentChange)="onContentChange($event)"
+      (contentChange)="${
+        this.appI18nService.codeGeneration().onContentChangeVar
+      }($event)"
     >
     </tiptap-editor>
   \`
-})
-export class TiptapDemoComponent {
-  
-  // Contenu de démo
-  demoContent = \`${this.escapeTemplateString(demoContent)}\`;
+})`;
+  }
 
-  // Configuration de la toolbar (approche simple - booleans)
-  // ✅ Facile à utiliser : toolbar = { bold: true, italic: false }
-  // ✅ Configuration rapide pour l'usage quotidien
-  // ✅ Moins de code à maintenir
-  toolbarConfig = {
+  private generateDemoContent(codeGen: any): string {
+    return `// ${codeGen.demoContentComment}
+  ${codeGen.demoContentVar} = '<p>${codeGen.placeholderContent}</p>';`;
+  }
+
+  private generateToolbarConfig(toolbarConfig: any, codeGen: any): string {
+    return `// ${codeGen.toolbarConfigComment}
+  ${codeGen.toolbarConfigVar} = {
 ${this.generateSimpleConfig(toolbarConfig, TOOLBAR_ITEMS)}
-  };
+  };`;
+  }
 
-  // Configuration du bubble menu (approche simple - booleans)
-  // ✅ Même logique que la toolbar - simple et efficace
-  bubbleMenuConfig = {
+  private generateBubbleMenuConfig(
+    bubbleMenuConfig: any,
+    codeGen: any
+  ): string {
+    return `// ${codeGen.bubbleMenuConfigComment}
+  ${codeGen.bubbleMenuConfigVar} = {
 ${this.generateSimpleConfig(bubbleMenuConfig, BUBBLE_MENU_ITEMS)}
-  };
+  };`;
+  }
 
-  // Configuration des slash commands (approche complète - objets)
-  // ✅ Plus de contrôle pour les commandes complexes
-  // ✅ Personnalisation avancée (title, description, keywords, command)
-  // ✅ Justifie la complexité supplémentaire
-  slashCommandsConfig = {
+  private generateSlashCommandsConfig(
+    activeSlashCommands: any,
+    codeGen: any
+  ): string {
+    return `// ${codeGen.slashCommandsConfigComment}
+  ${codeGen.slashCommandsConfigVar} = {
     commands: [
 ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
     ]
-  };
-
-  onContentChange(content: string) {
-    console.log('Contenu modifié:', content);
+  };`;
   }
-}`;
+
+  private generateContentChangeHandler(codeGen: any): string {
+    return `// ${codeGen.onContentChangeComment}
+  ${codeGen.onContentChangeVar}(content: string) {
+    console.log('${codeGen.contentChangedLog}', content);
+  }`;
   }
 
   private generateSimpleConfig(
@@ -94,7 +133,7 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
       .map((item) => {
         const isActive = config[item.key] === true;
         const comment = isActive ? "" : " // ";
-        return `${comment}    ${item.key}: ${isActive}, // ${item.label}`;
+        return `${comment}    ${item.key}: ${isActive},`;
       })
       .join("\n");
   }
@@ -102,23 +141,49 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
   private generateCompleteSlashCommandsConfig(
     activeCommands: Set<string>
   ): string {
-    return SLASH_COMMAND_ITEMS.filter((item) => activeCommands.has(item.key))
-      .map(
-        (item) => `      {
-        title: '${item.label}',
-        description: 'Insérer ${item.label.toLowerCase()}',
-        icon: '${item.icon}',
-        keywords: ['${item.key}', '${item.label.toLowerCase()}'],
+    const slashTranslations = this.i18nService.slashCommands();
+    const currentLocale = this.i18nService.currentLocale();
+
+    // Mapping des clés vers les traductions avec accès sécurisé
+    const getTranslation = (key: string) => {
+      const translations: any = slashTranslations;
+      return translations[key] || { title: key, description: "", keywords: [] };
+    };
+
+    const activeCommandsArray = Array.from(activeCommands);
+
+    return activeCommandsArray
+      .map((key) => {
+        const translation = getTranslation(key);
+        const iconMap: Record<string, string> = {
+          heading1: "format_h1",
+          heading2: "format_h2",
+          heading3: "format_h3",
+          bulletList: "format_list_bulleted",
+          orderedList: "format_list_numbered",
+          blockquote: "format_quote",
+          code: "code",
+          image: "image",
+          horizontalRule: "horizontal_rule",
+        };
+
+        const codeGen = this.appI18nService.codeGeneration();
+        return `      {
+        title: '${translation.title}',
+        description: '${translation.description}',
+        icon: '${iconMap[key]}',
+        keywords: ${JSON.stringify(translation.keywords)},
         command: (editor) => {
-          // Implémentation spécifique pour ${item.key}
-          ${this.generateCommandImplementation(item.key)}
+          // ${codeGen.commandImplementation} ${key}
+          ${this.generateCommandImplementation(key)}
         }
-      }`
-      )
+      }`;
+      })
       .join(",\n");
   }
 
   private generateCommandImplementation(key: string): string {
+    const codeGen = this.appI18nService.codeGeneration();
     const implementations: Record<string, string> = {
       heading1: "editor.chain().focus().toggleHeading({ level: 1 }).run();",
       heading2: "editor.chain().focus().toggleHeading({ level: 2 }).run();",
@@ -127,20 +192,14 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
       orderedList: "editor.chain().focus().toggleOrderedList().run();",
       blockquote: "editor.chain().focus().toggleBlockquote().run();",
       code: "editor.chain().focus().toggleCodeBlock().run();",
-      image: "console.log('Implémenter upload d\\'image');",
+      image: `console.log('${codeGen.implementImageUpload}');`,
       horizontalRule: "editor.chain().focus().setHorizontalRule().run();",
     };
 
     return (
-      implementations[key] || `console.log('Commande ${key} à implémenter');`
+      implementations[key] ||
+      `console.log('${codeGen.commandImplementation} ${key}');`
     );
-  }
-
-  private escapeTemplateString(content: string): string {
-    return content
-      .replace(/\\/g, "\\\\")
-      .replace(/`/g, "\\`")
-      .replace(/\$/g, "\\$");
   }
 
   // Copier le code dans le presse-papiers
@@ -148,9 +207,17 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
     try {
       const code = this.generateCode();
       await navigator.clipboard.writeText(code);
-      console.log("Code copié dans le presse-papiers !");
+      const successMessage =
+        this.appI18nService.currentLocale() === "fr"
+          ? "Code copié dans le presse-papiers !"
+          : "Code copied to clipboard!";
+      console.log(successMessage);
     } catch (error) {
-      console.error("Erreur lors de la copie:", error);
+      const errorMessage =
+        this.appI18nService.currentLocale() === "fr"
+          ? "Erreur lors de la copie:"
+          : "Error copying code:";
+      console.error(errorMessage, error);
     }
   }
 

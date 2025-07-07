@@ -1,6 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { TiptapI18nService } from "tiptap-editor";
+import { AppI18nService } from "../services/app-i18n.service";
 
 @Component({
   selector: "app-language-switch",
@@ -12,7 +13,7 @@ import { TiptapI18nService } from "tiptap-editor";
         class="language-switch"
         [class.french]="currentLocale() === 'fr'"
         (click)="toggleLanguage()"
-        title="Cliquer pour changer la langue"
+        [title]="appI18n.ui().clickToChange"
       >
         <div class="language-options">
           <div
@@ -158,6 +159,7 @@ import { TiptapI18nService } from "tiptap-editor";
 })
 export class LanguageSwitchComponent {
   private i18nService = inject(TiptapI18nService);
+  readonly appI18n = inject(AppI18nService);
 
   readonly currentLocale = this.i18nService.currentLocale;
 

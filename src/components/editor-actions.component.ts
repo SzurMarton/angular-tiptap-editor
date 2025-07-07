@@ -1,6 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
+import { AppI18nService } from "../services/app-i18n.service";
 import { LanguageSwitchComponent } from "./language-switch.component";
 
 @Component({
@@ -15,19 +16,19 @@ import { LanguageSwitchComponent } from "./language-switch.component";
           class="mode-btn"
           [class.active]="!editorState().showCodeMode"
           (click)="toggleCodeMode(false)"
-          title="Mode éditeur"
+          [title]="appI18n.tooltips().switchToEditor"
         >
           <span class="material-symbols-outlined">edit</span>
-          <span>Éditeur</span>
+          <span>{{ appI18n.ui().editor }}</span>
         </button>
         <button
           class="mode-btn"
           [class.active]="editorState().showCodeMode"
           (click)="toggleCodeMode(true)"
-          title="Mode code"
+          [title]="appI18n.tooltips().switchToCode"
         >
           <span class="material-symbols-outlined">code</span>
-          <span>Code</span>
+          <span>{{ appI18n.ui().code }}</span>
         </button>
       </div>
 
@@ -36,10 +37,10 @@ import { LanguageSwitchComponent } from "./language-switch.component";
       <button
         class="editor-action-btn"
         (click)="clearContent()"
-        title="Vider l'éditeur"
+        [title]="appI18n.tooltips().clearEditorContent"
       >
         <span class="material-symbols-outlined">delete</span>
-        <span>Vider</span>
+        <span>{{ appI18n.ui().clear }}</span>
       </button>
 
       <div class="action-separator"></div>
@@ -256,6 +257,7 @@ import { LanguageSwitchComponent } from "./language-switch.component";
 })
 export class EditorActionsComponent {
   private configService = inject(EditorConfigurationService);
+  readonly appI18n = inject(AppI18nService);
 
   readonly editorState = this.configService.editorState;
 

@@ -4,6 +4,7 @@ import { ConfigSectionComponent } from "./config-section.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
 import { CodeGeneratorService } from "../services/code-generator.service";
 import { TiptapI18nService } from "tiptap-editor";
+import { AppI18nService } from "../services/app-i18n.service";
 import {
   TOOLBAR_ITEMS,
   BUBBLE_MENU_ITEMS,
@@ -23,20 +24,20 @@ import {
           <div class="header-content">
             <div class="logo">
               <span class="material-symbols-outlined">tune</span>
-              <h1>Configuration</h1>
+              <h1>{{ appI18n.ui().configuration }}</h1>
             </div>
             <div class="header-actions">
               <button
                 class="panel-btn secondary"
                 (click)="resetToDefaults()"
-                title="Réinitialiser la configuration"
+                [title]="appI18n.tooltips().resetConfiguration"
               >
                 <span class="material-symbols-outlined">restart_alt</span>
               </button>
               <button
                 class="panel-btn danger"
                 (click)="toggleSidebar()"
-                title="Fermer le panneau"
+                [title]="appI18n.tooltips().closeSidebar"
               >
                 <span class="material-symbols-outlined">close</span>
               </button>
@@ -71,10 +72,10 @@ import {
           <button
             class="editor-control-btn"
             (click)="clearContent()"
-            title="Vider l'éditeur"
+            [title]="appI18n.tooltips().clearEditorContent"
           >
             <span class="material-symbols-outlined">delete</span>
-            <span>Vider l'éditeur</span>
+            <span>{{ appI18n.ui().clearEditor }}</span>
           </button>
         </div>
 
@@ -82,7 +83,7 @@ import {
         <div class="config-sections">
           <!-- Toolbar -->
           <app-config-section
-            title="Toolbar"
+            [title]="appI18n.config().toolbar"
             icon="build"
             [items]="toolbarItems"
             [isEnabled]="editorState().showToolbar"
@@ -96,7 +97,7 @@ import {
 
           <!-- Bubble Menu -->
           <app-config-section
-            title="Bubble Menu"
+            [title]="appI18n.config().bubbleMenu"
             icon="chat_bubble"
             [items]="bubbleMenuItems"
             [isEnabled]="editorState().showBubbleMenu"
@@ -110,7 +111,7 @@ import {
 
           <!-- Slash Commands -->
           <app-config-section
-            title="Slash Commands"
+            [title]="appI18n.config().slashCommands"
             icon="flash_on"
             [items]="slashCommandItems"
             [isEnabled]="editorState().enableSlashCommands"
@@ -123,10 +124,15 @@ import {
           />
 
           <!-- Section Langue -->
-          <app-config-section title="Langue" icon="language">
+          <app-config-section
+            [title]="appI18n.config().language"
+            icon="language"
+          >
             <div class="config-controls">
               <div class="language-switch-container">
-                <div class="language-switch-label">Langue de l'éditeur</div>
+                <div class="language-switch-label">
+                  {{ appI18n.config().editorLanguage }}
+                </div>
                 <div class="language-switch-wrapper">
                   <div
                     class="language-switch"
@@ -137,7 +143,7 @@ import {
                         class="language-option"
                         [class.active]="currentLocale() === 'en'"
                         (click)="setLanguage('en')"
-                        title="English"
+                        [title]="appI18n.ui().english"
                       >
                         <span class="flag-icon">🇺🇸</span>
                         <span class="language-label">EN</span>
@@ -146,7 +152,7 @@ import {
                         class="language-option"
                         [class.active]="currentLocale() === 'fr'"
                         (click)="setLanguage('fr')"
-                        title="Français"
+                        [title]="appI18n.ui().french"
                       >
                         <span class="flag-icon">🇫🇷</span>
                         <span class="language-label">FR</span>
@@ -160,22 +166,26 @@ import {
                 </div>
                 <div class="language-info">
                   <span class="current-language">
-                    {{ currentLocale() === "fr" ? "Français" : "English" }}
+                    {{
+                      currentLocale() === "fr"
+                        ? appI18n.ui().french
+                        : appI18n.ui().english
+                    }}
                   </span>
                   <span class="auto-detect-note" *ngIf="isAutoDetected">
-                    (Détection automatique)
+                    ({{ appI18n.ui().autoDetection }})
                   </span>
                 </div>
                 <div class="auto-detect-button" *ngIf="!isAutoDetected">
                   <button
                     class="btn-auto-detect"
                     (click)="autoDetectLanguage()"
-                    title="Détecter automatiquement la langue du navigateur"
+                    [title]="appI18n.tooltips().autoDetectLanguage"
                   >
                     <span class="material-symbols-outlined"
                       >auto_detect_voice</span
                     >
-                    <span>Détection automatique</span>
+                    <span>{{ appI18n.ui().autoDetect }}</span>
                   </button>
                 </div>
               </div>
@@ -187,7 +197,7 @@ import {
         <div class="sidebar-footer">
           <button class="copy-btn" (click)="copyCode()">
             <span class="material-symbols-outlined">content_copy</span>
-            <span>Copier le code</span>
+            <span>{{ appI18n.ui().copyCode }}</span>
           </button>
         </div>
       </div>
@@ -198,7 +208,7 @@ import {
       class="open-sidebar-btn"
       *ngIf="!editorState().showSidebar && !editorState().isTransitioning"
       (click)="toggleSidebar()"
-      title="Ouvrir la configuration"
+      [title]="appI18n.tooltips().toggleSidebar"
     >
       <span class="material-symbols-outlined">tune</span>
     </button>
@@ -782,6 +792,7 @@ export class ConfigurationPanelComponent {
   private codeGeneratorService = inject(CodeGeneratorService);
   private elementRef = inject(ElementRef);
   private i18nService = inject(TiptapI18nService);
+  readonly appI18n = inject(AppI18nService);
 
   // Signaux depuis le service
   readonly editorState = this.configService.editorState;

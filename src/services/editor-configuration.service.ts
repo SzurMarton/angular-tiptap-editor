@@ -1,18 +1,21 @@
-import { Injectable, signal, computed } from "@angular/core";
+import { Injectable, signal, computed, inject, effect } from "@angular/core";
 import {
   ToolbarConfig,
   BubbleMenuConfig,
   SlashCommandsConfig,
-  DEFAULT_SLASH_COMMANDS,
   SlashCommandItem,
+  TiptapI18nService,
 } from "tiptap-editor";
+import { createI18nSlashCommands } from "tiptap-editor";
 import { EditorState, MenuState } from "../types/editor-config.types";
-import { DEFAULT_DEMO_CONTENT } from "../config/editor-items.config";
+import { AppI18nService } from "./app-i18n.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class EditorConfigurationService {
+  private i18nService = inject(TiptapI18nService);
+  private appI18nService = inject(AppI18nService);
   // État de l'éditeur
   private _editorState = signal<EditorState>({
     showSidebar: true,
@@ -21,7 +24,7 @@ export class EditorConfigurationService {
     showToolbar: true,
     showBubbleMenu: true,
     enableSlashCommands: true,
-    placeholder: "Commencez à écrire...",
+    placeholder: "Start typing...", // Sera mis à jour par l'effect
   });
 
   // État des menus
@@ -32,7 +35,7 @@ export class EditorConfigurationService {
   });
 
   // Contenu de l'éditeur
-  private _demoContent = signal(DEFAULT_DEMO_CONTENT);
+  private _demoContent = signal("<p></p>");
 
   // Configurations
   private _toolbarConfig = signal<Partial<ToolbarConfig>>({
@@ -76,7 +79,7 @@ export class EditorConfigurationService {
   );
 
   private _slashCommandsConfig = signal<SlashCommandsConfig>({
-    commands: DEFAULT_SLASH_COMMANDS,
+    commands: [],
   });
 
   // Signaux publics (lecture seule)
@@ -104,7 +107,25 @@ export class EditorConfigurationService {
   });
 
   constructor() {
+    // Mettre à jour le contenu et les slash commands quand la langue change
+    effect(() => {
+      // Re-trigger quand la langue change
+      this.i18nService.currentLocale();
+      this.updateSlashCommandsConfig();
+      this.initializeDemoContent();
+    });
+
+    // Mettre à jour le placeholder de l'éditeur selon la langue
+    effect(() => {
+      const editorTranslations = this.i18nService.editor();
+      this._editorState.update((state) => ({
+        ...state,
+        placeholder: editorTranslations.placeholder,
+      }));
+    });
+
     this.updateSlashCommandsConfig();
+    this.initializeDemoContent();
   }
 
   // Méthodes pour l'état de l'éditeur
@@ -233,9 +254,26 @@ export class EditorConfigurationService {
 
   private updateSlashCommandsConfig() {
     const activeCommands = this._activeSlashCommands();
-    const filteredCommands = DEFAULT_SLASH_COMMANDS.filter((command) => {
-      const commandKey = this.getSlashCommandKey(command);
-      return activeCommands.has(commandKey);
+    const allI18nCommands = createI18nSlashCommands(this.i18nService);
+
+    // Map des titres vers les clés pour la compatibilité
+    const commandKeyMap = new Map<string, string>([
+      ["heading1", "heading1"],
+      ["heading2", "heading2"],
+      ["heading3", "heading3"],
+      ["bulletList", "bulletList"],
+      ["orderedList", "orderedList"],
+      ["blockquote", "blockquote"],
+      ["code", "code"],
+      ["image", "image"],
+      ["horizontalRule", "horizontalRule"],
+    ]);
+
+    const filteredCommands = allI18nCommands.filter((command, index) => {
+      // Utiliser l'index pour déterminer la clé de commande
+      const commandKeys = Array.from(commandKeyMap.keys());
+      const commandKey = commandKeys[index];
+      return commandKey && activeCommands.has(commandKey);
     });
 
     this._slashCommandsConfig.set({
@@ -243,18 +281,9 @@ export class EditorConfigurationService {
     });
   }
 
-  private getSlashCommandKey(command: SlashCommandItem): string {
-    const keyMap: { [key: string]: string } = {
-      "Titre 1": "heading1",
-      "Titre 2": "heading2",
-      "Titre 3": "heading3",
-      "Liste à puces": "bulletList",
-      "Liste numérotée": "orderedList",
-      Citation: "blockquote",
-      Code: "code",
-      Image: "image",
-      "Ligne horizontale": "horizontalRule",
-    };
-    return keyMap[command.title] || command.title.toLowerCase();
+  // Initialiser le contenu de démo avec les traductions
+  private initializeDemoContent() {
+    const translatedContent = this.appI18nService.generateDemoContent();
+    this._demoContent.set(translatedContent);
   }
 }

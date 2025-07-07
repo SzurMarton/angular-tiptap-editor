@@ -1,8 +1,10 @@
-import { inject } from "@angular/core";
+import { Editor } from "@tiptap/core";
 import { SlashCommandItem } from "../tiptap-slash-commands.component";
 import { TiptapI18nService } from "../services/i18n.service";
-import { Editor } from "@tiptap/core";
 
+/**
+ * Factory function pour créer les slash commands traduits
+ */
 export function createI18nSlashCommands(
   i18nService: TiptapI18nService
 ): SlashCommandItem[] {
@@ -164,8 +166,19 @@ export function createI18nSlashCommands(
   ];
 }
 
-// Factory function pour créer les slash commands avec l'injection de dépendance
-export function createDefaultI18nSlashCommands(): SlashCommandItem[] {
-  const i18nService = inject(TiptapI18nService);
-  return createI18nSlashCommands(i18nService);
-}
+/**
+ * Mapping des clés de commandes pour la compatibilité
+ */
+export const SLASH_COMMAND_KEYS = {
+  heading1: "heading1",
+  heading2: "heading2",
+  heading3: "heading3",
+  bulletList: "bulletList",
+  orderedList: "orderedList",
+  blockquote: "blockquote",
+  code: "code",
+  image: "image",
+  horizontalRule: "horizontalRule",
+} as const;
+
+export type SlashCommandKey = keyof typeof SLASH_COMMAND_KEYS;

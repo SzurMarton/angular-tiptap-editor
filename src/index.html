@@ -2,8 +2,11 @@
 <html lang="en">
 
 <head>
-  <title>My app</title>
+  <title>Tiptap Editor Demo - Modern Rich Text Editor</title>
   <meta charset="UTF-8" />
+  <meta name="description"
+    content="Experience the power of Tiptap editor with this interactive demo. Modern rich text editing for Angular applications with full customization options." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <base href="/">
   <!-- Material Symbols Outlined -->
   <link
@@ -14,7 +17,44 @@
 </head>
 
 <body>
-  <app-root>Loading...</app-root>
+  <app-root>
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background: #fafafa;
+    ">
+      <div style="
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #7c3aed;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      "></div>
+      <p style="
+        color: #7c3aed;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+      ">Loading Tiptap Editor...</p>
+    </div>
+    <style>
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </app-root>
 </body>
 
 </html>

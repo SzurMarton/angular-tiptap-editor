@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigItem } from "../types/editor-config.types";
+import { AppI18nService } from "../services/app-i18n.service";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
 
 @Component({
@@ -27,7 +28,9 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
       <div class="section-content" [class.collapsed]="!isEnabled">
         <div class="dropdown-section">
           <div class="dropdown-trigger" (click)="onToggleDropdown()">
-            <span>Personnaliser ({{ activeCount }})</span>
+            <span
+              >{{ appI18n.config().selectOptions }} ({{ activeCount }})</span
+            >
             <span
               class="material-symbols-outlined chevron"
               [class.rotated]="isDropdownOpen"
@@ -276,6 +279,8 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
   ],
 })
 export class ConfigSectionComponent {
+  readonly appI18n = inject(AppI18nService);
+
   @Input() title!: string;
   @Input() icon!: string;
   @Input() items!: ConfigItem[];

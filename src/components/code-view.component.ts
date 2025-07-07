@@ -1,6 +1,7 @@
 import { Component, inject, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { CodeGeneratorService } from "../services/code-generator.service";
+import { AppI18nService } from "../services/app-i18n.service";
 
 @Component({
   selector: "app-code-view",
@@ -13,15 +14,15 @@ import { CodeGeneratorService } from "../services/code-generator.service";
           <span class="material-symbols-outlined"
             >integration_instructions</span
           >
-          <span>Code généré</span>
+          <span>{{ appI18n.titles().generatedCode }}</span>
         </div>
         <button
           class="copy-code-btn"
           (click)="copyCode()"
-          title="Copier le code"
+          [title]="appI18n.tooltips().copyGeneratedCode"
         >
           <span class="material-symbols-outlined">content_copy</span>
-          <span>Copier</span>
+          <span>{{ appI18n.ui().copy }}</span>
         </button>
       </div>
 
@@ -204,6 +205,7 @@ import { CodeGeneratorService } from "../services/code-generator.service";
 })
 export class CodeViewComponent {
   private codeGeneratorService = inject(CodeGeneratorService);
+  readonly appI18n = inject(AppI18nService);
 
   readonly generatedCode = computed(() =>
     this.codeGeneratorService.generateCode()
