@@ -13,6 +13,7 @@ import { ConfigurationPanelComponent } from "./components/configuration-panel.co
 
 // Import des services
 import { EditorConfigurationService } from "./services/editor-configuration.service";
+import { CodeGeneratorService } from "./services/code-generator.service";
 
 @Component({
   selector: "app-root",

@@ -3,6 +3,7 @@ import {
   ToolbarConfig,
   BubbleMenuConfig,
   SlashCommandsConfig,
+  SlashCommandItem,
   TiptapI18nService,
 } from "tiptap-editor";
 import { createI18nSlashCommands } from "tiptap-editor";

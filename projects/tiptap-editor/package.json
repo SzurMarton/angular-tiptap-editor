@@ -1,6 +1,6 @@
 {
-  "name": "@flogeez/ngx-tiptap-editor",
-  "version": "1.0.2",
+  "name": "angular-tiptap-editor",
+  "version": "1.0.0",
   "description": "A modern, customizable rich-text editor for Angular (19+), built with Tiptap and featuring complete internationalization support",
   "keywords": [
     "angular",
