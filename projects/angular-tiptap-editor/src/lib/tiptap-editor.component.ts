@@ -100,7 +100,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
 };
 
 @Component({
-  selector: "tiptap-editor",
+  selector: "angular-tiptap-editor",
   standalone: true,
   imports: [
     TiptapToolbarComponent,
@@ -178,7 +178,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TiptapEditorComponent),
+      useExisting: forwardRef(() => AngularTiptapEditorComponent),
       multi: true,
     },
   ],
@@ -585,7 +585,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
     `,
   ],
 })
-export class TiptapEditorComponent
+export class AngularTiptapEditorComponent
   implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor
 {
   // Nouveaux inputs avec signal

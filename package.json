@@ -1,7 +1,6 @@
 {
-  "name": "ngx-tiptap-editor-project",
-  "version": "1.0.0",
-  "description": "Angular project containing the NgxTiptapEditor library and its interactive demo",
+  "name": "angular-tiptap-editor-project",
+  "description": "Angular project containing the AngularTiptapEditor library and its interactive demo",
   "keywords": [
     "angular",
     "tiptap",
@@ -17,22 +16,22 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/flogeez/ngx-tiptap-editor.git"
+    "url": "https://github.com/FloGeez/angular-tiptap-editor.git"
   },
   "bugs": {
-    "url": "https://github.com/flogeez/ngx-tiptap-editor/issues"
+    "url": "https://github.com/FloGeez/angular-tiptap-editor/issues"
   },
-  "homepage": "https://github.com/flogeez/ngx-tiptap-editor#readme",
+  "homepage": "https://github.com/FloGeez/angular-tiptap-editor#readme",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:lib": "ng build tiptap-editor && npm run copy-lib-assets",
-    "watch:lib": "ng build tiptap-editor --watch",
-    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/tiptap-editor && npm run start\"",
+    "build:lib": "ng build angular-tiptap-editor && npm run copy-lib-assets",
+    "watch:lib": "ng build angular-tiptap-editor --watch",
+    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/angular-tiptap-editor && npm run start\"",
     "build:demo": "ng build --configuration production",
-    "build:demo:gh-pages": "ng build --configuration production --base-href /ngx-tiptap-editor/",
-    "copy-lib-assets": "cp README.md dist/tiptap-editor/ && cp LICENSE dist/tiptap-editor/"
+    "build:demo:gh-pages": "ng build --configuration production --base-href /angular-tiptap-editor/",
+    "copy-lib-assets": "cp README.md dist/angular-tiptap-editor/ && cp LICENSE dist/angular-tiptap-editor/"
   },
   "dependencies": {
     "@angular/animations": "^20.0.0",

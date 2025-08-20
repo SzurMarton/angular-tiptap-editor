@@ -38,7 +38,7 @@
             "scripts": [],
             "styles": [
               "node_modules/@fontsource/material-symbols-outlined/index.css",
-              "projects/tiptap-editor/src/lib/styles/index.css",
+              "projects/angular-tiptap-editor/src/lib/styles/index.css",
               "src/global_styles.css"
             ],
             "tsConfig": "tsconfig.app.json"
@@ -63,20 +63,20 @@
       "schematics": {},
       "sourceRoot": "src"
     },
-    "tiptap-editor": {
+    "angular-tiptap-editor": {
       "projectType": "library",
-      "root": "projects/tiptap-editor",
-      "sourceRoot": "projects/tiptap-editor/src",
+      "root": "projects/angular-tiptap-editor",
+      "sourceRoot": "projects/angular-tiptap-editor/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/tiptap-editor/tsconfig.lib.prod.json"
+              "tsConfig": "projects/angular-tiptap-editor/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/tiptap-editor/tsconfig.lib.json"
+              "tsConfig": "projects/angular-tiptap-editor/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -84,7 +84,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "tsConfig": "projects/tiptap-editor/tsconfig.spec.json",
+            "tsConfig": "projects/angular-tiptap-editor/tsconfig.spec.json",
             "polyfills": [
               "zone.js",
               "zone.js/testing"

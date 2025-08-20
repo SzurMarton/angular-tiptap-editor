@@ -3,13 +3,9 @@ import { CommonModule } from "@angular/common";
 import { ConfigSectionComponent } from "./config-section.component";
 import { HeightConfigComponent } from "./height-config.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
-import { TiptapI18nService } from "tiptap-editor";
+import { TiptapI18nService } from "angular-tiptap-editor";
 import { AppI18nService } from "../services/app-i18n.service";
 import {
-  TOOLBAR_ITEMS,
-  BUBBLE_MENU_ITEMS,
-  SLASH_COMMAND_ITEMS,
-  HEIGHT_ITEMS,
   createToolbarItems,
   createBubbleMenuItems,
   createSlashCommandItems,

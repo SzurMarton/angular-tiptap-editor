@@ -3,7 +3,10 @@ import { bootstrapApplication } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
-import { TiptapEditorComponent, TiptapI18nService } from "tiptap-editor";
+import {
+  AngularTiptapEditorComponent,
+  TiptapI18nService,
+} from "angular-tiptap-editor";
 import { MAT_ICON_DEFAULT_OPTIONS } from "@angular/material/icon";
 
 // Import des composants
@@ -13,7 +16,6 @@ import { ConfigurationPanelComponent } from "./components/configuration-panel.co
 
 // Import des services
 import { EditorConfigurationService } from "./services/editor-configuration.service";
-import { CodeGeneratorService } from "./services/code-generator.service";
 
 @Component({
   selector: "app-root",
@@ -22,7 +24,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    TiptapEditorComponent,
+    AngularTiptapEditorComponent,
     EditorActionsComponent,
     CodeViewComponent,
     ConfigurationPanelComponent,
@@ -46,7 +48,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
           <div class="main-content">
             <!-- Mode éditeur -->
             <div class="editor-view" *ngIf="!editorState().showCodeMode">
-              <tiptap-editor
+              <angular-tiptap-editor
                 [content]="demoContent()"
                 [toolbar]="toolbarConfig()"
                 [bubbleMenu]="bubbleMenuConfig()"
@@ -60,8 +62,7 @@ import { CodeGeneratorService } from "./services/code-generator.service";
                 [height]="editorState().height"
                 [maxHeight]="editorState().maxHeight"
                 (contentChange)="onContentChange($event)"
-              >
-              </tiptap-editor>
+              />
             </div>
 
             <!-- Mode code -->

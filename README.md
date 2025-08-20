@@ -1,4 +1,4 @@
-# NgxTiptapEditor
+# Angular Tiptap Editor
 
 A modern, customizable rich-text editor for Angular applications, built with Tiptap and featuring complete internationalization support.
 
@@ -16,7 +16,7 @@ A modern, customizable rich-text editor for Angular applications, built with Tip
 ## 📦 Installation
 
 ```bash
-npm install @flogeez/ngx-tiptap-editor
+npm install @flogeez/angular-tiptap-editor
 ```
 
 ### CSS Styles
@@ -27,7 +27,7 @@ Add the required CSS to your `angular.json` file in the `styles` array:
 {
   "styles": [
     ...
-    "node_modules/@flogeez/ngx-tiptap-editor/src/lib/styles/index.css",
+    "node_modules/@flogeez/angular-tiptap-editor/src/lib/styles/index.css",
     ...
   ]
 }
@@ -39,14 +39,14 @@ Add the required CSS to your `angular.json` file in the `styles` array:
 
 ```typescript
 import { Component } from "@angular/core";
-import { NgxTiptapEditorComponent } from "@flogeez/ngx-tiptap-editor";
+import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-example",
   standalone: true,
-  imports: [NgxTiptapEditorComponent],
+  imports: [AngularTiptapEditorComponent],
   template: `
-    <ngx-tiptap-editor
+    <angular-tiptap-editor
       [content]="content"
       (contentChange)="onContentChange($event)"
     />
@@ -66,14 +66,14 @@ export class ExampleComponent {
 
 ```typescript
 import { Component } from "@angular/core";
-import { NgxTiptapEditorComponent } from "@flogeez/ngx-tiptap-editor";
+import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-advanced",
   standalone: true,
-  imports: [NgxTiptapEditorComponent],
+  imports: [AngularTiptapEditorComponent],
   template: `
-    <ngx-tiptap-editor
+    <angular-tiptap-editor
       [content]="content"
       [toolbar]="toolbarConfig"
       [bubbleMenu]="bubbleMenuConfig"
@@ -117,15 +117,15 @@ export class AdvancedComponent {
 ```typescript
 import { Component } from "@angular/core";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { NgxTiptapEditorComponent } from "@flogeez/ngx-tiptap-editor";
+import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-form",
   standalone: true,
-  imports: [NgxTiptapEditorComponent, ReactiveFormsModule],
+  imports: [AngularTiptapEditorComponent, ReactiveFormsModule],
   template: `
     <form>
-      <ngx-tiptap-editor
+      <angular-tiptap-editor
         [formControl]="contentControl"
         placeholder="Enter your content here..."
       />
@@ -142,13 +142,13 @@ export class FormComponent {
 
 ### 🌐 Live Demo
 
-Try the interactive demo online: **[https://flogeez.github.io/ngx-tiptap-editor/](https://flogeez.github.io/ngx-tiptap-editor/)**
+Try the interactive demo online: **[https://flogeez.github.io/angular-tiptap-editor/](https://flogeez.github.io/angular-tiptap-editor/)**
 
 ### 🖥️ Run Locally
 
 ```bash
-git clone https://github.com/flogeez/ngx-tiptap-editor.git
-cd ngx-tiptap-editor
+git clone https://github.com/FloGeez/angular-tiptap-editor.git
+cd angular-tiptap-editor
 npm install
 npm start
 ```
@@ -222,13 +222,13 @@ The editor supports English and French with automatic browser language detection
 
 ```typescript
 // Force English
-<ngx-tiptap-editor [locale]="'en'" />
+<angular-tiptap-editor [locale]="'en'" />
 
 // Force French
-<ngx-tiptap-editor [locale]="'fr'" />
+<angular-tiptap-editor [locale]="'fr'" />
 
 // Auto-detect (default)
-<ngx-tiptap-editor />
+<angular-tiptap-editor />
 ```
 
 ## 🔧 Development
@@ -271,10 +271,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 🔗 Links
 
-- 🎮 [Live Demo](https://flogeez.github.io/ngx-tiptap-editor/)
+- 🎮 [Live Demo](https://flogeez.github.io/angular-tiptap-editor/)
 - 📖 [Tiptap Documentation](https://tiptap.dev/)
 - 🅰️ [Angular Documentation](https://angular.dev/)
-- 📦 [NPM Package](https://www.npmjs.com/package/@flogeez/ngx-tiptap-editor)
+- 📦 [NPM Package](https://www.npmjs.com/package/angular-tiptap-editor)
 
 ---
 

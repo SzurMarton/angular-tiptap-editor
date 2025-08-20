@@ -3,10 +3,9 @@ import {
   ToolbarConfig,
   BubbleMenuConfig,
   SlashCommandsConfig,
-  SlashCommandItem,
   TiptapI18nService,
-} from "tiptap-editor";
-import { createI18nSlashCommands } from "tiptap-editor";
+} from "angular-tiptap-editor";
+import { createI18nSlashCommands } from "angular-tiptap-editor";
 import { EditorState, MenuState } from "../types/editor-config.types";
 import { AppI18nService } from "./app-i18n.service";
 

@@ -1,6 +1,6 @@
 {
-  "name": "@flogeez/ngx-tiptap-editor",
-  "version": "1.5.0",
+  "name": "@flogeez/angular-tiptap-editor",
+  "version": "0.2.0",
   "description": "A modern, customizable rich-text editor for Angular (19+), built with Tiptap and featuring complete internationalization support",
   "keywords": [
     "angular",
@@ -16,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/FloGeez/ngx-tiptap-editor.git"
+    "url": "https://github.com/FloGeez/angular-tiptap-editor.git"
   },
   "bugs": {
-    "url": "https://github.com/FloGeez/ngx-tiptap-editor/issues"
+    "url": "https://github.com/FloGeez/angular-tiptap-editor/issues"
   },
-  "homepage": "https://flogeez.github.io/ngx-tiptap-editor/",
+  "homepage": "https://flogeez.github.io/angular-tiptap-editor/",
   "peerDependencies": {
     "@angular/common": ">=19.0.0",
     "@angular/core": ">=19.0.0",
