@@ -361,7 +361,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      :host ::ng-deep .ProseMirror img.selected {
+      :host ::ng-deep .ProseMirror img.ProseMirror-selectednode {
         border-color: #3182ce;
         box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
         transition: all 0.2s ease;
