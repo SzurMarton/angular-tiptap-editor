@@ -1,7 +1,7 @@
 {
-  "name": "tiptap-editor-project",
+  "name": "ngx-tiptap-editor-project",
   "version": "1.0.0",
-  "description": "Projet Angular contenant la bibliothèque TiptapEditor et sa démo interactive",
+  "description": "Angular project containing the NgxTiptapEditor library and its interactive demo",
   "keywords": [
     "angular",
     "tiptap",
@@ -17,12 +17,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/flogeez/tiptap-editor.git"
+    "url": "https://github.com/flogeez/ngx-tiptap-editor.git"
   },
   "bugs": {
-    "url": "https://github.com/flogeez/tiptap-editor/issues"
+    "url": "https://github.com/flogeez/ngx-tiptap-editor/issues"
   },
-  "homepage": "https://github.com/flogeez/tiptap-editor#readme",
+  "homepage": "https://github.com/flogeez/ngx-tiptap-editor#readme",
   "private": true,
   "scripts": {
     "ng": "ng",
@@ -30,7 +30,9 @@
     "build": "ng build",
     "build:lib": "ng build tiptap-editor",
     "watch:lib": "ng build tiptap-editor --watch",
-    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/tiptap-editor && npm run start\""
+    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/tiptap-editor && npm run start\"",
+    "build:demo": "ng build --configuration production",
+    "build:demo:gh-pages": "ng build --configuration production --base-href /ngx-tiptap-editor/"
   },
   "dependencies": {
     "@angular/animations": "^20.0.0",

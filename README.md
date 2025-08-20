@@ -1,124 +1,267 @@
-# TiptapEditor - Projet Angular
+# NgxTiptapEditor
 
-Ce projet contient une **bibliothèque Angular** d'éditeur de texte riche basée sur Tiptap, ainsi qu'une **démo interactive** pour tester toutes les fonctionnalités.
+A modern, customizable rich-text editor for Angular applications, built with Tiptap and featuring complete internationalization support.
 
-## 📁 Structure du projet
+## 🚀 Features
 
-```
-project/
-├── projects/tiptap-editor/     # 📦 Bibliothèque principale
-│   ├── src/lib/               # Code source de la lib
-│   ├── package.json           # Configuration npm de la lib
-│   └── README.md              # Documentation de la lib
-├── src/                       # 🎮 Application de démo
-│   ├── components/            # Composants de la démo
-│   ├── services/              # Services de la démo
-│   └── main.ts               # Point d'entrée de la démo
-└── README.md                 # Ce fichier
-```
+- **Modern Angular**: Built with Angular 20+ and standalone components
+- **Rich Text Editing**: Powered by Tiptap with extensive formatting options
+- **Internationalization**: Full i18n support (English & French) with auto-detection
+- **Customizable**: Highly configurable toolbar, bubble menus, and slash commands
+- **Image Support**: Advanced image handling with resizing and compression
+- **Height Control**: Configurable editor height with scrolling
+- **TypeScript**: Full TypeScript support with strict typing
+- **Accessibility**: Built with accessibility best practices
 
-## 🚀 Démarrage rapide
-
-### Installation des dépendances
+## 📦 Installation
 
 ```bash
+npm install ngx-tiptap-editor
+```
+
+## 🎯 Quick Start
+
+### 1. Basic Usage
+
+```typescript
+import { Component } from "@angular/core";
+import { NgxTiptapEditorComponent } from "ngx-tiptap-editor";
+
+@Component({
+  selector: "app-example",
+  standalone: true,
+  imports: [NgxTiptapEditorComponent],
+  template: `
+    <ngx-tiptap-editor
+      [content]="content"
+      (contentChange)="onContentChange($event)"
+    />
+  `,
+})
+export class ExampleComponent {
+  content = "<p>Hello <strong>World</strong>!</p>";
+
+  onContentChange(newContent: string) {
+    this.content = newContent;
+    console.log("Content updated:", newContent);
+  }
+}
+```
+
+### 2. With Custom Configuration
+
+```typescript
+import { Component } from "@angular/core";
+import { NgxTiptapEditorComponent } from "ngx-tiptap-editor";
+
+@Component({
+  selector: "app-advanced",
+  standalone: true,
+  imports: [NgxTiptapEditorComponent],
+  template: `
+    <ngx-tiptap-editor
+      [content]="content"
+      [toolbar]="toolbarConfig"
+      [bubbleMenu]="bubbleMenuConfig"
+      [locale]="'en'"
+      [height]="400"
+      [showCharacterCount]="true"
+      (contentChange)="onContentChange($event)"
+    />
+  `,
+})
+export class AdvancedComponent {
+  content = "<h1>Welcome!</h1><p>Start editing...</p>";
+
+  toolbarConfig = {
+    bold: true,
+    italic: true,
+    underline: true,
+    heading1: true,
+    heading2: true,
+    bulletList: true,
+    orderedList: true,
+    link: true,
+    image: true,
+  };
+
+  bubbleMenuConfig = {
+    bold: true,
+    italic: true,
+    underline: true,
+    link: true,
+  };
+
+  onContentChange(newContent: string) {
+    this.content = newContent;
+  }
+}
+```
+
+### 3. With Form Integration
+
+```typescript
+import { Component } from "@angular/core";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { NgxTiptapEditorComponent } from "ngx-tiptap-editor";
+
+@Component({
+  selector: "app-form",
+  standalone: true,
+  imports: [NgxTiptapEditorComponent, ReactiveFormsModule],
+  template: `
+    <form>
+      <ngx-tiptap-editor
+        [formControl]="contentControl"
+        placeholder="Enter your content here..."
+      />
+      <button type="submit">Submit</button>
+    </form>
+  `,
+})
+export class FormComponent {
+  contentControl = new FormControl("<p>Initial content</p>");
+}
+```
+
+## 🎨 Demo
+
+### 🌐 Live Demo
+
+Try the interactive demo online: **[https://flogeez.github.io/ngx-tiptap-editor/](https://flogeez.github.io/ngx-tiptap-editor/)**
+
+### 🖥️ Run Locally
+
+```bash
+git clone https://github.com/flogeez/ngx-tiptap-editor.git
+cd ngx-tiptap-editor
 npm install
-```
-
-### Lancer la démo
-
-```bash
 npm start
 ```
 
-La démo sera accessible sur `http://localhost:4200`
+Open [http://localhost:4200](http://localhost:4200) to view the demo.
 
-### Build de la bibliothèque
+## 📖 Documentation
+
+### API Reference
+
+#### Inputs
+
+| Input                | Type               | Default             | Description                |
+| -------------------- | ------------------ | ------------------- | -------------------------- |
+| `content`            | `string`           | `""`                | Initial HTML content       |
+| `placeholder`        | `string`           | `"Start typing..."` | Placeholder text           |
+| `locale`             | `'en' \| 'fr'`     | Auto-detect         | Editor language            |
+| `editable`           | `boolean`          | `true`              | Whether editor is editable |
+| `height`             | `number`           | `undefined`         | Fixed height in pixels     |
+| `maxHeight`          | `number`           | `undefined`         | Maximum height in pixels   |
+| `minHeight`          | `number`           | `200`               | Minimum height in pixels   |
+| `showToolbar`        | `boolean`          | `true`              | Show toolbar               |
+| `showBubbleMenu`     | `boolean`          | `true`              | Show bubble menu           |
+| `showCharacterCount` | `boolean`          | `true`              | Show character counter     |
+| `toolbar`            | `ToolbarConfig`    | All enabled         | Toolbar configuration      |
+| `bubbleMenu`         | `BubbleMenuConfig` | All enabled         | Bubble menu configuration  |
+
+#### Outputs
+
+| Output          | Type              | Description                     |
+| --------------- | ----------------- | ------------------------------- |
+| `contentChange` | `string`          | Emitted when content changes    |
+| `editorCreated` | `Editor`          | Emitted when editor is created  |
+| `editorFocus`   | `{editor, event}` | Emitted when editor gains focus |
+| `editorBlur`    | `{editor, event}` | Emitted when editor loses focus |
+
+### Configuration Examples
+
+```typescript
+// Minimal toolbar
+const minimalToolbar = {
+  bold: true,
+  italic: true,
+  bulletList: true,
+};
+
+// Full toolbar
+const fullToolbar = {
+  bold: true,
+  italic: true,
+  underline: true,
+  strike: true,
+  code: true,
+  heading1: true,
+  heading2: true,
+  heading3: true,
+  bulletList: true,
+  orderedList: true,
+  blockquote: true,
+  link: true,
+  image: true,
+  horizontalRule: true,
+  undo: true,
+  redo: true,
+};
+```
+
+## 🌍 Internationalization
+
+The editor supports English and French with automatic browser language detection:
+
+```typescript
+// Force English
+<ngx-tiptap-editor [locale]="'en'" />
+
+// Force French
+<ngx-tiptap-editor [locale]="'fr'" />
+
+// Auto-detect (default)
+<ngx-tiptap-editor />
+```
+
+## 🔧 Development
+
+### Build Library
 
 ```bash
 npm run build:lib
 ```
 
-### Build de la démo
+### Watch Mode (Development)
 
 ```bash
-npm run build
+npm run dev
 ```
 
-## 📦 À propos de la bibliothèque
+This runs the library in watch mode and starts the demo application.
 
-**TiptapEditor** est un éditeur de texte riche moderne et personnalisable pour Angular, basé sur Tiptap avec support complet de l'internationalisation.
+### Available Scripts
 
-### ✨ Fonctionnalités principales
+- `npm start` - Start demo application
+- `npm run build` - Build demo application
+- `npm run build:lib` - Build library
+- `npm run watch:lib` - Watch library changes
+- `npm run dev` - Development mode (watch + serve)
 
-- 🌍 **Internationalisation** (Français/Anglais) avec détection automatique
-- 🎛️ **Toolbar personnalisable** avec tous les outils de formatage
-- 💬 **Menus contextuels** (bubble menus) pour texte et images
-- ⚡ **Slash commands** avec interface intuitive
-- 📸 **Upload d'images** avec drag & drop et redimensionnement
-- 📱 **Responsive** et accessible
-- 🎨 **Styles modernes** et personnalisables
+## 📝 License
 
-### 📚 Documentation complète
+MIT License - see [LICENSE](LICENSE) file for details.
 
-Consultez la [documentation de la bibliothèque](./projects/tiptap-editor/README.md) pour :
+## 🤝 Contributing
 
-- Guide d'installation et d'utilisation
-- Configuration détaillée
-- Exemples de code
-- API complète
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 🎮 Démo interactive
+## 📞 Support
 
-La démo inclut :
+- 🐛 [Report Issues](https://github.com/flogeez/ngx-tiptap-editor/issues)
+- 💡 [Feature Requests](https://github.com/flogeez/ngx-tiptap-editor/issues)
+- 📖 [Documentation](https://github.com/flogeez/ngx-tiptap-editor#readme)
 
-- **Panneau de configuration** pour tester tous les paramètres
-- **Générateur de code** pour voir le code Angular généré
-- **Interface multilingue** (FR/EN)
-- **Tests de toutes les fonctionnalités** en temps réel
+## 🔗 Links
 
-## 🛠️ Scripts disponibles
+- 🎮 [Live Demo](https://flogeez.github.io/ngx-tiptap-editor/)
+- 📖 [Tiptap Documentation](https://tiptap.dev/)
+- 🅰️ [Angular Documentation](https://angular.dev/)
+- 📦 [NPM Package](https://www.npmjs.com/package/ngx-tiptap-editor)
 
-| Script              | Description                                    |
-| ------------------- | ---------------------------------------------- |
-| `npm start`         | Lance la démo en mode développement            |
-| `npm run build`     | Build la démo                                  |
-| `npm run build:lib` | Build la bibliothèque                          |
-| `npm run watch:lib` | Build la lib en mode watch                     |
-| `npm run dev`       | Mode développement avec watch de la lib + démo |
-| `npm run ng`        | Accès direct à Angular CLI                     |
+---
 
-## 📦 Publication
-
-### Publier la bibliothèque
-
-```bash
-# Build la lib
-npm run build:lib
-
-# Aller dans le dossier dist
-cd dist/tiptap-editor
-
-# Publier sur npm
-npm publish
-```
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à :
-
-- Signaler des bugs
-- Proposer des améliorations
-- Ajouter de nouvelles fonctionnalités
-- Améliorer la documentation
-
-## 📄 Licence
-
-MIT License - voir le fichier [LICENSE](./LICENSE) pour plus de détails.
-
-## 🔗 Liens utiles
-
-- [Documentation de la bibliothèque](./projects/tiptap-editor/README.md)
-- [Documentation Tiptap](https://tiptap.dev/)
-- [Angular](https://angular.dev/)
-- [Angular CLI](https://angular.dev/tools/cli)
+Made with ❤️ by [FloGeez](https://github.com/FloGeez)
