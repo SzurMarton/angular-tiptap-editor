@@ -43,12 +43,12 @@ jobs:
         run: npm run build:lib
 
       - name: Build demo for GitHub Pages
-        run: npm run build -- --base-href /ngx-tiptap-editor/
+        run: npm run build:demo:gh-pages
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./demo-dist
+          path: ./demo-dist/browser
 
   # Deployment job
   deploy:
