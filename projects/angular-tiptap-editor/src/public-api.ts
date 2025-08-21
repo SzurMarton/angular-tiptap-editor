@@ -5,6 +5,9 @@
 // Main component - only public component
 export * from "./lib/tiptap-editor.component";
 
+// Host directive for FormControl integration
+export * from "./lib/noop-value-accessor.directive";
+
 // Internationalization service
 export * from "./lib/services/i18n.service";
 

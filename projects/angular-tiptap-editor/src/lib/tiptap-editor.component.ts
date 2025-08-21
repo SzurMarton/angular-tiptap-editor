@@ -6,14 +6,14 @@ import {
   OnInit,
   OnDestroy,
   viewChild,
-  forwardRef,
   effect,
   signal,
   computed,
   AfterViewInit,
   inject,
+  DestroyRef,
 } from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Editor, Extension, Node, Mark } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -38,6 +38,8 @@ import {
 } from "./tiptap-slash-commands.component";
 import { ImageService } from "./services/image.service";
 import { TiptapI18nService, SupportedLocale } from "./services/i18n.service";
+import { NoopValueAccessorDirective } from "./noop-value-accessor.directive";
+import { NgControl } from "@angular/forms";
 
 import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./toolbar.component";
@@ -45,6 +47,7 @@ import {
   BubbleMenuConfig,
   ImageBubbleMenuConfig,
 } from "./models/bubble-menu.model";
+import { tap } from "rxjs";
 
 // Configuration par défaut de la toolbar
 export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
@@ -102,6 +105,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
 @Component({
   selector: "angular-tiptap-editor",
   standalone: true,
+  hostDirectives: [NoopValueAccessorDirective],
   imports: [
     TiptapToolbarComponent,
     TiptapImageUploadComponent,
@@ -175,13 +179,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       }
     </div>
   `,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => AngularTiptapEditorComponent),
-      multi: true,
-    },
-  ],
+
   styles: [
     `
       /* Styles de base pour l'éditeur Tiptap */
@@ -580,9 +578,7 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
     `,
   ],
 })
-export class AngularTiptapEditorComponent
-  implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor
-{
+export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   // Nouveaux inputs avec signal
   content = input<string>("");
   placeholder = input<string>("");
@@ -699,14 +695,14 @@ export class AngularTiptapEditorComponent
     return { commands: undefined }; // Le composant utilisera DEFAULT_SLASH_COMMANDS
   });
 
-  // ControlValueAccessor implementation
-  private onChange = (value: string) => {};
-  private onTouched = () => {};
-  private pendingFormValue: string | null = null;
+  private _destroyRef = inject(DestroyRef);
+  // NgControl pour gérer les FormControls
+  private ngControl = inject(NgControl, { self: true, optional: true });
 
   readonly i18nService = inject(TiptapI18nService);
+  readonly imageService = inject(ImageService);
 
-  constructor(private imageService: ImageService) {
+  constructor() {
     // Effet pour gérer le changement de langue
     effect(() => {
       const locale = this.locale();
@@ -763,13 +759,12 @@ export class AngularTiptapEditorComponent
     });
   }
 
-  ngOnInit() {
-    // L'initialisation se fait maintenant dans ngAfterViewInit
-  }
-
   ngAfterViewInit() {
     // La vue est déjà complètement initialisée dans ngAfterViewInit
     this.initEditor();
+
+    // S'abonner aux changements du FormControl
+    this.setupFormControlSubscription();
   }
 
   ngOnDestroy() {
@@ -846,15 +841,16 @@ export class AngularTiptapEditorComponent
       onUpdate: ({ editor, transaction }) => {
         const html = editor.getHTML();
         this.contentChange.emit(html);
-        // Defer the onChange call to prevent ExpressionChangedAfterItHasBeenCheckedError
-        Promise.resolve().then(() => {
-          this.onChange(html);
-        });
+        // Mettre à jour le FormControl si il existe (dans le prochain cycle)
+        if ((this.ngControl as any)?.control) {
+          setTimeout(() => {
+            (this.ngControl as any).control.setValue(html, {
+              emitEvent: false,
+            });
+          }, 0);
+        }
         this.editorUpdate.emit({ editor, transaction });
         this.updateCharacterCount(editor);
-      },
-      onSelectionUpdate: ({ editor, transaction }) => {
-        // Note: La mise à jour des états des boutons est maintenant gérée par TiptapBubbleMenuComponent
       },
       onCreate: ({ editor }) => {
         this.editorCreated.emit(editor);
@@ -870,7 +866,10 @@ export class AngularTiptapEditorComponent
         this.editorFocus.emit({ editor, event });
       },
       onBlur: ({ editor, event }) => {
-        this.onTouched();
+        // Marquer le FormControl comme touché si il existe
+        if ((this.ngControl as any)?.control) {
+          (this.ngControl as any).control.markAsTouched();
+        }
         this.editorBlur.emit({ editor, event });
       },
     });
@@ -878,10 +877,10 @@ export class AngularTiptapEditorComponent
     // Stocker la référence de l'éditeur immédiatement
     this.editor.set(newEditor);
 
-    // Appliquer la valeur du FormControl en attente si elle existe
-    if (this.pendingFormValue !== null) {
-      this.setContent(this.pendingFormValue, false);
-      this.pendingFormValue = null;
+    // Vérifier si on a un contenu initial via l'input content()
+    const initialContent = this.content();
+    if (initialContent) {
+      this.setContent(initialContent, false);
     }
   }
 
@@ -985,26 +984,45 @@ export class AngularTiptapEditorComponent
     this.editor()?.commands.clearContent();
   }
 
-  // ControlValueAccessor methods
-  writeValue(value: string): void {
-    const currentEditor = this.editor();
-    if (currentEditor && value !== currentEditor.getHTML()) {
-      this.setContent(value || "", false);
-      this.pendingFormValue = null; // Valeur appliquée, plus besoin de la stocker
-    } else {
-      // Éditeur pas encore prêt, stocker la valeur du FormControl pour plus tard
-      this.pendingFormValue = value || "";
+  private normalizeHTML(html: string): string {
+    if (!html) return "";
+    // Normaliser les espaces et retours à la ligne pour une comparaison fiable
+    return html
+      .replace(/\s+/g, " ") // Remplacer espaces multiples par un seul
+      .replace(/>\s+</g, "><") // Supprimer espaces entre balises
+      .replace(/<br\s*\/?>/gi, "<br>") // Normaliser les <br>
+      .trim();
+  }
+
+  private checkInitialFormValue(): void {
+    // Vérifier si on a une valeur initiale dans le FormControl
+    if ((this.ngControl as any)?.control?.value) {
+      console.log(
+        "Found initial FormControl value:",
+        (this.ngControl as any).control.value
+      );
+      this.setContent((this.ngControl as any).control.value, false);
     }
   }
 
-  registerOnChange(fn: (value: string) => void): void {
-    this.onChange = fn;
+  private setupFormControlSubscription(): void {
+    const control = (this.ngControl as any)?.control;
+    if (control) {
+      control.valueChanges
+        .pipe(
+          tap((value: any) => {
+            const editor = this.editor();
+            if (editor && value !== editor.getHTML()) {
+              this.setContent(value, false);
+            }
+          }),
+          takeUntilDestroyed(this._destroyRef)
+        )
+        .subscribe();
+    }
   }
 
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
+  // Méthode pour gérer l'état disabled
   setDisabledState(isDisabled: boolean): void {
     const currentEditor = this.editor();
     if (currentEditor) {
