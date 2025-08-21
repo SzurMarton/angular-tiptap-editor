@@ -718,8 +718,9 @@ export class AngularTiptapEditorComponent
     effect(() => {
       const editor = this.editor();
       const content = this.content();
-      if (editor && content !== editor.getHTML()) {
-        editor.commands.setContent(content, false);
+
+      if (editor && content !== undefined && content !== editor.getHTML()) {
+        this.setContent(content, false);
       }
     });
 
@@ -981,7 +982,7 @@ export class AngularTiptapEditorComponent
   writeValue(value: string): void {
     const currentEditor = this.editor();
     if (currentEditor && value !== currentEditor.getHTML()) {
-      currentEditor.commands.setContent(value || "", false);
+      this.setContent(value || "", false);
     }
   }
 
