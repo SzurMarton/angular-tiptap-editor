@@ -815,7 +815,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
     const newEditor = new Editor({
       element: this.editorElement().nativeElement,
       extensions,
-      content: this.content() || undefined,
+      content: this.content(),
       editable: this.editable(),
       onUpdate: ({ editor, transaction }) => {
         const html = editor.getHTML();

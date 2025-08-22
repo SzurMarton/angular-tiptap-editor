@@ -685,10 +685,10 @@ export class AppI18nService {
         : "Utilisation avec les form controls Angular :"
     }</p>
 <pre><code>// ${isEnglish ? "Component" : "Composant"}
-content = new FormControl('', [Validators.required]);
+simpleControl = new FormControl('', [Validators.required]);
 
 // Template
-&lt;angular-tiptap-editor [formControl]="content" /&gt;</code></pre>
+&lt;angular-tiptap-editor [formControl]="simpleControl" /&gt;</code></pre>
 
 <h3>${content.customizationTitle}</h3>
 <ul>
