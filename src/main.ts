@@ -106,24 +106,52 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
 
       /* Éditeur principal */
       .editor-main {
-        max-width: 1000px;
+        width: var(--editor-width);
+        max-width: 900px;
         margin: 0 auto;
         padding: 2rem;
         background: #fafafa;
         min-height: 100vh;
         position: relative;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(0);
       }
 
       /* Ajustement de l'éditeur quand le sidebar est ouvert */
       .sidebar-open .editor-main {
-        max-width: 800px;
-        transform: translateX(-40px);
+        width: var(--editor-width-with-panel);
+        max-width: 900px;
+        transform: translateX(calc((-2 * var(--panel-width)) + 50%));
+      }
+
+      /* Ajustement pour les écrans moyens */
+      @media (min-width: 769px) and (max-width: 1199px) {
+        .sidebar-open .editor-main {
+          transform: translateX(calc(-50vw + 50% + 2rem));
+        }
+      }
+
+      /* Mobile: l'éditeur ne se déplace pas, le panel passe au-dessus */
+      @media (max-width: 768px) {
+        .editor-main {
+          width: var(--editor-width);
+          max-width: 100%;
+          margin: 0 auto;
+          transform: none;
+        }
+
+        .sidebar-open .editor-main {
+          width: var(--editor-width);
+          max-width: 100%;
+          margin: 0 auto;
+          transform: none;
+          transition-delay: 0s;
+        }
       }
 
       /* Contenu principal */
       .main-content {
-        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         padding-top: 60px; /* Espace pour les actions */
       }
 

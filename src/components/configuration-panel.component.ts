@@ -203,9 +203,9 @@ import {
       .sidebar {
         position: fixed;
         top: 2rem;
-        right: 1.5rem;
-        width: 360px;
-        height: calc(100vh - 4rem);
+        right: var(--panel-right-offset);
+        width: var(--panel-width);
+        height: var(--panel-height);
         background: transparent;
         display: flex;
         flex-direction: column;
@@ -381,9 +381,9 @@ import {
       }
 
       .transition-element.expanding {
-        width: 360px;
-        height: calc(100vh - 4rem);
-        right: 1.5rem;
+        right: var(--panel-right-offset);
+        width: var(--panel-width);
+        height: var(--panel-height);
       }
 
       .transition-content {
