@@ -122,12 +122,27 @@ export interface AppTranslations {
     multimediaTitle: string;
     multimediaIntro: string;
     imageCaption: string;
+    tablesTitle: string;
+    tablesIntro: string;
+    tablesTryText: string;
+    tableHeaders: {
+      name: string;
+      age: string;
+      city: string;
+      profession: string;
+      email: string;
+      phone: string;
+    };
     shortcutsTitle: string;
     shortcutsIntro: string;
     slashCommand: string;
     bubbleMenu: string;
     boldShortcut: string;
     italicShortcut: string;
+    reactiveFormsTitle: string;
+    reactiveFormsIntro: string;
+    componentComment: string;
+    templateComment: string;
     customizationTitle: string;
     customizationIntro: string;
     customizationItems: {
@@ -191,6 +206,8 @@ export interface AppTranslations {
     undo: string;
     redo: string;
     separator: string;
+    table: string;
+    clear: string;
 
     // Height configuration
     fixedHeight: string;
@@ -307,12 +324,28 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     multimediaTitle: "Media",
     multimediaIntro: "",
     imageCaption: "Resizable image support.",
+    tablesTitle: "Tables",
+    tablesIntro: "Create and edit tables with advanced features:",
+    tablesTryText:
+      "Try selecting cells, adding rows/columns, and using table actions!",
+    tableHeaders: {
+      name: "Name",
+      age: "Age",
+      city: "City",
+      profession: "Profession",
+      email: "Email",
+      phone: "Phone",
+    },
     shortcutsTitle: "Quick Actions",
     shortcutsIntro: "",
     slashCommand: "/ for commands",
     bubbleMenu: "Select text for bubble menu",
     boldShortcut: "Ctrl+B",
     italicShortcut: "Ctrl+I",
+    reactiveFormsTitle: "Reactive Forms Integration",
+    reactiveFormsIntro: "Use with Angular form controls:",
+    componentComment: "Component",
+    templateComment: "Template",
     customizationTitle: "Features",
     customizationIntro: "",
     customizationItems: {
@@ -372,6 +405,8 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     undo: "Undo",
     redo: "Redo",
     separator: "Separator",
+    table: "Table",
+    clear: "Clear",
 
     // Height configuration
     fixedHeight: "Fixed height",
@@ -489,12 +524,29 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     multimediaTitle: "Média",
     multimediaIntro: "",
     imageCaption: "Support d'images redimensionnables.",
+    tablesTitle: "Tableaux",
+    tablesIntro:
+      "Créez et éditez des tableaux avec des fonctionnalités avancées :",
+    tablesTryText:
+      "Essayez de sélectionner des cellules, d'ajouter des lignes/colonnes et d'utiliser les actions de tableau !",
+    tableHeaders: {
+      name: "Nom",
+      age: "Âge",
+      city: "Ville",
+      profession: "Profession",
+      email: "Email",
+      phone: "Téléphone",
+    },
     shortcutsTitle: "Actions Rapides",
     shortcutsIntro: "",
     slashCommand: "/ pour commandes",
     bubbleMenu: "Sélectionnez du texte pour bubble menu",
     boldShortcut: "Ctrl+B",
     italicShortcut: "Ctrl+I",
+    reactiveFormsTitle: "Intégration Reactive Forms",
+    reactiveFormsIntro: "Utilisation avec les form controls Angular :",
+    componentComment: "Composant",
+    templateComment: "Template",
     customizationTitle: "Fonctionnalités",
     customizationIntro: "",
     customizationItems: {
@@ -554,6 +606,8 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     undo: "Annuler",
     redo: "Refaire",
     separator: "Séparateur",
+    table: "Tableau",
+    clear: "Effacer",
 
     // Height configuration
     fixedHeight: "Hauteur fixe",
@@ -643,7 +697,6 @@ export class AppI18nService {
   // Générer le contenu HTML de démo selon la langue
   generateDemoContent(): string {
     const content = this.demoContent();
-    const isEnglish = this.currentLocale() === "en";
 
     return `
 <h1>${content.title}</h1>
@@ -651,18 +704,12 @@ export class AppI18nService {
 
 <h2>${content.basicFeaturesTitle}</h2>
 <ul>
-  <li><strong>${content.boldText}</strong>, <em>${
-      content.italicText
-    }</em>, <u>${content.underlineText}</u>, <s>${
-      content.strikeText
-    }</s>, <code>${content.codeText}</code></li>
+  <li><strong>${content.boldText}</strong>, <em>${content.italicText}</em>, <u>${content.underlineText}</u>, <s>${content.strikeText}</s>, <code>${content.codeText}</code></li>
 </ul>
 
 <h2>${content.listsTitle}</h2>
 <ul><li>${content.firstItem}</li></ul>
-<ol><li>${content.secondItem}</li><li>${
-      content.thirdItem
-    } <a href="https://tiptap.dev">Tiptap</a></li></ol>
+<ol><li>${content.secondItem}</li><li>${content.thirdItem} <a href="https://tiptap.dev">Tiptap</a></li></ol>
 
 <blockquote><p><em>${content.quote}</em></p></blockquote>
 
@@ -670,34 +717,62 @@ export class AppI18nService {
 <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop" class="tiptap-image" alt="Sample image">
 <p><em>${content.imageCaption}</em></p>
 
+<h2>${content.tablesTitle}</h2>
+<p>${content.tablesIntro}</p>
+<table>
+  <tr>
+    <th>${content.tableHeaders.name}</th>
+    <th>${content.tableHeaders.age}</th>
+    <th>${content.tableHeaders.city}</th>
+    <th>${content.tableHeaders.profession}</th>
+    <th>${content.tableHeaders.email}</th>
+    <th>${content.tableHeaders.phone}</th>
+  </tr>
+  <tr>
+    <td>Alice P.</td>
+    <td>28</td>
+    <td>Paris</td>
+    <td>Développeuse</td>
+    <td>alice@flogeez.fr</td>
+    <td>01 23 45 67 89</td>
+  </tr>
+  <tr>
+    <td>Bob D.</td>
+    <td>35</td>
+    <td>Lyon</td>
+    <td>Designer</td>
+    <td>bob@flogeez.fr</td>
+    <td>04 56 78 90 12</td>
+  </tr>
+  <tr>
+    <td>Flo E.</td>
+    <td>33</td>
+    <td>Rennes</td>
+    <td>Développeur</td>
+    <td>flo@flogeez.fr</td>
+    <td>04 91 23 45 67</td>
+  </tr>
+</table>
+<p><em>${content.tablesTryText}</em></p>
+
 <h2>${content.shortcutsTitle}</h2>
 <ul>
   <li>${content.slashCommand} • ${content.bubbleMenu}</li>
   <li>${content.boldShortcut} • ${content.italicShortcut}</li>
 </ul>
 
-<h3>${
-      isEnglish ? "Reactive Forms Integration" : "Intégration Reactive Forms"
-    }</h3>
-<p>${
-      isEnglish
-        ? "Use with Angular form controls:"
-        : "Utilisation avec les form controls Angular :"
-    }</p>
-<pre><code>// ${isEnglish ? "Component" : "Composant"}
+<h3>${content.reactiveFormsTitle}</h3>
+<p>${content.reactiveFormsIntro}</p>
+<pre><code>// ${content.componentComment}
 simpleControl = new FormControl('', [Validators.required]);
 
-// Template
+// ${content.templateComment}
 &lt;angular-tiptap-editor [formControl]="simpleControl" /&gt;</code></pre>
 
 <h3>${content.customizationTitle}</h3>
 <ul>
-  <li>${content.customizationItems.toolbar} • ${
-      content.customizationItems.buttons
-    }</li>
-  <li>${content.customizationItems.bubbleMenu} • ${
-      content.customizationItems.slashCommands
-    }</li>
+  <li>${content.customizationItems.toolbar} • ${content.customizationItems.buttons}</li>
+  <li>${content.customizationItems.bubbleMenu} • ${content.customizationItems.slashCommands}</li>
 </ul>
 
 <p style="text-align: right;"><strong>${content.conclusion}</strong></p>

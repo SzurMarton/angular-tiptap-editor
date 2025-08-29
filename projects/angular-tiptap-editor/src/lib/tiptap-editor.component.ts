@@ -3,7 +3,6 @@ import {
   ElementRef,
   input,
   output,
-  OnInit,
   OnDestroy,
   viewChild,
   effect,
@@ -28,10 +27,16 @@ import OfficePaste from "@intevation/tiptap-extension-office-paste";
 
 import { ResizableImage } from "./extensions/resizable-image.extension";
 import { UploadProgress } from "./extensions/upload-progress.extension";
-import { TiptapToolbarComponent } from "./toolbar.component";
+import { TableExtension } from "./extensions/table.extension";
+import { TiptapToolbarComponent } from "./index";
 import { TiptapImageUploadComponent } from "./tiptap-image-upload.component";
 import { TiptapBubbleMenuComponent } from "./tiptap-bubble-menu.component";
 import { TiptapImageBubbleMenuComponent } from "./tiptap-image-bubble-menu.component";
+import { TiptapTableBubbleMenuComponent } from "./tiptap-table-bubble-menu.component";
+import {
+  CellBubbleMenuConfig,
+  TiptapCellBubbleMenuComponent,
+} from "./tiptap-cell-bubble-menu.component";
 import {
   TiptapSlashCommandsComponent,
   SlashCommandsConfig,
@@ -42,10 +47,11 @@ import { NoopValueAccessorDirective } from "./noop-value-accessor.directive";
 import { NgControl } from "@angular/forms";
 
 import { ImageUploadResult } from "./services/image.service";
-import { ToolbarConfig } from "./toolbar.component";
+import { ToolbarConfig } from "./tiptap-toolbar.component";
 import {
   BubbleMenuConfig,
   ImageBubbleMenuConfig,
+  TableBubbleMenuConfig,
 } from "./models/bubble-menu.model";
 import { concat, defer, of, tap } from "rxjs";
 
@@ -72,8 +78,10 @@ export const DEFAULT_TOOLBAR_CONFIG: ToolbarConfig = {
   link: true,
   image: true,
   horizontalRule: true,
+  table: true,
   undo: true,
   redo: true,
+  clear: false, // Désactivé par défaut (opt-in)
   separator: true,
 };
 
@@ -102,6 +110,25 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
   separator: true,
 };
 
+// Configuration par défaut du menu de table
+export const DEFAULT_TABLE_MENU_CONFIG: TableBubbleMenuConfig = {
+  addRowBefore: true,
+  addRowAfter: true,
+  deleteRow: true,
+  addColumnBefore: true,
+  addColumnAfter: true,
+  deleteColumn: true,
+  toggleHeaderRow: true,
+  toggleHeaderColumn: true,
+  deleteTable: true,
+  separator: true,
+};
+
+export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
+  mergeCells: true,
+  splitCell: true,
+};
+
 @Component({
   selector: "angular-tiptap-editor",
   standalone: true,
@@ -111,6 +138,8 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
     TiptapImageUploadComponent,
     TiptapBubbleMenuComponent,
     TiptapImageBubbleMenuComponent,
+    TiptapTableBubbleMenuComponent,
+    TiptapCellBubbleMenuComponent,
     TiptapSlashCommandsComponent,
   ],
   template: `
@@ -166,13 +195,34 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       ></tiptap-slash-commands>
       }
 
+      <!-- Table Menu -->
+      @if (editor()) {
+      <tiptap-table-bubble-menu
+        [editor]="editor()!"
+        [config]="tableBubbleMenuConfig()"
+        [style.display]="editorFullyInitialized() ? 'block' : 'none'"
+      ></tiptap-table-bubble-menu>
+      }
+
+      <!-- Cell Menu -->
+      @if (editor()) {
+      <tiptap-cell-bubble-menu
+        [editor]="editor()!"
+        [config]="cellBubbleMenuConfig()"
+        [style.display]="editorFullyInitialized() ? 'block' : 'none'"
+      ></tiptap-cell-bubble-menu>
+      }
+
+      <!-- Table Edit Button - Supprimé car remplacé par le menu bubble -->
+
       <!-- Compteur de caractères -->
-      @if (showCharacterCount() && characterCountData()) {
+      @if (showCharacterCount()) {
       <div class="character-count">
-        {{ characterCountData()?.characters }}
-        {{ i18nService.editor().characters }},
-        {{ characterCountData()?.words }} {{ i18nService.editor().words }} @if
-        (maxCharacters()) { /
+        {{ characterCount() }}
+        {{ i18nService.editor().character
+        }}{{ characterCount() > 1 ? "s" : "" }}, {{ wordCount() }}
+        {{ i18nService.editor().word }}{{ wordCount() > 1 ? "s" : "" }}
+        @if (maxCharacters()) { /
         {{ maxCharacters() }}
         }
       </div>
@@ -189,14 +239,12 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         background: white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         transition: border-color 0.2s ease;
       }
 
       .tiptap-editor:focus-within {
         border-color: #3182ce;
-        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
       }
 
       /* Contenu de l'éditeur */
@@ -575,6 +623,138 @@ export const DEFAULT_IMAGE_BUBBLE_MENU_CONFIG: ImageBubbleMenuConfig = {
       :host ::ng-deep .image-container:hover .image-size-info {
         opacity: 1;
       }
+      /* Styles pour les tables */
+      :host ::ng-deep .ProseMirror table {
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+        table-layout: fixed;
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      :host ::ng-deep .ProseMirror table td,
+      :host ::ng-deep .ProseMirror table th {
+        border: none;
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+        box-sizing: border-box;
+        min-width: 1em;
+        padding: 8px 12px;
+        position: relative;
+        vertical-align: top;
+        background: white;
+      }
+
+      /* Ajouter les bordures externes manquantes pour former la bordure du tableau */
+      :host ::ng-deep .ProseMirror table td:first-child,
+      :host ::ng-deep .ProseMirror table th:first-child {
+        border-left: 1px solid #e2e8f0;
+      }
+
+      :host ::ng-deep .ProseMirror table tr:first-child td,
+      :host ::ng-deep .ProseMirror table tr:first-child th {
+        border-top: 1px solid #e2e8f0;
+      }
+
+      /* Coins arrondis */
+      :host ::ng-deep .ProseMirror table tr:first-child th:first-child {
+        border-top-left-radius: 8px;
+      }
+
+      :host ::ng-deep .ProseMirror table tr:first-child th:last-child {
+        border-top-right-radius: 8px;
+      }
+
+      :host ::ng-deep .ProseMirror table tr:last-child td:first-child {
+        border-bottom-left-radius: 8px;
+      }
+
+      :host ::ng-deep .ProseMirror table tr:last-child td:last-child {
+        border-bottom-right-radius: 8px;
+      }
+
+      /* En-têtes de table */
+      :host ::ng-deep .ProseMirror table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      /* Cellules sélectionnées */
+      :host ::ng-deep .ProseMirror table .selectedCell:after {
+        background: rgba(200, 200, 255, 0.4);
+        content: "";
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 2;
+      }
+
+      /* Poignées de redimensionnement */
+      :host ::ng-deep .ProseMirror table .column-resize-handle {
+        position: absolute;
+        right: -2px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #6366f1;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      :host ::ng-deep .ProseMirror table:hover .column-resize-handle {
+        opacity: 1;
+      }
+
+      :host ::ng-deep .ProseMirror table .column-resize-handle:hover {
+        background-color: #4f46e5;
+      }
+
+      /* Container avec scroll horizontal */
+      :host ::ng-deep .ProseMirror .tableWrapper {
+        overflow-x: auto;
+        margin: 1em 0;
+        border-radius: 8px;
+      }
+
+      :host ::ng-deep .ProseMirror .tableWrapper table {
+        margin: 0;
+        border-radius: 8px;
+        min-width: 600px;
+        overflow: hidden;
+      }
+
+      /* Paragraphes dans les tables */
+      :host ::ng-deep .ProseMirror table p {
+        margin: 0;
+      }
+
+      /* Styles pour les cellules sélectionnées */
+      :host ::ng-deep .ProseMirror table .selectedCell {
+        background-color: rgba(99, 102, 241, 0.1);
+      }
+
+      /* Styles pour les en-têtes de table */
+      :host ::ng-deep .ProseMirror table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #374151;
+        text-align: left;
+      }
+
+      /* Styles pour les lignes alternées (optionnel) */
+      :host ::ng-deep .ProseMirror table tbody tr:nth-child(even) {
+        background-color: #fafbfc;
+      }
+
+      :host ::ng-deep .ProseMirror table tbody tr:hover {
+        background-color: #f1f5f9;
+      }
     `,
   ],
 })
@@ -620,9 +800,8 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
 
   // Signals pour l'état interne
   editor = signal<Editor | null>(null);
-  characterCountData = signal<{ characters: number; words: number } | null>(
-    null
-  );
+  characterCount = signal<number>(0);
+  wordCount = signal<number>(0);
   isDragOver = signal<boolean>(false);
   editorFullyInitialized = signal<boolean>(false);
 
@@ -649,6 +828,25 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       ? DEFAULT_IMAGE_BUBBLE_MENU_CONFIG
       : { ...DEFAULT_IMAGE_BUBBLE_MENU_CONFIG, ...this.imageBubbleMenu() }
   );
+
+  // Computed pour la configuration du bubble menu table
+  tableBubbleMenuConfig = computed(() => ({
+    addRowBefore: true,
+    addRowAfter: true,
+    deleteRow: true,
+    addColumnBefore: true,
+    addColumnAfter: true,
+    deleteColumn: true,
+    deleteTable: true,
+    toggleHeaderRow: true,
+    toggleHeaderColumn: true,
+  }));
+
+  // Computed pour la configuration du menu de cellules
+  cellBubbleMenuConfig = computed(() => ({
+    mergeCells: true,
+    splitCell: true,
+  }));
 
   // Computed pour la configuration de l'upload d'images
   imageUploadConfig = computed(() => ({
@@ -736,6 +934,14 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
         currentEditor.setEditable(isEditable);
       }
     });
+
+    // Effect pour la détection du survol des tables
+    effect(() => {
+      const currentEditor = this.editor();
+      if (!currentEditor) return;
+
+      // Table hover detection supprimée car remplacée par le menu bubble
+    });
   }
 
   ngAfterViewInit() {
@@ -791,6 +997,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
         uploadProgress: () => this.imageService.uploadProgress(),
         uploadMessage: () => this.imageService.uploadMessage(),
       }),
+      TableExtension,
     ];
 
     // Ajouter l'extension Office Paste si activée
@@ -860,10 +1067,8 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   private updateCharacterCount(editor: Editor) {
     if (this.showCharacterCount() && editor.storage["characterCount"]) {
       const storage = editor.storage["characterCount"];
-      this.characterCountData.set({
-        characters: storage.characters(),
-        words: storage.words(),
-      });
+      this.characterCount.set(storage.characters());
+      this.wordCount.set(storage.words());
     }
   }
 
@@ -954,7 +1159,12 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   clearContent() {
-    this.editor()?.commands.clearContent();
+    const editor = this.editor();
+    if (editor) {
+      editor.commands.clearContent();
+      // Mettre à jour les compteurs après avoir vidé le contenu
+      this.updateCharacterCount(editor);
+    }
   }
 
   private setupFormControlSubscription(): void {
@@ -1008,4 +1218,6 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       }, 0);
     }
   }
+
+  // Méthodes pour le bouton d'édition de table - Supprimées car remplacées par le menu bubble
 }

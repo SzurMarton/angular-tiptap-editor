@@ -368,6 +368,7 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
           code: "code",
           image: "image",
           horizontalRule: "horizontal_rule",
+          table: "table_view",
         };
 
         const codeGen = this.appI18nService.codeGeneration();
@@ -397,6 +398,7 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
       code: "editor.chain().focus().toggleCodeBlock().run();",
       image: `console.log('${codeGen.implementImageUpload}');`,
       horizontalRule: "editor.chain().focus().setHorizontalRule().run();",
+      table: "editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run();",
     };
 
     return (

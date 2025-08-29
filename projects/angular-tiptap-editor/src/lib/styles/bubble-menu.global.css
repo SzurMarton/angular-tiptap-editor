@@ -1,4 +1,14 @@
 /* Styles globaux pour les menus contextuels Tiptap */
+.tippy-box {
+  /* Par défaut Tippy limite à 350px */
+  max-width: none !important;
+}
+
+.tippy-content {
+  /* Le container interne ne doit pas rajouter de padding, on gère dans .bubble-menu */
+  padding: 0;
+}
+
 .tippy-box .bubble-menu {
   display: flex;
   align-items: center;
@@ -11,6 +21,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   z-index: 1000;
   animation: slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Empêcher les retours à la ligne pour des barres d'icônes */
+  white-space: nowrap;
 }
 
 .bubble-menu .tiptap-separator {

@@ -45,6 +45,32 @@ export class EditorCommandsService {
         return editor.can().chain().focus().undo().run();
       case "redo":
         return editor.can().chain().focus().redo().run();
+      case "insertTable":
+        return editor.can().chain().focus().insertTable().run();
+      case "addColumnBefore":
+        return editor.can().chain().focus().addColumnBefore().run();
+      case "addColumnAfter":
+        return editor.can().chain().focus().addColumnAfter().run();
+      case "deleteColumn":
+        return editor.can().chain().focus().deleteColumn().run();
+      case "addRowBefore":
+        return editor.can().chain().focus().addRowBefore().run();
+      case "addRowAfter":
+        return editor.can().chain().focus().addRowAfter().run();
+      case "deleteRow":
+        return editor.can().chain().focus().deleteRow().run();
+      case "deleteTable":
+        return editor.can().chain().focus().deleteTable().run();
+      case "mergeCells":
+        return editor.can().chain().focus().mergeCells().run();
+      case "splitCell":
+        return editor.can().chain().focus().splitCell().run();
+      case "toggleHeaderColumn":
+        return editor.can().chain().focus().toggleHeaderColumn().run();
+      case "toggleHeaderRow":
+        return editor.can().chain().focus().toggleHeaderRow().run();
+      case "toggleHeaderCell":
+        return editor.can().chain().focus().toggleHeaderCell().run();
       default:
         return false;
     }
@@ -133,5 +159,63 @@ export class EditorCommandsService {
     } else {
       editor.chain().focus().toggleHighlight().run();
     }
+  }
+
+  // Table commands
+  insertTable(editor: Editor, rows: number = 3, cols: number = 3): void {
+    editor.chain().focus().insertTable({ rows, cols }).run();
+  }
+
+  addColumnBefore(editor: Editor): void {
+    editor.chain().focus().addColumnBefore().run();
+  }
+
+  addColumnAfter(editor: Editor): void {
+    editor.chain().focus().addColumnAfter().run();
+  }
+
+  deleteColumn(editor: Editor): void {
+    editor.chain().focus().deleteColumn().run();
+  }
+
+  addRowBefore(editor: Editor): void {
+    editor.chain().focus().addRowBefore().run();
+  }
+
+  addRowAfter(editor: Editor): void {
+    editor.chain().focus().addRowAfter().run();
+  }
+
+  deleteRow(editor: Editor): void {
+    editor.chain().focus().deleteRow().run();
+  }
+
+  deleteTable(editor: Editor): void {
+    editor.chain().focus().deleteTable().run();
+  }
+
+  mergeCells(editor: Editor): void {
+    editor.chain().focus().mergeCells().run();
+  }
+
+  splitCell(editor: Editor): void {
+    editor.chain().focus().splitCell().run();
+  }
+
+  toggleHeaderColumn(editor: Editor): void {
+    editor.chain().focus().toggleHeaderColumn().run();
+  }
+
+  toggleHeaderRow(editor: Editor): void {
+    editor.chain().focus().toggleHeaderRow().run();
+  }
+
+  toggleHeaderCell(editor: Editor): void {
+    editor.chain().focus().toggleHeaderCell().run();
+  }
+
+  // Méthode pour vider le contenu
+  clearContent(editor: Editor): void {
+    editor.chain().focus().clearContent().run();
   }
 }

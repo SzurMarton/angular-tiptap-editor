@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigItem } from "../types/editor-config.types";
 import { AppI18nService } from "../services/app-i18n.service";
-import { EditorConfigurationService } from "../services/editor-configuration.service";
 
 @Component({
   selector: "app-config-section",
@@ -196,8 +195,9 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
       }
 
       .checkmark {
-        width: 16px;
-        height: 16px;
+        box-sizing: border-box;
+        width: 17px;
+        height: 17px;
         border: 2px solid #d1d5db;
         border-radius: 4px;
         position: relative;

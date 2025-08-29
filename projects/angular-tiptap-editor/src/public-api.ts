@@ -12,10 +12,12 @@ export * from "./lib/noop-value-accessor.directive";
 export * from "./lib/services/i18n.service";
 
 // Types and interfaces for configuration
-export type { ToolbarConfig } from "./lib/toolbar.component";
+export type { ToolbarConfig } from "./lib/tiptap-toolbar.component";
 export type {
   BubbleMenuConfig,
   ImageBubbleMenuConfig,
+  TableBubbleMenuConfig,
+  CellBubbleMenuConfig,
 } from "./lib/models/bubble-menu.model";
 export type {
   SlashCommandsConfig,
@@ -26,6 +28,7 @@ export type {
 export { DEFAULT_TOOLBAR_CONFIG } from "./lib/tiptap-editor.component";
 export { DEFAULT_BUBBLE_MENU_CONFIG } from "./lib/tiptap-editor.component";
 export { DEFAULT_IMAGE_BUBBLE_MENU_CONFIG } from "./lib/tiptap-editor.component";
+export { DEFAULT_TABLE_MENU_CONFIG } from "./lib/tiptap-editor.component";
 export { DEFAULT_SLASH_COMMANDS } from "./lib/tiptap-slash-commands.component";
 
 // Utility function to create internationalized slash commands

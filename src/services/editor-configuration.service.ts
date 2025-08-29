@@ -64,8 +64,10 @@ export class EditorConfigurationService {
     link: true,
     image: true,
     horizontalRule: true,
+    table: true,
     undo: true,
     redo: true,
+    clear: false, // ✅ Désactivé par défaut (opt-in)
     separator: true,
   });
 
@@ -91,6 +93,7 @@ export class EditorConfigurationService {
       "code",
       "image",
       "horizontalRule",
+      "table",
     ])
   );
 
@@ -279,8 +282,10 @@ export class EditorConfigurationService {
       link: true,
       image: true,
       horizontalRule: true,
+      table: true,
       undo: true,
       redo: true,
+      clear: false, // ✅ Désactivé par défaut (opt-in)
       separator: true,
     });
 
@@ -306,6 +311,7 @@ export class EditorConfigurationService {
         "code",
         "image",
         "horizontalRule",
+        "table",
       ])
     );
 
@@ -341,6 +347,7 @@ export class EditorConfigurationService {
       ["code", "code"],
       ["image", "image"],
       ["horizontalRule", "horizontalRule"],
+      ["table", "table"],
     ]);
 
     const filteredCommands = allI18nCommands.filter(

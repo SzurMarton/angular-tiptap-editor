@@ -158,13 +158,12 @@ import { AppI18nService } from "../services/app-i18n.service";
   ],
 })
 export class LanguageSwitchComponent {
-  private i18nService = inject(TiptapI18nService);
   readonly appI18n = inject(AppI18nService);
 
-  readonly currentLocale = this.i18nService.currentLocale;
+  readonly currentLocale = this.appI18n.currentLocale;
 
   toggleLanguage() {
     const newLocale = this.currentLocale() === "en" ? "fr" : "en";
-    this.i18nService.setLocale(newLocale);
+    this.appI18n.setLocale(newLocale);
   }
 }

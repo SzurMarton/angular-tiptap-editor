@@ -11,6 +11,7 @@ import {
 } from "@angular/core";
 import tippy, { Instance as TippyInstance } from "tippy.js";
 import type { Editor } from "@tiptap/core";
+import { CellSelection } from "@tiptap/pm/tables";
 import { TiptapButtonComponent } from "./tiptap-button.component";
 
 export interface BubbleMenuConfig {
@@ -259,16 +260,38 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
       const ed = this.editor();
       if (!ed) return;
 
-      const { from, to } = ed.state.selection;
-      const hasTextSelection = from !== to;
+      const { selection } = ed.state;
+      const { from, to } = selection;
+      const hasTextSelection =
+        from !== to && !(selection instanceof CellSelection);
       const isImageSelected =
         ed.isActive("image") || ed.isActive("resizableImage");
+      const isTableCellSelected =
+        ed.isActive("tableCell") || ed.isActive("tableHeader");
+      const hasCellSelection = selection instanceof CellSelection;
+
+      console.log("TextBubbleMenu - updateMenu:", {
+        hasTextSelection,
+        isImageSelected,
+        isTableCellSelected,
+        hasCellSelection,
+        selectionType: selection.constructor.name,
+        selectionEmpty: selection.empty,
+        from,
+        to,
+      });
 
       // Ne montrer le menu texte que si :
-      // - Il y a une sélection de texte
+      // - Il y a une sélection de texte (pas une sélection de cellules multiples)
       // - Aucune image n'est sélectionnée (priorité aux images)
+      // - Ce n'est pas une sélection de cellules multiples (CellSelection)
       // - L'éditeur est éditable
-      const shouldShow = hasTextSelection && !isImageSelected && ed.isEditable;
+      // Note: Le texte dans une cellule est autorisé (isTableCellSelected peut être true)
+      const shouldShow =
+        hasTextSelection &&
+        !isImageSelected &&
+        !hasCellSelection &&
+        ed.isEditable;
 
       if (shouldShow) {
         this.showTippy();
@@ -301,7 +324,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
     this.tippyInstance.show();
   }
 
-  private hideTippy() {
+  hideTippy() {
     if (this.tippyInstance) {
       this.tippyInstance.hide();
     }

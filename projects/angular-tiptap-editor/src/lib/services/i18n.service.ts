@@ -26,8 +26,10 @@ export interface TiptapTranslations {
     link: string;
     image: string;
     horizontalRule: string;
+    table: string;
     undo: string;
     redo: string;
+    clear: string;
   };
 
   // Bubble Menu
@@ -96,6 +98,26 @@ export interface TiptapTranslations {
       description: string;
       keywords: string[];
     };
+    table: {
+      title: string;
+      description: string;
+      keywords: string[];
+    };
+  };
+
+  // Table Actions
+  table: {
+    addRowBefore: string;
+    addRowAfter: string;
+    deleteRow: string;
+    addColumnBefore: string;
+    addColumnAfter: string;
+    deleteColumn: string;
+    deleteTable: string;
+    toggleHeaderRow: string;
+    toggleHeaderColumn: string;
+    mergeCells: string;
+    splitCell: string;
   };
 
   // Image Upload
@@ -119,8 +141,8 @@ export interface TiptapTranslations {
   // Editor
   editor: {
     placeholder: string;
-    characters: string;
-    words: string;
+    character: string;
+    word: string;
     imageLoadError: string;
     linkPrompt: string;
     linkUrlPrompt: string;
@@ -164,8 +186,10 @@ const ENGLISH_TRANSLATIONS: TiptapTranslations = {
     link: "Add Link",
     image: "Add Image",
     horizontalRule: "Horizontal Rule",
+    table: "Insert Table",
     undo: "Undo",
     redo: "Redo",
+    clear: "Clear",
   },
   bubbleMenu: {
     bold: "Bold",
@@ -230,6 +254,24 @@ const ENGLISH_TRANSLATIONS: TiptapTranslations = {
       description: "Add a horizontal line",
       keywords: ["hr", "horizontal", "rule", "line", "separator"],
     },
+    table: {
+      title: "Table",
+      description: "Insert a table",
+      keywords: ["table", "grid", "data", "rows", "columns"],
+    },
+  },
+  table: {
+    addRowBefore: "Add row before",
+    addRowAfter: "Add row after",
+    deleteRow: "Delete row",
+    addColumnBefore: "Add column before",
+    addColumnAfter: "Add column after",
+    deleteColumn: "Delete column",
+    deleteTable: "Delete table",
+    toggleHeaderRow: "Toggle header row",
+    toggleHeaderColumn: "Toggle header column",
+    mergeCells: "Merge cells",
+    splitCell: "Split cell",
   },
   imageUpload: {
     selectImage: "Select Image",
@@ -249,8 +291,8 @@ const ENGLISH_TRANSLATIONS: TiptapTranslations = {
   },
   editor: {
     placeholder: "Start typing...",
-    characters: "characters",
-    words: "words",
+    character: "character",
+    word: "word",
     imageLoadError: "Error loading image",
     linkPrompt: "Enter link URL",
     linkUrlPrompt: "Enter URL",
@@ -292,8 +334,10 @@ const FRENCH_TRANSLATIONS: TiptapTranslations = {
     link: "Ajouter un lien",
     image: "Ajouter une image",
     horizontalRule: "Ligne horizontale",
+    table: "Insérer un tableau",
     undo: "Annuler",
     redo: "Refaire",
+    clear: "Vider",
   },
   bubbleMenu: {
     bold: "Gras",
@@ -358,6 +402,33 @@ const FRENCH_TRANSLATIONS: TiptapTranslations = {
       description: "Ajouter une ligne de séparation",
       keywords: ["hr", "horizontal", "rule", "ligne", "séparation"],
     },
+    table: {
+      title: "Tableau",
+      description: "Insérer un tableau",
+      keywords: [
+        "table",
+        "tableau",
+        "grid",
+        "grille",
+        "data",
+        "données",
+        "rows",
+        "colonnes",
+      ],
+    },
+  },
+  table: {
+    addRowBefore: "Ajouter une ligne avant",
+    addRowAfter: "Ajouter une ligne après",
+    deleteRow: "Supprimer la ligne",
+    addColumnBefore: "Ajouter une colonne avant",
+    addColumnAfter: "Ajouter une colonne après",
+    deleteColumn: "Supprimer la colonne",
+    deleteTable: "Supprimer le tableau",
+    toggleHeaderRow: "Basculer ligne d'en-tête",
+    toggleHeaderColumn: "Basculer colonne d'en-tête",
+    mergeCells: "Fusionner les cellules",
+    splitCell: "Diviser la cellule",
   },
   imageUpload: {
     selectImage: "Sélectionner une image",
@@ -377,8 +448,8 @@ const FRENCH_TRANSLATIONS: TiptapTranslations = {
   },
   editor: {
     placeholder: "Commencez à écrire...",
-    characters: "caractères",
-    words: "mots",
+    character: "caractère",
+    word: "mot",
     imageLoadError: "Erreur de chargement de l'image",
     linkPrompt: "Entrez l'URL du lien",
     linkUrlPrompt: "Entrez l'URL",
@@ -418,6 +489,7 @@ export class TiptapI18nService {
   readonly toolbar = computed(() => this.translations().toolbar);
   readonly bubbleMenu = computed(() => this.translations().bubbleMenu);
   readonly slashCommands = computed(() => this.translations().slashCommands);
+  readonly table = computed(() => this.translations().table);
   readonly imageUpload = computed(() => this.translations().imageUpload);
   readonly editor = computed(() => this.translations().editor);
   readonly common = computed(() => this.translations().common);

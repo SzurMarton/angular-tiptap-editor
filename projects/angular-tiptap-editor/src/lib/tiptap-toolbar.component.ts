@@ -28,8 +28,10 @@ export interface ToolbarConfig {
   link?: boolean;
   image?: boolean;
   horizontalRule?: boolean;
+  table?: boolean;
   undo?: boolean;
   redo?: boolean;
+  clear?: boolean;
   separator?: boolean;
 }
 
@@ -200,6 +202,12 @@ export interface ToolbarConfig {
         [title]="t().horizontalRule"
         (onClick)="insertHorizontalRule()"
       />
+      } @if (config().table) {
+      <tiptap-button
+        icon="table_view"
+        [title]="t().table"
+        (onClick)="insertTable()"
+      />
       } @if (config().separator && config().image) {
       <tiptap-separator />
       } @if (config().image) {
@@ -223,6 +231,14 @@ export interface ToolbarConfig {
         [title]="t().redo"
         [disabled]="!canExecute('redo')"
         (onClick)="redo()"
+      />
+      } @if (config().separator && config().clear) {
+      <tiptap-separator />
+      } @if (config().clear) {
+      <tiptap-button
+        icon="delete"
+        [title]="t().clear"
+        (onClick)="clearContent()"
       />
       }
     </div>
@@ -366,6 +382,11 @@ export class TiptapToolbarComponent {
     this.editorCommands.toggleHighlight(this.editor());
   }
 
+  // Méthode pour insérer un tableau
+  insertTable() {
+    this.editorCommands.insertTable(this.editor());
+  }
+
   // Méthode pour insérer une image
   async insertImage() {
     try {
@@ -374,6 +395,11 @@ export class TiptapToolbarComponent {
       console.error("Erreur lors de l'upload d'image:", error);
       this.imageError.emit("Erreur lors de l'upload d'image");
     }
+  }
+
+  // Méthode pour vider le contenu
+  clearContent() {
+    this.editorCommands.clearContent(this.editor());
   }
 
   // Méthodes pour les événements d'image (conservées pour compatibilité)

@@ -68,8 +68,10 @@ export function createToolbarItems(itemLabels: any): ConfigItem[] {
       label: itemLabels["horizontalRule"],
       icon: "horizontal_rule",
     },
+    { key: "table", label: itemLabels["table"], icon: "table_view" },
     { key: "undo", label: itemLabels["undo"], icon: "undo" },
     { key: "redo", label: itemLabels["redo"], icon: "redo" },
+    { key: "clear", label: itemLabels["clear"], icon: "delete" },
     { key: "separator", label: itemLabels["separator"], icon: "more_vert" },
   ];
 }
@@ -116,6 +118,7 @@ export function createSlashCommandItems(itemLabels: any): ConfigItem[] {
       label: itemLabels.horizontalRule,
       icon: "horizontal_rule",
     },
+    { key: "table", label: itemLabels.table, icon: "table_view" },
   ];
 }
 
@@ -150,6 +153,7 @@ export const TOOLBAR_ITEMS: ConfigItem[] = [
     label: "Ligne horizontale",
     icon: "horizontal_rule",
   },
+  { key: "table", label: "Tableau", icon: "table_view" },
   { key: "undo", label: "Annuler", icon: "undo" },
   { key: "redo", label: "Refaire", icon: "redo" },
   { key: "separator", label: "Séparateur", icon: "more_vert" },
@@ -186,6 +190,7 @@ export const SLASH_COMMAND_ITEMS: ConfigItem[] = [
     label: "Ligne horizontale",
     icon: "horizontal_rule",
   },
+  { key: "table", label: "Tableau", icon: "table_view" },
 ];
 
 export const HEIGHT_ITEMS: ConfigItem[] = [
@@ -232,6 +237,35 @@ export const DEFAULT_DEMO_CONTENT = `
   <li>Utilisez <strong>Ctrl+B</strong> pour mettre en gras</li>
   <li>Utilisez <strong>Ctrl+I</strong> pour mettre en italique</li>
 </ul>
+
+<h2>Tables et Données</h2>
+<p>Créez des tableaux pour organiser vos données :</p>
+<table>
+  <thead>
+    <tr>
+      <th>Fonctionnalité</th>
+      <th>Description</th>
+      <th>Statut</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tables redimensionnables</td>
+      <td>Redimensionnez les colonnes en glissant</td>
+      <td>✅ Disponible</td>
+    </tr>
+    <tr>
+      <td>En-têtes de colonnes</td>
+      <td>Convertissez les cellules en en-têtes</td>
+      <td>✅ Disponible</td>
+    </tr>
+    <tr>
+      <td>Fusion de cellules</td>
+      <td>Combinez plusieurs cellules</td>
+      <td>✅ Disponible</td>
+    </tr>
+  </tbody>
+</table>
 
 <hr>
 

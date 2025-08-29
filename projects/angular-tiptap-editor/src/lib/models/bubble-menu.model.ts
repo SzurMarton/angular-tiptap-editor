@@ -20,3 +20,21 @@ export interface ImageBubbleMenuConfig {
   deleteImage?: boolean;
   separator?: boolean;
 }
+
+export interface TableBubbleMenuConfig {
+  addRowBefore?: boolean;
+  addRowAfter?: boolean;
+  deleteRow?: boolean;
+  addColumnBefore?: boolean;
+  addColumnAfter?: boolean;
+  deleteColumn?: boolean;
+  deleteTable?: boolean;
+  toggleHeaderRow?: boolean;
+  toggleHeaderColumn?: boolean;
+  separator?: boolean;
+}
+
+export interface CellBubbleMenuConfig {
+  mergeCells?: boolean;
+  splitCell?: boolean;
+}

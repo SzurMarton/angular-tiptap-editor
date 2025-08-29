@@ -163,6 +163,14 @@ export function createI18nSlashCommands(
       command: (editor: Editor) =>
         editor.chain().focus().setHorizontalRule().run(),
     },
+    {
+      title: slashCommands.table.title,
+      description: slashCommands.table.description,
+      icon: "table_view",
+      keywords: slashCommands.table.keywords,
+      command: (editor: Editor) =>
+        editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run(),
+    },
   ];
 }
 
@@ -179,6 +187,7 @@ export const SLASH_COMMAND_KEYS = {
   code: "code",
   image: "image",
   horizontalRule: "horizontalRule",
+  table: "table",
 } as const;
 
 export type SlashCommandKey = keyof typeof SLASH_COMMAND_KEYS;

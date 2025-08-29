@@ -16,8 +16,14 @@ import {
   standalone: true,
   imports: [CommonModule, ConfigSectionComponent, HeightConfigComponent],
   template: `
-    <!-- Sidebar de configuration -->
-    <aside class="sidebar" [class.hidden]="!editorState().showSidebar">
+    <!-- Sidebar de configuration avec contenu visible pendant l'animation -->
+    <aside
+      class="sidebar"
+      [class.hidden]="
+        !editorState().showSidebar && !editorState().isTransitioning
+      "
+      [class.expanding]="editorState().isTransitioning"
+    >
       <div class="sidebar-container">
         <!-- Header du sidebar -->
         <div class="sidebar-header">
@@ -117,89 +123,20 @@ import {
       </div>
     </aside>
 
-    <!-- Bouton d'ouverture (quand sidebar fermée) -->
+    <!-- Bouton d'ouverture simple -->
+    @if (!editorState().showSidebar && !editorState().isTransitioning) {
     <button
       class="open-sidebar-btn"
-      *ngIf="!editorState().showSidebar && !editorState().isTransitioning"
       (click)="toggleSidebar()"
       [title]="appI18n.tooltips().toggleSidebar"
     >
       <span class="material-symbols-outlined">tune</span>
     </button>
-
-    <!-- Élément de transition pour l'animation -->
-    <div class="transition-element" *ngIf="editorState().isTransitioning">
-      <div class="transition-content">
-        <span class="material-symbols-outlined transition-icon">tune</span>
-      </div>
-
-      <div class="transition-panel-content">
-        <div class="sidebar-container">
-          <!-- Header du sidebar -->
-          <div class="sidebar-header">
-            <div class="header-content">
-              <div class="logo">
-                <span class="material-symbols-outlined">tune</span>
-                <h1>Configuration</h1>
-              </div>
-              <div class="header-actions">
-                <button
-                  class="panel-btn secondary"
-                  (click)="resetToDefaults()"
-                  title="Réinitialiser la configuration"
-                >
-                  <span class="material-symbols-outlined">restart_alt</span>
-                </button>
-                <button
-                  class="panel-btn danger"
-                  (click)="toggleSidebar()"
-                  title="Fermer le panneau"
-                >
-                  <span class="material-symbols-outlined">close</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Status bar intégré -->
-            <div class="status-bar">
-              <div
-                class="status-item"
-                [class.active]="editorState().showToolbar"
-              >
-                <span class="material-symbols-outlined">build</span>
-                <span>{{ toolbarActiveCount() }}</span>
-              </div>
-              <div
-                class="status-item"
-                [class.active]="editorState().showBubbleMenu"
-              >
-                <span class="material-symbols-outlined">chat_bubble</span>
-                <span>Bubble</span>
-              </div>
-              <div
-                class="status-item"
-                [class.active]="editorState().enableSlashCommands"
-              >
-                <span class="material-symbols-outlined">flash_on</span>
-                <span>{{ slashCommandsActiveCount() }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Configuration sections -->
-          <div class="config-sections">
-            <!-- Contenu simplifié pour la transition -->
-            <div style="padding: 1rem; text-align: center; color: #64748b;">
-              Configuration en cours de chargement...
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    }
   `,
   styles: [
     `
-      /* Sidebar styles */
+      /* Sidebar styles avec animation sophistiquée */
       .sidebar {
         position: fixed;
         top: 2rem;
@@ -215,21 +152,69 @@ import {
         z-index: 100;
         opacity: 1;
         transform: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .sidebar.hidden {
         display: none;
       }
 
+      /* Animation d'expansion de la sidebar avec contenu visible */
+      .sidebar.expanding {
+        animation: sidebarExpand 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+          forwards;
+      }
+
+      @keyframes sidebarExpand {
+        0% {
+          right: 2rem;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          overflow: hidden;
+          opacity: 0.8;
+        }
+        50% {
+          right: var(--panel-right-offset);
+          width: var(--panel-width);
+          height: var(--panel-height);
+          border-radius: 16px;
+          overflow: hidden;
+          opacity: 0.95;
+        }
+        100% {
+          right: var(--panel-right-offset);
+          width: var(--panel-width);
+          height: var(--panel-height);
+          border-radius: 16px;
+          overflow: visible;
+          opacity: 1;
+        }
+      }
+
       .sidebar-container {
         background: white;
         border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
         height: 100%;
         overflow: hidden;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+      }
+
+      .sidebar.expanding .sidebar-container {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .sidebar:not(.expanding) .sidebar-container {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       .sidebar-header {
@@ -349,6 +334,18 @@ import {
         justify-content: center;
         cursor: pointer;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform: scale(1);
+      }
+
+      .open-sidebar-btn:hover {
+        color: #6366f1;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        transform: scale(1.05);
+      }
+
+      .open-sidebar-btn:active {
+        transform: scale(0.95);
       }
 
       .open-sidebar-btn:hover {
@@ -360,68 +357,7 @@ import {
         font-size: 24px;
       }
 
-      /* Animations - Nettoyées */
-
-      /* Élément de transition */
-      .transition-element {
-        position: fixed;
-        top: 2rem;
-        right: 2rem;
-        z-index: 150;
-        width: 48px;
-        height: 48px;
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .transition-element.expanding {
-        right: var(--panel-right-offset);
-        width: var(--panel-width);
-        height: var(--panel-height);
-      }
-
-      .transition-content {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-      }
-
-      .transition-element.expanding .transition-content {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .transition-icon {
-        font-size: 24px;
-        color: #64748b;
-        transition: all 0.15s ease;
-      }
-
-      /* Contenu du panel dans la transition */
-      .transition-panel-content {
-        opacity: 0;
-        transition: all 0.2s ease 0.2s;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .transition-element.expanding .transition-panel-content {
-        opacity: 1;
-      }
+      /* Animation sophistiquée maintenue avec CSS pur */
 
       /* Styles pour les contrôles de configuration */
       .config-controls {
@@ -527,20 +463,13 @@ export class ConfigurationPanelComponent {
       };
     });
 
-    // Effect to automatically start expansion animation
+    // Effect pour démarrer l'animation d'expansion
     effect(() => {
       const isTransitioning = this.editorState().isTransitioning;
 
       if (isTransitioning) {
-        // Start animation after a short delay
-        setTimeout(() => {
-          const transitionElement = this.elementRef.nativeElement.querySelector(
-            ".transition-element"
-          );
-          if (transitionElement) {
-            transitionElement.classList.add("expanding");
-          }
-        }, 25);
+        // L'animation CSS se déclenche automatiquement via la classe .expanding
+        // Pas besoin de manipulation DOM complexe
       }
     });
   }
@@ -622,16 +551,16 @@ export class ConfigurationPanelComponent {
       // Fermeture du sidebar
       this.configService.updateEditorState({ showSidebar: false });
     } else {
-      // Ouverture avec animation de transformation
+      // Ouverture avec animation et contenu visible
       this.configService.updateEditorState({ isTransitioning: true });
 
-      // After animation, replace directly with sidebar
+      // Après l'animation CSS, finaliser l'état
       setTimeout(() => {
         this.configService.updateEditorState({
           isTransitioning: false,
           showSidebar: true,
         });
-      }, 425);
+      }, 800); // Durée de l'animation CSS
     }
   }
 
