@@ -1,11 +1,18 @@
 import { Injectable, signal, computed, inject, effect } from "@angular/core";
+import { Editor } from "@tiptap/core";
 import {
   ToolbarConfig,
   BubbleMenuConfig,
   SlashCommandsConfig,
   TiptapI18nService,
+  DEFAULT_TOOLBAR_CONFIG,
+  DEFAULT_BUBBLE_MENU_CONFIG,
+  SLASH_COMMAND_KEYS,
 } from "angular-tiptap-editor";
-import { createI18nSlashCommands } from "angular-tiptap-editor";
+import {
+  filterSlashCommands,
+  EditorCommandsService,
+} from "angular-tiptap-editor";
 import { EditorState, MenuState } from "../types/editor-config.types";
 import { AppI18nService } from "./app-i18n.service";
 
@@ -15,6 +22,7 @@ import { AppI18nService } from "./app-i18n.service";
 export class EditorConfigurationService {
   private i18nService = inject(TiptapI18nService);
   private appI18nService = inject(AppI18nService);
+  private editorCommandsService = inject(EditorCommandsService);
   // Editor state
   private _editorState = signal<EditorState>({
     showSidebar: true,
@@ -41,60 +49,15 @@ export class EditorConfigurationService {
   // Editor content
   private _demoContent = signal("<p></p>");
 
-  // Configurations
-  private _toolbarConfig = signal<Partial<ToolbarConfig>>({
-    bold: true,
-    italic: true,
-    underline: true,
-    strike: true,
-    code: true,
-    superscript: false,
-    subscript: false,
-    highlight: true,
-    heading1: true,
-    heading2: true,
-    heading3: true,
-    bulletList: true,
-    orderedList: true,
-    blockquote: true,
-    alignLeft: false,
-    alignCenter: false,
-    alignRight: false,
-    alignJustify: false,
-    link: true,
-    image: true,
-    horizontalRule: true,
-    table: true,
-    undo: true,
-    redo: true,
-    clear: false, // ✅ Désactivé par défaut (opt-in)
-    separator: true,
-  });
-
-  private _bubbleMenuConfig = signal<Partial<BubbleMenuConfig>>({
-    bold: true,
-    italic: true,
-    underline: true,
-    strike: true,
-    code: true,
-    highlight: true,
-    link: true,
-    separator: true,
-  });
-
+  // Configurations - utilisent les configurations par défaut de la librairie
+  private _toolbarConfig = signal<Partial<ToolbarConfig>>(
+    DEFAULT_TOOLBAR_CONFIG
+  );
+  private _bubbleMenuConfig = signal<Partial<BubbleMenuConfig>>(
+    DEFAULT_BUBBLE_MENU_CONFIG
+  );
   private _activeSlashCommands = signal<Set<string>>(
-    new Set([
-      "heading1",
-      "heading2",
-      "heading3",
-      "bulletList",
-      "orderedList",
-      "blockquote",
-      "code",
-      "image",
-      "horizontalRule",
-      "table",
-    ])
+    new Set(SLASH_COMMAND_KEYS)
   );
 
   private _slashCommandsConfig = signal<SlashCommandsConfig>({
@@ -258,62 +221,11 @@ export class EditorConfigurationService {
     });
   }
 
-  // Reset to default values
+  // Reset to default values - utilise les configurations de la librairie
   resetToDefaults() {
-    this._toolbarConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      code: true,
-      superscript: false,
-      subscript: false,
-      highlight: true,
-      heading1: true,
-      heading2: true,
-      heading3: true,
-      bulletList: true,
-      orderedList: true,
-      blockquote: true,
-      alignLeft: false,
-      alignCenter: false,
-      alignRight: false,
-      alignJustify: false,
-      link: true,
-      image: true,
-      horizontalRule: true,
-      table: true,
-      undo: true,
-      redo: true,
-      clear: false, // ✅ Désactivé par défaut (opt-in)
-      separator: true,
-    });
-
-    this._bubbleMenuConfig.set({
-      bold: true,
-      italic: true,
-      underline: true,
-      strike: true,
-      code: true,
-      highlight: true,
-      link: true,
-      separator: true,
-    });
-
-    this._activeSlashCommands.set(
-      new Set([
-        "heading1",
-        "heading2",
-        "heading3",
-        "bulletList",
-        "orderedList",
-        "blockquote",
-        "code",
-        "image",
-        "horizontalRule",
-        "table",
-      ])
-    );
+    this._toolbarConfig.set(DEFAULT_TOOLBAR_CONFIG);
+    this._bubbleMenuConfig.set(DEFAULT_BUBBLE_MENU_CONFIG);
+    this._activeSlashCommands.set(new Set(SLASH_COMMAND_KEYS));
 
     this.updateSlashCommandsConfig();
 
@@ -327,37 +239,31 @@ export class EditorConfigurationService {
     this.closeAllMenus();
   }
 
+  // Référence à l'éditeur (pour les actions directes)
+  private _editorReference = signal<Editor | null>(null);
+
+  // Méthode pour définir la référence de l'éditeur
+  setEditorReference(editor: Editor) {
+    this._editorReference.set(editor);
+  }
+
   // Vider le contenu
   clearContent() {
-    this._demoContent.set("<p></p>");
+    const editor = this._editorReference();
+    if (editor) {
+      // Utiliser le service pour vider le contenu et déclencher les événements
+      this.editorCommandsService.clearContent(editor);
+    } else {
+      // Fallback : mettre à jour le contenu via le signal
+      this._demoContent.set("<p></p>");
+    }
   }
 
   private updateSlashCommandsConfig() {
     const activeCommands = this._activeSlashCommands();
-    const allI18nCommands = createI18nSlashCommands(this.i18nService);
 
-    // Map titles to keys for compatibility
-    const commandKeyMap = new Map<string, string>([
-      ["heading1", "heading1"],
-      ["heading2", "heading2"],
-      ["heading3", "heading3"],
-      ["bulletList", "bulletList"],
-      ["orderedList", "orderedList"],
-      ["blockquote", "blockquote"],
-      ["code", "code"],
-      ["image", "image"],
-      ["horizontalRule", "horizontalRule"],
-      ["table", "table"],
-    ]);
-
-    const filteredCommands = allI18nCommands.filter(
-      (command: any, index: number) => {
-        // Use index to determine command key
-        const commandKeys = Array.from(commandKeyMap.keys());
-        const commandKey = commandKeys[index];
-        return commandKey && activeCommands.has(commandKey);
-      }
-    );
+    // Utiliser la fonction utilitaire de la librairie (gère l'i18n en interne)
+    const filteredCommands = filterSlashCommands(activeCommands);
 
     this._slashCommandsConfig.set({
       commands: filteredCommands,

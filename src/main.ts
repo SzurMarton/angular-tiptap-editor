@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, viewChild, signal, effect } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -49,6 +49,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
             <!-- Mode éditeur -->
             <div class="editor-view" *ngIf="!editorState().showCodeMode">
               <angular-tiptap-editor
+                #editorRef
                 [content]="demoContent()"
                 [toolbar]="toolbarConfig()"
                 [bubbleMenu]="bubbleMenuConfig()"
@@ -173,6 +174,9 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
   ],
 })
 export class App {
+  // ViewChild pour l'éditeur
+  private editorRef = viewChild<AngularTiptapEditorComponent>("editorRef");
+
   // Injection des services
   private configService = inject(EditorConfigurationService);
   private i18nService = inject(TiptapI18nService);
@@ -184,6 +188,16 @@ export class App {
   readonly bubbleMenuConfig = this.configService.bubbleMenuConfig;
   readonly slashCommandsConfig = this.configService.slashCommandsConfig;
   readonly currentLocale = this.i18nService.currentLocale;
+
+  constructor() {
+    // Effet pour passer la référence de l'éditeur au service
+    effect(() => {
+      const editor = this.editorRef()?.editor();
+      if (editor) {
+        this.configService.setEditorReference(editor);
+      }
+    });
+  }
 
   // Method to handle content changes
   onContentChange(content: string) {

@@ -43,6 +43,7 @@ import {
 } from "./tiptap-slash-commands.component";
 import { ImageService } from "./services/image.service";
 import { TiptapI18nService, SupportedLocale } from "./services/i18n.service";
+import { EditorCommandsService } from "./services/editor-commands.service";
 import { NoopValueAccessorDirective } from "./noop-value-accessor.directive";
 import { NgControl } from "@angular/forms";
 
@@ -798,12 +799,19 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   // ViewChild avec signal
   editorElement = viewChild.required<ElementRef>("editorElement");
 
-  // Signals pour l'état interne
-  editor = signal<Editor | null>(null);
-  characterCount = signal<number>(0);
-  wordCount = signal<number>(0);
-  isDragOver = signal<boolean>(false);
-  editorFullyInitialized = signal<boolean>(false);
+  // Signals privés pour l'état interne
+  private _editor = signal<Editor | null>(null);
+  private _characterCount = signal<number>(0);
+  private _wordCount = signal<number>(0);
+  private _isDragOver = signal<boolean>(false);
+  private _editorFullyInitialized = signal<boolean>(false);
+
+  // Accès en lecture seule aux signaux
+  readonly editor = this._editor.asReadonly();
+  readonly characterCount = this._characterCount.asReadonly();
+  readonly wordCount = this._wordCount.asReadonly();
+  readonly isDragOver = this._isDragOver.asReadonly();
+  readonly editorFullyInitialized = this._editorFullyInitialized.asReadonly();
 
   // Computed pour les états de l'éditeur
   isEditorReady = computed(() => this.editor() !== null);
@@ -873,6 +881,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
 
   readonly i18nService = inject(TiptapI18nService);
   readonly imageService = inject(ImageService);
+  readonly editorCommandsService = inject(EditorCommandsService);
 
   constructor() {
     // Effet pour gérer le changement de langue
@@ -931,7 +940,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       const isEditable = this.editable();
 
       if (currentEditor) {
-        currentEditor.setEditable(isEditable);
+        this.editorCommandsService.setEditable(currentEditor, isEditable);
       }
     });
 
@@ -957,7 +966,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
     if (currentEditor) {
       currentEditor.destroy();
     }
-    this.editorFullyInitialized.set(false);
+    this._editorFullyInitialized.set(false);
   }
 
   private initEditor() {
@@ -1045,7 +1054,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
         // Marquer l'éditeur comme complètement initialisé après un court délai
         // pour s'assurer que tous les plugins et extensions sont prêts
         setTimeout(() => {
-          this.editorFullyInitialized.set(true);
+          this._editorFullyInitialized.set(true);
         }, 100);
       },
       onFocus: ({ editor, event }) => {
@@ -1061,14 +1070,14 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
     });
 
     // Stocker la référence de l'éditeur immédiatement
-    this.editor.set(newEditor);
+    this._editor.set(newEditor);
   }
 
   private updateCharacterCount(editor: Editor) {
     if (this.showCharacterCount() && editor.storage["characterCount"]) {
       const storage = editor.storage["characterCount"];
-      this.characterCount.set(storage.characters());
-      this.wordCount.set(storage.words());
+      this._characterCount.set(storage.characters());
+      this._wordCount.set(storage.words());
     }
   }
 
@@ -1105,13 +1114,13 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.isDragOver.set(true);
+    this._isDragOver.set(true);
   }
 
   onDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.isDragOver.set(false);
+    this._isDragOver.set(false);
 
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
@@ -1147,24 +1156,36 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   setContent(content: string, emitUpdate = true) {
-    this.editor()?.commands.setContent(content, emitUpdate);
+    const editor = this.editor();
+    if (editor) {
+      this.editorCommandsService.setContent(editor, content, emitUpdate);
+    }
   }
 
   focus() {
-    this.editor()?.commands.focus();
+    const editor = this.editor();
+    if (editor) {
+      this.editorCommandsService.focus(editor);
+    }
   }
 
   blur() {
-    this.editor()?.commands.blur();
+    const editor = this.editor();
+    if (editor) {
+      this.editorCommandsService.blur(editor);
+    }
   }
 
   clearContent() {
     const editor = this.editor();
     if (editor) {
-      editor.commands.clearContent();
-      // Mettre à jour les compteurs après avoir vidé le contenu
-      this.updateCharacterCount(editor);
+      this.editorCommandsService.clearContent(editor);
     }
+  }
+
+  // Méthode publique pour obtenir l'éditeur
+  getEditor(): Editor | null {
+    return this.editor();
   }
 
   private setupFormControlSubscription(): void {
@@ -1193,7 +1214,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   setDisabledState(isDisabled: boolean): void {
     const currentEditor = this.editor();
     if (currentEditor) {
-      currentEditor.setEditable(!isDisabled);
+      this.editorCommandsService.setEditable(currentEditor, !isDisabled);
     }
   }
 

@@ -1,5 +1,10 @@
 import { Injectable, inject } from "@angular/core";
-import { TiptapI18nService } from "angular-tiptap-editor";
+import {
+  TiptapI18nService,
+  DEFAULT_TOOLBAR_CONFIG,
+  DEFAULT_BUBBLE_MENU_CONFIG,
+  SLASH_COMMAND_KEYS,
+} from "angular-tiptap-editor";
 import { AppI18nService } from "./app-i18n.service";
 import {
   TOOLBAR_ITEMS,
@@ -8,46 +13,7 @@ import {
 import { ConfigItem } from "../types/editor-config.types";
 import { EditorConfigurationService } from "./editor-configuration.service";
 
-// Default library values (copied from tiptap-editor.component.ts)
-const DEFAULT_TOOLBAR_CONFIG = {
-  bold: true,
-  italic: true,
-  underline: true,
-  strike: true,
-  code: true,
-  superscript: false,
-  subscript: false,
-  highlight: true,
-  heading1: true,
-  heading2: true,
-  heading3: true,
-  bulletList: true,
-  orderedList: true,
-  blockquote: true,
-  alignLeft: false,
-  alignCenter: false,
-  alignRight: false,
-  alignJustify: false,
-  link: true,
-  image: true,
-  horizontalRule: true,
-  undo: true,
-  redo: true,
-  separator: true,
-};
-
-const DEFAULT_BUBBLE_MENU_CONFIG = {
-  bold: true,
-  italic: true,
-  underline: true,
-  strike: true,
-  code: true,
-  superscript: false,
-  subscript: false,
-  highlight: true,
-  link: true,
-  separator: true,
-};
+// Les configurations par défaut sont maintenant importées de la librairie
 
 @Injectable({
   providedIn: "root",
@@ -162,19 +128,8 @@ export class TiptapDemoComponent {
   }
 
   private isSlashCommandsDefault(activeCommands: Set<string>): boolean {
-    // For slash commands, we consider them default if using DEFAULT_SLASH_COMMANDS
-    // For now, we consider them default if all basic commands are present
-    const defaultCommands = [
-      "heading1",
-      "heading2",
-      "heading3",
-      "bulletList",
-      "orderedList",
-      "blockquote",
-      "code",
-      "image",
-      "horizontalRule",
-    ];
+    // Utiliser SLASH_COMMAND_KEYS de la librairie pour déterminer les commandes par défaut
+    const defaultCommands = Array.from(SLASH_COMMAND_KEYS);
     const activeCommandsArray = Array.from(activeCommands);
 
     return (
@@ -358,6 +313,7 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
     return activeCommandsArray
       .map((key) => {
         const translation = getTranslation(key);
+        // Utiliser un mapping basé sur SLASH_COMMAND_KEYS pour la cohérence
         const iconMap: Record<string, string> = {
           heading1: "format_h1",
           heading2: "format_h2",

@@ -11,6 +11,12 @@ export * from "./lib/noop-value-accessor.directive";
 // Internationalization service
 export * from "./lib/services/i18n.service";
 
+// Editor commands service
+export * from "./lib/services/editor-commands.service";
+
+// Image service
+export * from "./lib/services/image.service";
+
 // Types and interfaces for configuration
 export type { ToolbarConfig } from "./lib/tiptap-toolbar.component";
 export type {
@@ -23,7 +29,6 @@ export type {
   SlashCommandsConfig,
   SlashCommandItem,
 } from "./lib/tiptap-slash-commands.component";
-
 // Default configurations
 export { DEFAULT_TOOLBAR_CONFIG } from "./lib/tiptap-editor.component";
 export { DEFAULT_BUBBLE_MENU_CONFIG } from "./lib/tiptap-editor.component";
@@ -31,8 +36,12 @@ export { DEFAULT_IMAGE_BUBBLE_MENU_CONFIG } from "./lib/tiptap-editor.component"
 export { DEFAULT_TABLE_MENU_CONFIG } from "./lib/tiptap-editor.component";
 export { DEFAULT_SLASH_COMMANDS } from "./lib/tiptap-slash-commands.component";
 
-// Utility function to create internationalized slash commands
-export { createI18nSlashCommands } from "./lib/config/i18n-slash-commands";
+// Utility functions to create and filter internationalized slash commands
+export {
+  createI18nSlashCommands,
+  filterSlashCommands,
+  SLASH_COMMAND_KEYS,
+} from "./lib/config/i18n-slash-commands";
 
 // Types for height configuration
 export type HeightConfig = {

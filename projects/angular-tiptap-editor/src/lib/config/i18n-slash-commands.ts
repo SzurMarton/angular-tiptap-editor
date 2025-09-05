@@ -1,6 +1,23 @@
+import { inject } from "@angular/core";
 import { Editor } from "@tiptap/core";
 import { SlashCommandItem } from "../tiptap-slash-commands.component";
 import { TiptapI18nService } from "../services/i18n.service";
+
+/**
+ * Clés des commandes dans l'ordre de création
+ */
+export const SLASH_COMMAND_KEYS = [
+  "heading1",
+  "heading2",
+  "heading3",
+  "bulletList",
+  "orderedList",
+  "blockquote",
+  "code",
+  "image",
+  "horizontalRule",
+  "table",
+] as const;
 
 /**
  * Factory function pour créer les slash commands traduits
@@ -175,19 +192,18 @@ export function createI18nSlashCommands(
 }
 
 /**
- * Mapping des clés de commandes pour la compatibilité
+ * Fonction utilitaire pour filtrer les slash commands selon les commandes actives
+ * Utilise le service i18n injecté en interne
  */
-export const SLASH_COMMAND_KEYS = {
-  heading1: "heading1",
-  heading2: "heading2",
-  heading3: "heading3",
-  bulletList: "bulletList",
-  orderedList: "orderedList",
-  blockquote: "blockquote",
-  code: "code",
-  image: "image",
-  horizontalRule: "horizontalRule",
-  table: "table",
-} as const;
+export function filterSlashCommands(
+  activeCommands: Set<string>
+): SlashCommandItem[] {
+  // Injecter le service i18n en interne
+  const i18nService = inject(TiptapI18nService);
+  const allCommands = createI18nSlashCommands(i18nService);
 
-export type SlashCommandKey = keyof typeof SLASH_COMMAND_KEYS;
+  return allCommands.filter((command, index) => {
+    const commandKey = SLASH_COMMAND_KEYS[index];
+    return commandKey && activeCommands.has(commandKey);
+  });
+}
