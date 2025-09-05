@@ -262,8 +262,11 @@ export class EditorConfigurationService {
   private updateSlashCommandsConfig() {
     const activeCommands = this._activeSlashCommands();
 
-    // Utiliser la fonction utilitaire de la librairie (gère l'i18n en interne)
-    const filteredCommands = filterSlashCommands(activeCommands);
+    // Utiliser la fonction utilitaire de la librairie
+    const filteredCommands = filterSlashCommands(
+      activeCommands,
+      this.i18nService
+    );
 
     this._slashCommandsConfig.set({
       commands: filteredCommands,

@@ -6,9 +6,9 @@ import { EditorConfigurationService } from "../services/editor-configuration.ser
 import { TiptapI18nService } from "angular-tiptap-editor";
 import { AppI18nService } from "../services/app-i18n.service";
 import {
-  createToolbarItems,
   createBubbleMenuItems,
   createSlashCommandItems,
+  createToolbarItems,
 } from "../config/editor-items.config";
 
 @Component({

@@ -46,6 +46,10 @@ import { TiptapI18nService, SupportedLocale } from "./services/i18n.service";
 import { EditorCommandsService } from "./services/editor-commands.service";
 import { NoopValueAccessorDirective } from "./noop-value-accessor.directive";
 import { NgControl } from "@angular/forms";
+import {
+  filterSlashCommands,
+  SLASH_COMMAND_KEYS,
+} from "./config/i18n-slash-commands";
 
 import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./tiptap-toolbar.component";
@@ -128,6 +132,10 @@ export const DEFAULT_TABLE_MENU_CONFIG: TableBubbleMenuConfig = {
 export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
   mergeCells: true,
   splitCell: true,
+};
+
+export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
+  commands: [], // Sera rempli par filterSlashCommands
 };
 
 @Component({
@@ -871,9 +879,19 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   }));
 
   // Computed pour la configuration des slash commands
-  slashCommandsConfigComputed = computed(
-    () => this.slashCommandsConfig() ?? { commands: undefined }
-  );
+  slashCommandsConfigComputed = computed(() => {
+    const config = this.slashCommandsConfig();
+    if (config) {
+      return config;
+    }
+
+    // Configuration par défaut avec toutes les commandes
+    const allCommands = filterSlashCommands(
+      new Set(SLASH_COMMAND_KEYS),
+      this.i18nService
+    );
+    return { commands: allCommands };
+  });
 
   private _destroyRef = inject(DestroyRef);
   // NgControl pour gérer les FormControls

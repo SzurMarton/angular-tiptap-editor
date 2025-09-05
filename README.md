@@ -6,14 +6,19 @@ A modern, customizable rich-text editor for Angular applications, built with Tip
 
 ## 🚀 Features
 
-- **Modern Angular**: Built with Angular 18+
-- **Rich Text Editing**: Powered by Tiptap with extensive formatting options
+- **Modern Angular**: Built with Angular 18+ with Signals and modern patterns
+- **Rich Text Editing**: Powered by Tiptap v3.3.0 with extensive formatting options
+- **Table Support**: Full table management with bubble menus and cell selection
+- **Slash Commands**: Intuitive slash commands for quick content insertion
 - **Internationalization**: Full i18n support (English & French) with auto-detection
 - **Customizable**: Highly configurable toolbar, bubble menus, and slash commands
-- **Image Support**: Advanced image handling with resizing and compression
+- **Image Support**: Advanced image handling with resizing, compression, and bubble menus
 - **Height Control**: Configurable editor height with scrolling
+- **Word/Character Count**: Real-time word and character counting with proper pluralization
+- **Office Paste**: Clean pasting from Microsoft Office applications
 - **TypeScript**: Full TypeScript support with strict typing
 - **Accessibility**: Built with accessibility best practices
+- **Service Architecture**: Clean service-based architecture with `EditorCommandsService`
 
 ## 📦 Installation
 
@@ -69,7 +74,11 @@ export class ExampleComponent {
 
 ```typescript
 import { Component } from "@angular/core";
-import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
+import {
+  AngularTiptapEditorComponent,
+  DEFAULT_TOOLBAR_CONFIG,
+  DEFAULT_BUBBLE_MENU_CONFIG,
+} from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-advanced",
@@ -80,9 +89,11 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
       [content]="content"
       [toolbar]="toolbarConfig"
       [bubbleMenu]="bubbleMenuConfig"
+      [slashCommands]="slashCommandsConfig"
       [locale]="'en'"
       [height]="400"
       [showCharacterCount]="true"
+      [showWordCount]="true"
       (contentChange)="onContentChange($event)"
     />
   `,
@@ -90,23 +101,19 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
 export class AdvancedComponent {
   content = "<h1>Welcome!</h1><p>Start editing...</p>";
 
+  // Use default configurations as base
   toolbarConfig = {
-    bold: true,
-    italic: true,
-    underline: true,
-    heading1: true,
-    heading2: true,
-    bulletList: true,
-    orderedList: true,
-    link: true,
-    image: true,
+    ...DEFAULT_TOOLBAR_CONFIG,
+    clear: true, // Add clear button
   };
 
   bubbleMenuConfig = {
-    bold: true,
-    italic: true,
-    underline: true,
-    link: true,
+    ...DEFAULT_BUBBLE_MENU_CONFIG,
+    table: true, // Enable table bubble menu
+  };
+
+  slashCommandsConfig = {
+    commands: [], // Will be populated by the library
   };
 
   onContentChange(newContent: string) {
@@ -131,6 +138,8 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
       <angular-tiptap-editor
         [formControl]="contentControl"
         placeholder="Enter your content here..."
+        [showCharacterCount]="true"
+        [showWordCount]="true"
       />
       <button type="submit">Submit</button>
     </form>
@@ -140,6 +149,95 @@ export class FormComponent {
   contentControl = new FormControl("<p>Initial content</p>");
 }
 ```
+
+### 4. Using EditorCommandsService
+
+```typescript
+import { Component, inject } from "@angular/core";
+import { EditorCommandsService } from "@flogeez/angular-tiptap-editor";
+
+@Component({
+  selector: "app-commands",
+  standalone: true,
+  template: `
+    <div>
+      <button (click)="clearContent()">Clear Content</button>
+      <button (click)="focusEditor()">Focus Editor</button>
+      <button (click)="setContent()">Set Content</button>
+    </div>
+  `,
+})
+export class CommandsComponent {
+  private editorCommandsService = inject(EditorCommandsService);
+  private editor: Editor | null = null;
+
+  onEditorCreated(editor: Editor) {
+    this.editor = editor;
+  }
+
+  clearContent() {
+    if (this.editor) {
+      this.editorCommandsService.clearContent(this.editor);
+    }
+  }
+
+  focusEditor() {
+    if (this.editor) {
+      this.editorCommandsService.focus(this.editor);
+    }
+  }
+
+  setContent() {
+    if (this.editor) {
+      this.editorCommandsService.setContent(
+        this.editor,
+        "<h1>New Content</h1>"
+      );
+    }
+  }
+}
+```
+
+## ✨ Key Features
+
+### 📊 Table Management
+
+Full table support with intuitive bubble menus:
+
+- **Table Creation**: Insert tables via slash commands (`/table`)
+- **Cell Selection**: Click and drag to select multiple cells
+- **Bubble Menus**: Context-aware menus for table operations
+- **Row/Column Management**: Add, remove, and merge cells
+- **Styling**: Custom table styling with proper borders
+
+### ⚡ Slash Commands
+
+Quick content insertion with slash commands:
+
+- **Headings**: `/h1`, `/h2`, `/h3`
+- **Lists**: `/bullet`, `/numbered`
+- **Blocks**: `/quote`, `/code`, `/line`
+- **Media**: `/image`, `/table`
+- **Fully Internationalized**: All commands translated
+
+### 🖼️ Advanced Image Handling
+
+Professional image management:
+
+- **Drag & Drop**: Drag images directly into the editor
+- **File Selection**: Click to select images from device
+- **Auto-Compression**: Images automatically compressed (max 1920x1080)
+- **Resizable**: Images can be resized with handles
+- **Bubble Menu**: Context menu for image operations
+
+### 📝 Word & Character Counting
+
+Real-time content statistics:
+
+- **Live Updates**: Counters update as you type
+- **Proper Pluralization**: "1 word" vs "2 words"
+- **Separate Counts**: Independent word and character counts
+- **Configurable**: Show/hide individual counters
 
 ## 🎨 Demo
 
@@ -164,20 +262,22 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 
 #### Inputs
 
-| Input                | Type               | Default             | Description                |
-| -------------------- | ------------------ | ------------------- | -------------------------- |
-| `content`            | `string`           | `""`                | Initial HTML content       |
-| `placeholder`        | `string`           | `"Start typing..."` | Placeholder text           |
-| `locale`             | `'en' \| 'fr'`     | Auto-detect         | Editor language            |
-| `editable`           | `boolean`          | `true`              | Whether editor is editable |
-| `height`             | `number`           | `undefined`         | Fixed height in pixels     |
-| `maxHeight`          | `number`           | `undefined`         | Maximum height in pixels   |
-| `minHeight`          | `number`           | `200`               | Minimum height in pixels   |
-| `showToolbar`        | `boolean`          | `true`              | Show toolbar               |
-| `showBubbleMenu`     | `boolean`          | `true`              | Show bubble menu           |
-| `showCharacterCount` | `boolean`          | `true`              | Show character counter     |
-| `toolbar`            | `ToolbarConfig`    | All enabled         | Toolbar configuration      |
-| `bubbleMenu`         | `BubbleMenuConfig` | All enabled         | Bubble menu configuration  |
+| Input                | Type                  | Default             | Description                  |
+| -------------------- | --------------------- | ------------------- | ---------------------------- |
+| `content`            | `string`              | `""`                | Initial HTML content         |
+| `placeholder`        | `string`              | `"Start typing..."` | Placeholder text             |
+| `locale`             | `'en' \| 'fr'`        | Auto-detect         | Editor language              |
+| `editable`           | `boolean`             | `true`              | Whether editor is editable   |
+| `height`             | `number`              | `undefined`         | Fixed height in pixels       |
+| `maxHeight`          | `number`              | `undefined`         | Maximum height in pixels     |
+| `minHeight`          | `number`              | `200`               | Minimum height in pixels     |
+| `showToolbar`        | `boolean`             | `true`              | Show toolbar                 |
+| `showBubbleMenu`     | `boolean`             | `true`              | Show bubble menu             |
+| `showCharacterCount` | `boolean`             | `true`              | Show character counter       |
+| `showWordCount`      | `boolean`             | `true`              | Show word counter            |
+| `toolbar`            | `ToolbarConfig`       | All enabled         | Toolbar configuration        |
+| `bubbleMenu`         | `BubbleMenuConfig`    | All enabled         | Bubble menu configuration    |
+| `slashCommands`      | `SlashCommandsConfig` | All enabled         | Slash commands configuration |
 
 #### Outputs
 
@@ -191,6 +291,12 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 ### Configuration Examples
 
 ```typescript
+import {
+  DEFAULT_TOOLBAR_CONFIG,
+  DEFAULT_BUBBLE_MENU_CONFIG,
+  SLASH_COMMAND_KEYS,
+} from "@flogeez/angular-tiptap-editor";
+
 // Minimal toolbar
 const minimalToolbar = {
   bold: true,
@@ -198,25 +304,25 @@ const minimalToolbar = {
   bulletList: true,
 };
 
-// Full toolbar
+// Full toolbar with clear button
 const fullToolbar = {
-  bold: true,
-  italic: true,
-  underline: true,
-  strike: true,
-  code: true,
-  heading1: true,
-  heading2: true,
-  heading3: true,
-  bulletList: true,
-  orderedList: true,
-  blockquote: true,
-  link: true,
-  image: true,
-  horizontalRule: true,
-  undo: true,
-  redo: true,
+  ...DEFAULT_TOOLBAR_CONFIG,
+  clear: true, // Add clear button
 };
+
+// Bubble menu with table support
+const bubbleMenuWithTable = {
+  ...DEFAULT_BUBBLE_MENU_CONFIG,
+  table: true, // Enable table bubble menu
+};
+
+// Slash commands configuration
+const slashCommands = {
+  commands: [], // Will be populated by filterSlashCommands()
+};
+
+// Available slash command keys
+console.log(SLASH_COMMAND_KEYS); // ["heading1", "heading2", "heading3", "bulletList", "orderedList", "blockquote", "code", "image", "horizontalRule", "table"]
 ```
 
 ## 🌍 Internationalization
@@ -232,6 +338,67 @@ The editor supports English and French with automatic browser language detection
 
 // Auto-detect (default)
 <angular-tiptap-editor />
+```
+
+### Available Translations
+
+- **English (en)**: Default language with complete translations
+- **French (fr)**: Full French translation including:
+  - Toolbar buttons
+  - Bubble menu items
+  - Slash commands
+  - Placeholder text
+  - Error messages
+  - Word/character count (with proper pluralization)
+
+### Custom Slash Commands
+
+```typescript
+import {
+  filterSlashCommands,
+  SLASH_COMMAND_KEYS,
+} from "@flogeez/angular-tiptap-editor";
+
+// Filter available slash commands
+const activeCommands = new Set(["heading1", "heading2", "bulletList", "table"]);
+const commands = filterSlashCommands(activeCommands);
+
+// Use in component
+slashCommandsConfig = {
+  commands: commands,
+};
+```
+
+## 🏗️ Architecture
+
+### Service-Based Design
+
+The library follows a clean service-based architecture:
+
+- **`EditorCommandsService`**: Centralized service for all editor commands
+- **`TiptapI18nService`**: Internationalization service with automatic language detection
+- **`ImageService`**: Advanced image handling with compression and resizing
+- **`filterSlashCommands()`**: Utility function for managing slash commands
+
+### Modern Angular Patterns
+
+- **Signals**: Used throughout for reactive state management
+- **Dependency Injection**: Clean service injection with `inject()`
+- **Standalone Components**: All components are standalone for better tree-shaking
+- **TypeScript**: Strict typing with comprehensive interfaces
+
+### Default Configurations
+
+The library provides default configurations that can be imported and customized:
+
+```typescript
+import {
+  DEFAULT_TOOLBAR_CONFIG,
+  DEFAULT_BUBBLE_MENU_CONFIG,
+  DEFAULT_IMAGE_BUBBLE_MENU_CONFIG,
+  DEFAULT_TABLE_MENU_CONFIG,
+  SLASH_COMMAND_KEYS,
+} from "@flogeez/angular-tiptap-editor";
 ```
 
 ## 🔧 Development
@@ -266,18 +433,26 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📞 Support
-
-- 🐛 [Report Issues](https://github.com/flogeez/angular-tiptap-editor/issues)
-- 💡 [Feature Requests](https://github.com/flogeez/angular-tiptap-editor/issues)
-- 📖 [Documentation](https://github.com/flogeez/angular-tiptap-editor#readme)
-
 ## 🔗 Links
 
 - 🎮 [Live Demo](https://flogeez.github.io/angular-tiptap-editor/)
 - 📖 [Tiptap Documentation](https://tiptap.dev/)
 - 🅰️ [Angular Documentation](https://angular.dev/)
 - 📦 [NPM Package](https://www.npmjs.com/package/@flogeez/angular-tiptap-editor)
+- 🐛 [Report Issues](https://github.com/FloGeez/angular-tiptap-editor/issues)
+- 💡 [Feature Requests](https://github.com/FloGeez/angular-tiptap-editor/issues)
+
+## 🆕 What's New
+
+### Latest Updates
+
+- ✅ **Table Support**: Full table management with bubble menus
+- ✅ **Slash Commands**: Intuitive content insertion commands
+- ✅ **Word/Character Count**: Real-time counting with proper pluralization
+- ✅ **Service Architecture**: Clean `EditorCommandsService` for better maintainability
+- ✅ **Default Configurations**: Importable default configs for easy customization
+- ✅ **Office Paste**: Clean pasting from Microsoft Office applications
+- ✅ **Enhanced i18n**: Improved internationalization with better architecture
 
 ---
 

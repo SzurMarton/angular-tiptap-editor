@@ -1,4 +1,3 @@
-import { inject } from "@angular/core";
 import { Editor } from "@tiptap/core";
 import { SlashCommandItem } from "../tiptap-slash-commands.component";
 import { TiptapI18nService } from "../services/i18n.service";
@@ -193,13 +192,11 @@ export function createI18nSlashCommands(
 
 /**
  * Fonction utilitaire pour filtrer les slash commands selon les commandes actives
- * Utilise le service i18n injecté en interne
  */
 export function filterSlashCommands(
-  activeCommands: Set<string>
+  activeCommands: Set<string>,
+  i18nService: TiptapI18nService
 ): SlashCommandItem[] {
-  // Injecter le service i18n en interne
-  const i18nService = inject(TiptapI18nService);
   const allCommands = createI18nSlashCommands(i18nService);
 
   return allCommands.filter((command, index) => {
