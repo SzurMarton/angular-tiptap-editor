@@ -782,6 +782,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   enableSlashCommands = input<boolean>(true);
   slashCommandsConfig = input<SlashCommandsConfig | undefined>(undefined);
   locale = input<SupportedLocale | undefined>(undefined);
+  autofocus = input<boolean | 'start' | 'end' | 'all' | number>(false);
 
   // Nouveaux inputs pour les bubble menus
   showBubbleMenu = input<boolean>(true);
@@ -1051,6 +1052,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       extensions,
       content: this.content(),
       editable: this.editable(),
+      autofocus: this.autofocus(),
       onUpdate: ({ editor, transaction }) => {
         const html = editor.getHTML();
         this.contentChange.emit(html);
