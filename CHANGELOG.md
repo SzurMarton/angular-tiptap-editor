@@ -13,21 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.6] - 2025-12-19
 
 ### Added
-- `autofocus` input with multiple options (`false`, `'start'`, `'end'`, `'all'`, or position number)
+- Custom image upload handler (`imageUploadHandler` input)
+- Support for both `Promise` and `Observable` return types in upload handler
 
 ## [0.3.5] - 2025-12-19
 
 ### Added
-- Custom image upload handler (`imageUploadHandler` input)
-- Support for both `Promise` and `Observable` return types in upload handler
-
-### Changed
-- Images can now be uploaded to external servers instead of base64 encoding
+- `autofocus` input with multiple options (`false`, `'start'`, `'end'`, `'all'`, or position number)
+- Autofocus property support (PR #5 by @elirov)
 
 ## [0.3.4] - 2025-12-19
 
-### Added
-- Autofocus property support (PR #5 by @elirov)
+### Fixed
+- Removed console.log statements
 
 ## [0.3.3] - 2025-09-05
 
