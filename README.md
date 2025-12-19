@@ -229,6 +229,80 @@ Professional image management:
 - **Auto-Compression**: Images automatically compressed (max 1920x1080)
 - **Resizable**: Images can be resized with handles
 - **Bubble Menu**: Context menu for image operations
+- **Custom Upload Handler**: Upload images to your own server instead of base64
+
+#### Custom Image Upload Handler
+
+By default, images are converted to base64 and embedded directly in the HTML content. You can provide a custom upload handler to upload images to your own server (S3, Cloudinary, custom API, etc.) and use the returned URL instead.
+
+The handler can return either an **Observable** or a **Promise**.
+
+#### Using Observable (recommended for Angular)
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import {
+  AngularTiptapEditorComponent,
+  ImageUploadHandler
+} from '@flogeez/angular-tiptap-editor';
+
+@Component({
+  selector: 'app-custom-upload',
+  standalone: true,
+  imports: [AngularTiptapEditorComponent],
+  template: `
+    <angular-tiptap-editor
+      [content]="content"
+      [imageUploadHandler]="uploadHandler"
+      (contentChange)="onContentChange($event)"
+    />
+  `
+})
+export class CustomUploadComponent {
+  private http = inject(HttpClient);
+  content = '';
+
+  uploadHandler: ImageUploadHandler = (ctx) => {
+    const formData = new FormData();
+    formData.append('image', ctx.file);
+
+    return this.http.post<{ url: string }>('/api/upload', formData).pipe(
+      map(result => ({ src: result.url }))
+    );
+  };
+
+  onContentChange(newContent: string) {
+    this.content = newContent;
+  }
+}
+```
+
+#### Using Promise (async/await)
+
+```typescript
+uploadHandler: ImageUploadHandler = async (ctx) => {
+  const formData = new FormData();
+  formData.append('image', ctx.file);
+
+  const result = await firstValueFrom(
+    this.http.post<{ url: string }>('/api/upload', formData)
+  );
+
+  return { src: result.url };
+};
+```
+
+The `ImageUploadContext` provides:
+- `file`: The original File object
+- `width`: Processed image width
+- `height`: Processed image height
+- `type`: MIME type (e.g., 'image/jpeg')
+- `base64`: Base64 data URL of the processed image (fallback)
+
+The handler must return an `ImageUploadHandlerResult` with at least a `src` property containing the image URL.
+
 
 ### 📝 Word & Character Counting
 
@@ -262,22 +336,24 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 
 #### Inputs
 
-| Input                | Type                  | Default             | Description                  |
-| -------------------- | --------------------- | ------------------- | ---------------------------- |
-| `content`            | `string`              | `""`                | Initial HTML content         |
-| `placeholder`        | `string`              | `"Start typing..."` | Placeholder text             |
-| `locale`             | `'en' \| 'fr'`        | Auto-detect         | Editor language              |
-| `editable`           | `boolean`             | `true`              | Whether editor is editable   |
-| `height`             | `number`              | `undefined`         | Fixed height in pixels       |
-| `maxHeight`          | `number`              | `undefined`         | Maximum height in pixels     |
-| `minHeight`          | `number`              | `200`               | Minimum height in pixels     |
-| `showToolbar`        | `boolean`             | `true`              | Show toolbar                 |
-| `showBubbleMenu`     | `boolean`             | `true`              | Show bubble menu             |
-| `showCharacterCount` | `boolean`             | `true`              | Show character counter       |
-| `showWordCount`      | `boolean`             | `true`              | Show word counter            |
-| `toolbar`            | `ToolbarConfig`       | All enabled         | Toolbar configuration        |
-| `bubbleMenu`         | `BubbleMenuConfig`    | All enabled         | Bubble menu configuration    |
-| `slashCommands`      | `SlashCommandsConfig` | All enabled         | Slash commands configuration |
+| Input                | Type                  | Default             | Description                   |
+| -------------------- | --------------------- | ------------------- | ----------------------------- |
+| `content`            | `string`              | `""`                | Initial HTML content          |
+| `placeholder`        | `string`              | `"Start typing..."` | Placeholder text              |
+| `locale`             | `'en' \| 'fr'`        | Auto-detect         | Editor language               |
+| `editable`           | `boolean`             | `true`              | Whether editor is editable    |
+| `height`             | `number`              | `undefined`         | Fixed height in pixels        |
+| `maxHeight`          | `number`              | `undefined`         | Maximum height in pixels      |
+| `minHeight`          | `number`              | `200`               | Minimum height in pixels      |
+| `showToolbar`        | `boolean`             | `true`              | Show toolbar                  |
+| `showBubbleMenu`     | `boolean`             | `true`              | Show bubble menu              |
+| `showCharacterCount` | `boolean`             | `true`              | Show character counter        |
+| `showWordCount`      | `boolean`             | `true`              | Show word counter             |
+| `toolbar`            | `ToolbarConfig`       | All enabled         | Toolbar configuration         |
+| `bubbleMenu`         | `BubbleMenuConfig`    | All enabled         | Bubble menu configuration     |
+| `slashCommands`      | `SlashCommandsConfig` | All enabled         | Slash commands configuration  |
+| `imageUploadHandler` | `ImageUploadHandler`  | `undefined`         | Custom image upload function  |
+
 
 #### Outputs
 
@@ -446,6 +522,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Latest Updates
 
+- ✅ **Custom Image Upload Handler**: Upload images to your own server (S3, Cloudinary, etc.)
 - ✅ **Table Support**: Full table management with bubble menus
 - ✅ **Slash Commands**: Intuitive content insertion commands
 - ✅ **Word/Character Count**: Real-time counting with proper pluralization
@@ -453,6 +530,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - ✅ **Default Configurations**: Importable default configs for easy customization
 - ✅ **Office Paste**: Clean pasting from Microsoft Office applications
 - ✅ **Enhanced i18n**: Improved internationalization with better architecture
+
 
 ---
 

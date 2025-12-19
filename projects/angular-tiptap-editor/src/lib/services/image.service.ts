@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from "@angular/core";
 import { Editor } from "@tiptap/core";
+import { Observable, isObservable, firstValueFrom } from "rxjs";
 
 export interface ImageData {
   src: string;
@@ -25,6 +26,70 @@ export interface ResizeOptions {
   maintainAspectRatio?: boolean;
 }
 
+/**
+ * Context passed to the image upload handler containing information about the image
+ */
+export interface ImageUploadContext {
+  /** Original file being uploaded */
+  file: File;
+  /** Width of the processed image */
+  width: number;
+  /** Height of the processed image */
+  height: number;
+  /** MIME type of the image */
+  type: string;
+  /** Base64 data URL of the processed image (after compression/resize) */
+  base64: string;
+}
+
+/**
+ * Result expected from a custom image upload handler.
+ * Must contain at least the `src` property with the image URL.
+ */
+export interface ImageUploadHandlerResult {
+  /** URL of the uploaded image (can be a remote URL or any string) */
+  src: string;
+  /** Optional custom alt text */
+  alt?: string;
+  /** Optional custom title */
+  title?: string;
+}
+
+/**
+ * Custom handler function for image uploads.
+ * Allows users to implement their own image storage logic (e.g., upload to S3, Cloudinary, etc.)
+ *
+ * Can return either a Promise or an Observable (Angular-friendly).
+ *
+ * @param context - Context containing the image file and metadata
+ * @returns Promise or Observable resolving to ImageUploadHandlerResult
+ *
+ * @example Using Promise (async/await)
+ * ```typescript
+ * uploadHandler: ImageUploadHandler = async (ctx) => {
+ *   const formData = new FormData();
+ *   formData.append('image', ctx.file);
+ *   const result = await firstValueFrom(this.http.post<{url: string}>('/api/upload', formData));
+ *   return { src: result.url };
+ * };
+ * ```
+ *
+ * @example Using Observable (Angular HttpClient)
+ * ```typescript
+ * uploadHandler: ImageUploadHandler = (ctx) => {
+ *   const formData = new FormData();
+ *   formData.append('image', ctx.file);
+ *   return this.http.post<{url: string}>('/api/upload', formData).pipe(
+ *     map(result => ({ src: result.url }))
+ *   );
+ * };
+ * ```
+ */
+export type ImageUploadHandler = (
+  context: ImageUploadContext
+) => Promise<ImageUploadHandlerResult> | Observable<ImageUploadHandlerResult>;
+
+
 @Injectable({
   providedIn: "root",
 })
@@ -38,6 +103,24 @@ export class ImageService {
   isUploading = signal(false);
   uploadProgress = signal(0);
   uploadMessage = signal("");
+
+  /**
+   * Custom upload handler for images.
+   * When set, this handler will be called instead of the default base64 conversion.
+   * This allows users to implement their own image storage logic.
+   *
+   * @example
+   * ```typescript
+   * imageService.uploadHandler = async (context) => {
+   *   const formData = new FormData();
+   *   formData.append('image', context.file);
+   *   const response = await fetch('/api/upload', { method: 'POST', body: formData });
+   *   const data = await response.json();
+   *   return { src: data.url };
+   * };
+   * ```
+   */
+  uploadHandler: ImageUploadHandler | null = null;
 
   // Référence à l'éditeur pour les mises à jour
   private currentEditor: Editor | null = null;
@@ -354,6 +437,39 @@ export class ImageService {
       );
 
       this.uploadProgress.set(80);
+
+      // Si un handler personnalisé est défini, l'utiliser pour l'upload
+      if (this.uploadHandler) {
+        this.uploadMessage.set("Upload vers le serveur...");
+        this.forceEditorUpdate();
+
+        try {
+          const handlerResponse = this.uploadHandler({
+            file,
+            width: result.width || 0,
+            height: result.height || 0,
+            type: result.type,
+            base64: result.src,
+          });
+
+          // Convertir Observable en Promise si nécessaire
+          const handlerResult = isObservable(handlerResponse)
+            ? await firstValueFrom(handlerResponse)
+            : await handlerResponse;
+
+          // Remplacer le src base64 par l'URL retournée par le handler
+          result.src = handlerResult.src;
+
+          // Appliquer les overrides optionnels du handler
+          if (handlerResult.alt) {
+            result.name = handlerResult.alt;
+          }
+        } catch (handlerError) {
+          console.error("Erreur lors de l'upload personnalisé:", handlerError);
+          throw handlerError;
+        }
+      }
+
       this.uploadMessage.set(actionMessage);
       this.forceEditorUpdate();
 

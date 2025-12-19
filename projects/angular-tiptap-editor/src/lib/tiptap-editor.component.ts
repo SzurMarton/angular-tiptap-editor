@@ -41,7 +41,7 @@ import {
   TiptapSlashCommandsComponent,
   SlashCommandsConfig,
 } from "./tiptap-slash-commands.component";
-import { ImageService } from "./services/image.service";
+import { ImageService, ImageUploadHandler, ImageUploadResult } from "./services/image.service";
 import { TiptapI18nService, SupportedLocale } from "./services/i18n.service";
 import { EditorCommandsService } from "./services/editor-commands.service";
 import { NoopValueAccessorDirective } from "./noop-value-accessor.directive";
@@ -51,7 +51,6 @@ import {
   SLASH_COMMAND_KEYS,
 } from "./config/i18n-slash-commands";
 
-import { ImageUploadResult } from "./services/image.service";
 import { ToolbarConfig } from "./tiptap-toolbar.component";
 import {
   BubbleMenuConfig,
@@ -798,6 +797,28 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   // Nouveau input pour la configuration de l'upload d'images
   imageUpload = input<Partial<any>>({});
 
+  /**
+   * Custom handler for image uploads.
+   * When provided, images will be processed through this handler instead of being converted to base64.
+   * This allows you to upload images to your own server/storage and use the returned URL.
+   *
+   * @example
+   * ```typescript
+   * myUploadHandler: ImageUploadHandler = async (context) => {
+   *   const formData = new FormData();
+   *   formData.append('image', context.file);
+   *   const response = await fetch('/api/upload', { method: 'POST', body: formData });
+   *   const data = await response.json();
+   *   return { src: data.imageUrl };
+   * };
+   *
+   * // In template:
+   * // <angular-tiptap-editor [imageUploadHandler]="myUploadHandler" />
+   * ```
+   */
+  imageUploadHandler = input<ImageUploadHandler | undefined>(undefined);
+
+
   // Nouveaux outputs
   contentChange = output<string>();
   editorCreated = output<Editor>();
@@ -961,6 +982,12 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       if (currentEditor) {
         this.editorCommandsService.setEditable(currentEditor, isEditable);
       }
+    });
+
+    // Effect pour synchroniser le handler d'upload d'images avec le service
+    effect(() => {
+      const handler = this.imageUploadHandler();
+      this.imageService.uploadHandler = handler || null;
     });
 
     // Effect pour la détection du survol des tables

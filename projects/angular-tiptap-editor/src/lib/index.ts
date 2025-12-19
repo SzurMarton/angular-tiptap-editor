@@ -27,3 +27,12 @@ export type {
   TableBubbleMenuConfig,
   CellBubbleMenuConfig,
 } from "./models/bubble-menu.model";
+
+// Image upload types
+export type {
+  ImageUploadHandler,
+  ImageUploadContext,
+  ImageUploadHandlerResult,
+  ImageUploadResult,
+  ImageData,
+} from "./services/image.service";

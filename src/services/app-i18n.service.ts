@@ -153,6 +153,8 @@ export interface AppTranslations {
       bubbleMenu: string;
       slashCommands: string;
     };
+    imageUploadTitle: string;
+    imageUploadIntro: string;
     conclusion: string;
   };
 
@@ -363,6 +365,8 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
       bubbleMenu: "Bubble menu",
       slashCommands: "Slash commands",
     },
+    imageUploadTitle: "Custom Image Upload",
+    imageUploadIntro: "Upload images to your own server:",
     conclusion: "Try the configuration panel →",
   },
   codeGeneration: {
@@ -571,6 +575,8 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
       bubbleMenu: "Menu flottant",
       slashCommands: "Commandes slash",
     },
+    imageUploadTitle: "Upload d'images personnalisé",
+    imageUploadIntro: "Uploadez les images vers votre serveur :",
     conclusion: "Testez le panneau de configuration →",
   },
   codeGeneration: {
@@ -789,6 +795,23 @@ simpleControl = new FormControl('', [Validators.required]);
 
 // ${content.templateComment}
 &lt;angular-tiptap-editor [formControl]="simpleControl" /&gt;</code></pre>
+
+<h3>${content.imageUploadTitle}</h3>
+<p>${content.imageUploadIntro}</p>
+<pre><code>private http = inject(HttpClient);
+
+uploadHandler: ImageUploadHandler = (ctx) =&gt; {
+  const formData = new FormData();
+  formData.append('image', ctx.file);
+
+  return this.http.post&lt;{ url: string }&gt;('/api/upload', formData).pipe(
+    map(res =&gt; ({ src: res.url }))
+  );
+};
+
+// Template
+&lt;angular-tiptap-editor [imageUploadHandler]="uploadHandler" /&gt;</code></pre>
+
 
 <h3>${content.customizationTitle}</h3>
 <ul>
