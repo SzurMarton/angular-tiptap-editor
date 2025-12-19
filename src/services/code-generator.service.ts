@@ -372,7 +372,6 @@ ${this.generateCompleteSlashCommandsConfig(activeSlashCommands)}
         this.appI18nService.currentLocale() === "fr"
           ? "Code copié dans le presse-papiers !"
           : "Code copied to clipboard!";
-      console.log(successMessage);
     } catch (error) {
       const errorMessage =
         this.appI18nService.currentLocale() === "fr"
