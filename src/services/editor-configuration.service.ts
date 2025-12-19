@@ -36,6 +36,7 @@ export class EditorConfigurationService {
     minHeight: 200,
     height: undefined,
     maxHeight: undefined,
+    fillContainer: false,
     // Autofocus configuration
     autofocus: false,
   });
@@ -211,6 +212,14 @@ export class EditorConfigurationService {
       default:
         return false;
     }
+  }
+
+  // Fill container toggle
+  toggleFillContainer() {
+    this._editorState.update((state) => ({
+      ...state,
+      fillContainer: !state.fillContainer,
+    }));
   }
 
   // Menu closing methods

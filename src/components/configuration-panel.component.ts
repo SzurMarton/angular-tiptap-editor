@@ -1,6 +1,7 @@
 import { Component, inject, ElementRef, effect, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigSectionComponent } from "./config-section.component";
+import { FillContainerConfigComponent } from "./fill-container-config.component";
 import { HeightConfigComponent } from "./height-config.component";
 import { AutofocusConfigComponent } from "./autofocus-config.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
@@ -15,7 +16,7 @@ import {
 @Component({
   selector: "app-configuration-panel",
   standalone: true,
-  imports: [CommonModule, ConfigSectionComponent, HeightConfigComponent, AutofocusConfigComponent],
+  imports: [CommonModule, ConfigSectionComponent, FillContainerConfigComponent, HeightConfigComponent, AutofocusConfigComponent],
   template: `
     <!-- Sidebar de configuration avec contenu visible pendant l'animation -->
     <aside
@@ -117,6 +118,9 @@ import {
             (toggleDropdown)="toggleSlashCommandsMenu()"
             (toggleItem)="toggleSlashCommand($event)"
           />
+
+          <!-- Fill Container Configuration -->
+          <app-fill-container-config />
 
           <!-- Height Configuration -->
           <app-height-config />

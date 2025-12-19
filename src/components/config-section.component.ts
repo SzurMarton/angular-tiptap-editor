@@ -1,55 +1,53 @@
-import { Component, Input, Output, EventEmitter, inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
+import { Component, inject, input, output } from "@angular/core";
+import { ToggleSwitchComponent } from "./toggle-switch.component";
 import { ConfigItem } from "../types/editor-config.types";
 import { AppI18nService } from "../services/app-i18n.service";
 
 @Component({
   selector: "app-config-section",
   standalone: true,
-  imports: [CommonModule],
+  imports: [ToggleSwitchComponent],
   template: `
     <section class="config-section">
       <div class="section-header">
         <div class="section-title">
-          <span class="material-symbols-outlined">{{ icon }}</span>
-          <span>{{ title }}</span>
+          <span class="material-symbols-outlined">{{ icon() }}</span>
+          <span>{{ title() }}</span>
         </div>
-        <label class="toggle">
-          <input
-            type="checkbox"
-            [checked]="isEnabled"
-            (change)="onToggleEnabled()"
-          />
-          <span></span>
-        </label>
+        <app-toggle-switch
+          [checked]="isEnabled()"
+          (checkedChange)="toggleEnabled.emit()"
+        />
       </div>
 
-      <div class="section-content" [class.collapsed]="!isEnabled">
-        <div class="dropdown-section" [class.open]="isDropdownOpen">
-          <div class="dropdown-trigger" (click)="onToggleDropdown()">
+      <div class="section-content" [class.collapsed]="!isEnabled()">
+        <div class="dropdown-section" [class.open]="isDropdownOpen()">
+          <div class="dropdown-trigger" (click)="toggleDropdown.emit()">
             <span
-              >{{ appI18n.config().selectOptions }} ({{ activeCount }})</span
+              >{{ appI18n.config().selectOptions }} ({{ activeCount() }})</span
             >
             <span
               class="material-symbols-outlined chevron"
-              [class.rotated]="isDropdownOpen"
+              [class.rotated]="isDropdownOpen()"
             >
               keyboard_arrow_down
             </span>
           </div>
 
-          <div class="dropdown-content" [class.open]="isDropdownOpen">
+          <div class="dropdown-content" [class.open]="isDropdownOpen()">
             <div class="options-grid">
-              <label class="option" *ngFor="let item of items">
+              @for (item of items(); track item.key) {
+              <label class="option">
                 <input
                   type="checkbox"
                   [checked]="isItemActive(item.key)"
-                  (change)="onToggleItem(item.key)"
+                  (change)="toggleItem.emit(item.key)"
                 />
                 <span class="checkmark"></span>
                 <span class="material-symbols-outlined">{{ item.icon }}</span>
                 <span class="label">{{ item.label }}</span>
               </label>
+              }
             </div>
           </div>
         </div>
@@ -236,85 +234,27 @@ import { AppI18nService } from "../services/app-i18n.service";
         position: relative;
         z-index: 1;
       }
-
-      /* Toggle - Style Tiptap exact */
-      .toggle {
-        position: relative;
-        display: inline-block;
-        width: 36px;
-        height: 20px;
-        cursor: pointer;
-      }
-
-      .toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-
-      .toggle span {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #d1d5db;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 20px;
-      }
-
-      .toggle span:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 2px;
-        bottom: 2px;
-        background: white;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 50%;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      }
-
-      .toggle input:checked + span {
-        background: #6366f1;
-      }
-
-      .toggle input:checked + span:before {
-        transform: translateX(16px);
-      }
     `,
   ],
 })
 export class ConfigSectionComponent {
   readonly appI18n = inject(AppI18nService);
 
-  @Input() title!: string;
-  @Input() icon!: string;
-  @Input() items!: ConfigItem[];
-  @Input() isEnabled!: boolean;
-  @Input() activeCount!: number;
-  @Input() isDropdownOpen!: boolean;
-  @Input() itemCheckFunction!: (key: string) => boolean;
+  // Signal inputs
+  title = input.required<string>();
+  icon = input.required<string>();
+  items = input.required<ConfigItem[]>();
+  isEnabled = input.required<boolean>();
+  activeCount = input.required<number>();
+  isDropdownOpen = input.required<boolean>();
+  itemCheckFunction = input.required<(key: string) => boolean>();
 
-  @Output() toggleEnabled = new EventEmitter<void>();
-  @Output() toggleDropdown = new EventEmitter<void>();
-  @Output() toggleItem = new EventEmitter<string>();
-
-  onToggleEnabled() {
-    this.toggleEnabled.emit();
-  }
-
-  onToggleDropdown() {
-    this.toggleDropdown.emit();
-  }
-
-  onToggleItem(key: string) {
-    this.toggleItem.emit(key);
-  }
+  // Signal outputs
+  toggleEnabled = output<void>();
+  toggleDropdown = output<void>();
+  toggleItem = output<string>();
 
   isItemActive(key: string): boolean {
-    return this.itemCheckFunction(key);
+    return this.itemCheckFunction()(key);
   }
 }

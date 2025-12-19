@@ -345,6 +345,8 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 | `height`             | `number`              | `undefined`         | Fixed height in pixels        |
 | `maxHeight`          | `number`              | `undefined`         | Maximum height in pixels      |
 | `minHeight`          | `number`              | `200`               | Minimum height in pixels      |
+| `fillContainer`      | `boolean`             | `false`             | Fill parent container height  |
+| `autofocus`          | `boolean \| 'start' \| 'end' \| 'all'` | `false` | Auto-focus behavior |
 | `showToolbar`        | `boolean`             | `true`              | Show toolbar                  |
 | `showBubbleMenu`     | `boolean`             | `true`              | Show bubble menu              |
 | `showCharacterCount` | `boolean`             | `true`              | Show character counter        |
@@ -353,6 +355,7 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 | `bubbleMenu`         | `BubbleMenuConfig`    | All enabled         | Bubble menu configuration     |
 | `slashCommands`      | `SlashCommandsConfig` | All enabled         | Slash commands configuration  |
 | `imageUploadHandler` | `ImageUploadHandler`  | `undefined`         | Custom image upload function  |
+
 
 
 #### Outputs

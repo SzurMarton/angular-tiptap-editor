@@ -141,6 +141,9 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
   selector: "angular-tiptap-editor",
   standalone: true,
   hostDirectives: [NoopValueAccessorDirective],
+  host: {
+    '[class.fill-container]': 'fillContainer()',
+  },
   imports: [
     TiptapToolbarComponent,
     TiptapImageUploadComponent,
@@ -151,7 +154,7 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
     TiptapSlashCommandsComponent,
   ],
   template: `
-    <div class="tiptap-editor">
+    <div class="tiptap-editor" [class.fill-container]="fillContainer()">
       <!-- Toolbar -->
       @if (showToolbar() && editor()) {
       <tiptap-toolbar [editor]="editor()!" [config]="toolbarConfig()">
@@ -242,6 +245,12 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
     `
       /* Styles de base pour l'éditeur Tiptap */
 
+      /* Host styles pour fillContainer */
+      :host(.fill-container) {
+        display: block;
+        height: 100%;
+      }
+
       /* Conteneur principal de l'éditeur */
       .tiptap-editor {
         border: 2px solid #e2e8f0;
@@ -249,6 +258,19 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
         background: white;
         overflow: hidden;
         transition: border-color 0.2s ease;
+      }
+
+      /* Mode fill container - l'éditeur remplit son parent */
+      .tiptap-editor.fill-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .tiptap-editor.fill-container .tiptap-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
       }
 
       .tiptap-editor:focus-within {
@@ -767,13 +789,13 @@ export const DEFAULT_SLASH_COMMANDS: SlashCommandsConfig = {
   ],
 })
 export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
-  // Nouveaux inputs avec signal
   content = input<string>("");
   placeholder = input<string>("");
   editable = input<boolean>(true);
   minHeight = input<number>(200);
   height = input<number | undefined>(undefined);
   maxHeight = input<number | undefined>(undefined);
+  fillContainer = input<boolean>(false);
   showToolbar = input<boolean>(true);
   showCharacterCount = input<boolean>(true);
   maxCharacters = input<number | undefined>(undefined);

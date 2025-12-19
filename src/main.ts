@@ -47,7 +47,9 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
           <!-- Contenu principal -->
           <div class="main-content">
             <!-- Mode éditeur -->
-            <div class="editor-view" *ngIf="!editorState().showCodeMode">
+            <div class="editor-view" 
+                 *ngIf="!editorState().showCodeMode"
+                 [class.fill-container-active]="editorState().fillContainer">
               <angular-tiptap-editor
                 #editorRef
                 [content]="demoContent()"
@@ -62,6 +64,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
                 [minHeight]="editorState().minHeight"
                 [height]="editorState().height"
                 [maxHeight]="editorState().maxHeight"
+                [fillContainer]="editorState().fillContainer"
                 [autofocus]="editorState().autofocus"
                 (contentChange)="onContentChange($event)"
               />
@@ -159,6 +162,47 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
 
       .editor-view {
         animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Surbrillance quand fillContainer est activé */
+      .editor-view.fill-container-active {
+        position: relative;
+        border: 2px dashed #6366f1;
+        border-radius: 12px;
+        padding: 8px;
+        padding-top: 20px;
+        background: rgba(99, 102, 241, 0.03);
+        animation: fadeIn 0.15s cubic-bezier(0.4, 0, 0.2, 1), fillContainerPulse 2s ease-in-out infinite;
+        /* Hauteur fixe pour démontrer l'effet de fillContainer */
+        height: 450px;
+        margin-top: 16px;
+      }
+
+      .editor-view.fill-container-active::before {
+        content: 'fillContainer: true • height: 450px';
+        position: absolute;
+        top: -12px;
+        left: 12px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 10px;
+        z-index: 10;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+      }
+
+      @keyframes fillContainerPulse {
+        0%, 100% {
+          border-color: #6366f1;
+          box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.1);
+        }
+        50% {
+          border-color: #8b5cf6;
+          box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
       }
 
       @keyframes fadeIn {
