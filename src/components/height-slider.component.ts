@@ -6,11 +6,15 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="height-slider-container">
+    <div class="height-slider-container" [class.disabled]="disabled()">
       <div class="slider-header">
         <span class="material-symbols-outlined">{{ icon() }}</span>
         <span class="slider-label">{{ label() }}</span>
-        <span class="slider-value">{{ value() }}px</span>
+        @if (disabled()) {
+          <span class="disabled-badge">N/A</span>
+        } @else {
+          <span class="slider-value">{{ value() }}px</span>
+        }
       </div>
 
       <div class="slider-track">
@@ -20,18 +24,20 @@ import { CommonModule } from "@angular/common";
           [max]="max()"
           [value]="value()"
           [step]="step()"
+          [disabled]="disabled()"
           class="slider-input"
           (input)="onSliderChange($event)"
           (change)="onSliderChange($event)"
         />
-        <div class="slider-fill" [style.width.%]="fillPercentage()"></div>
+        <div class="slider-fill" [style.width.%]="disabled() ? 0 : fillPercentage()"></div>
       </div>
 
       <div class="slider-controls">
-        <label class="toggle">
+        <label class="toggle" [class.disabled]="disabled()">
           <input
             type="checkbox"
             [checked]="isEnabled()"
+            [disabled]="disabled()"
             (change)="toggleEnabled()"
           />
           <span></span>
@@ -46,6 +52,20 @@ import { CommonModule } from "@angular/common";
         border-radius: 6px;
         padding: 10px;
         border: 1px solid #e2e8f0;
+      }
+
+      .height-slider-container.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .disabled-badge {
+        font-size: 10px;
+        font-weight: 600;
+        color: #92400e;
+        background: #fef3c7;
+        padding: 2px 8px;
+        border-radius: 4px;
       }
 
       .slider-header {
@@ -178,6 +198,7 @@ export class HeightSliderComponent {
   max = input<number>(800);
   step = input<number>(10);
   isEnabled = input.required<boolean>();
+  disabled = input<boolean>(false);
 
   // Outputs
   valueChange = output<number>();

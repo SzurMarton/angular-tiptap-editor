@@ -35,6 +35,13 @@ import { AppI18nService } from "../services/app-i18n.service";
           </div>
 
           <div class="dropdown-content" [class.open]="isDropdownOpen()">
+            @if (isFillContainerActive()) {
+              <div class="fill-container-info">
+                <span class="material-symbols-outlined">info</span>
+                <span>{{ fillContainerInfo() }}</span>
+              </div>
+            }
+
             <div class="sliders-container">
               <!-- Slider pour hauteur fixe -->
               <app-height-slider
@@ -45,6 +52,7 @@ import { AppI18nService } from "../services/app-i18n.service";
                 [max]="600"
                 [step]="10"
                 [isEnabled]="isFixedHeightEnabled()"
+                [disabled]="isFillContainerActive()"
                 (valueChange)="onFixedHeightChange($event)"
                 (enabledChange)="onFixedHeightToggle($event)"
               />
@@ -78,6 +86,23 @@ import { AppI18nService } from "../services/app-i18n.service";
     `
       .config-section {
         border-bottom: 1px solid #e2e8f0;
+      }
+
+      .fill-container-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        margin: 0.75rem;
+        background: #f0f9ff;
+        color: #0369a1;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        border: 1px solid #bae6fd;
+      }
+
+      .fill-container-info .material-symbols-outlined {
+        font-size: 16px;
       }
 
       .section-header {
@@ -220,6 +245,15 @@ export class HeightConfigComponent {
   // État du dropdown
   private _isDropdownOpen = signal(false);
   readonly isDropdownOpen = this._isDropdownOpen.asReadonly();
+
+  // Détection de fillContainer
+  readonly isFillContainerActive = computed(() => this.editorState().fillContainer);
+
+  readonly fillContainerInfo = computed(() => {
+    return this.appI18n.currentLocale() === "fr"
+      ? "La hauteur fixe est ignorée avec \"Remplir le conteneur\". La hauteur max reste fonctionnelle."
+      : "Fixed height is ignored with \"Fill Container\". Max height still works.";
+  });
 
   readonly activeCount = computed(() => {
     const state = this.editorState();
