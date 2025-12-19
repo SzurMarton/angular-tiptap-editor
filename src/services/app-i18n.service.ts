@@ -30,6 +30,8 @@ export interface AppTranslations {
     slashCommands: string;
     height: string;
     heightSettings: string;
+    autofocus: string;
+    autofocusSettings: string;
     language: string;
     editorLanguage: string;
     showToolbar: string;
@@ -212,6 +214,11 @@ export interface AppTranslations {
     // Height configuration
     fixedHeight: string;
     maxHeight: string;
+    // Autofocus options
+    autofocusOff: string;
+    autofocusStart: string;
+    autofocusEnd: string;
+    autofocusAll: string;
   };
 }
 
@@ -241,6 +248,8 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     slashCommands: "Slash Commands",
     height: "Height",
     heightSettings: "Height settings",
+    autofocus: "Autofocus",
+    autofocusSettings: "Autofocus mode",
     language: "Language",
     editorLanguage: "Editor language",
     showToolbar: "Show toolbar",
@@ -411,6 +420,11 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     // Height configuration
     fixedHeight: "Fixed height",
     maxHeight: "Max height",
+    // Autofocus options
+    autofocusOff: "Disabled",
+    autofocusStart: "Start of document",
+    autofocusEnd: "End of document",
+    autofocusAll: "Select all",
   },
 };
 
@@ -440,6 +454,8 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     slashCommands: "Commandes slash",
     height: "Hauteur",
     heightSettings: "Paramètres de hauteur",
+    autofocus: "Autofocus",
+    autofocusSettings: "Mode autofocus",
     language: "Langue",
     editorLanguage: "Langue de l'éditeur",
     showToolbar: "Afficher la barre d'outils",
@@ -612,6 +628,11 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     // Height configuration
     fixedHeight: "Hauteur fixe",
     maxHeight: "Hauteur maximale",
+    // Autofocus options
+    autofocusOff: "Désactivé",
+    autofocusStart: "Début du document",
+    autofocusEnd: "Fin du document",
+    autofocusAll: "Tout sélectionner",
   },
 };
 

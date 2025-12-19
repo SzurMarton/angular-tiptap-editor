@@ -2,6 +2,7 @@ import { Component, inject, ElementRef, effect, computed } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ConfigSectionComponent } from "./config-section.component";
 import { HeightConfigComponent } from "./height-config.component";
+import { AutofocusConfigComponent } from "./autofocus-config.component";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
 import { TiptapI18nService } from "angular-tiptap-editor";
 import { AppI18nService } from "../services/app-i18n.service";
@@ -14,7 +15,7 @@ import {
 @Component({
   selector: "app-configuration-panel",
   standalone: true,
-  imports: [CommonModule, ConfigSectionComponent, HeightConfigComponent],
+  imports: [CommonModule, ConfigSectionComponent, HeightConfigComponent, AutofocusConfigComponent],
   template: `
     <!-- Sidebar de configuration avec contenu visible pendant l'animation -->
     <aside
@@ -119,6 +120,9 @@ import {
 
           <!-- Height Configuration -->
           <app-height-config />
+
+          <!-- Autofocus Configuration -->
+          <app-autofocus-config />
         </div>
       </div>
     </aside>

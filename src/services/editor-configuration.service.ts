@@ -36,6 +36,8 @@ export class EditorConfigurationService {
     minHeight: 200,
     height: undefined,
     maxHeight: undefined,
+    // Autofocus configuration
+    autofocus: false,
   });
 
   // Menu state

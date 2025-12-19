@@ -17,6 +17,8 @@ export interface EditorState {
   minHeight: number;
   height?: number;
   maxHeight?: number;
+  // Autofocus configuration
+  autofocus: boolean | 'start' | 'end' | 'all' | number;
 }
 
 export interface MenuState {

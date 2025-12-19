@@ -62,6 +62,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
                 [minHeight]="editorState().minHeight"
                 [height]="editorState().height"
                 [maxHeight]="editorState().maxHeight"
+                [autofocus]="editorState().autofocus"
                 (contentChange)="onContentChange($event)"
               />
             </div>
