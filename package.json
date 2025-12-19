@@ -31,7 +31,7 @@
     "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/angular-tiptap-editor && npm run start\"",
     "build:demo": "ng build --configuration production",
     "build:demo:gh-pages": "ng build --configuration production --base-href /angular-tiptap-editor/",
-    "copy-lib-assets": "cp README.md dist/angular-tiptap-editor/ && cp LICENSE dist/angular-tiptap-editor/"
+    "copy-lib-assets": "cp README.md dist/angular-tiptap-editor/ && cp LICENSE dist/angular-tiptap-editor/ && cp CHANGELOG.md dist/angular-tiptap-editor/"
   },
   "dependencies": {
     "@angular/animations": "^20.0.0",
