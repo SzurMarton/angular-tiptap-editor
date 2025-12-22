@@ -7,7 +7,7 @@ A modern, customizable rich-text editor for Angular applications, built with Tip
 ## 🚀 Features
 
 - **Modern Angular**: Built with Angular 18+ with Signals and modern patterns
-- **Rich Text Editing**: Powered by Tiptap v3.3.0 with extensive formatting options
+- **Rich Text Editing**: Powered by Tiptap v2 with extensive formatting options
 - **Table Support**: Full table management with bubble menus and cell selection
 - **Slash Commands**: Intuitive slash commands for quick content insertion
 - **Internationalization**: Full i18n support (English & French) with auto-detection
