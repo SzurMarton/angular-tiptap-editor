@@ -94,6 +94,7 @@ import {
       [height]="400"
       [showCharacterCount]="true"
       [showWordCount]="true"
+      [maxCharacters]="500"
       (contentChange)="onContentChange($event)"
     />
   `,

@@ -30,6 +30,8 @@ export class EditorConfigurationService {
     isTransitioning: false,
     showToolbar: true,
     showBubbleMenu: true,
+    showCharacterCount: true,
+    showWordCount: true,
     enableSlashCommands: true,
     placeholder: "Start typing...", // Will be updated by the effect
     // Height configuration
@@ -41,6 +43,7 @@ export class EditorConfigurationService {
     autofocus: false,
     darkMode: false,
     activePanel: 'config',
+    maxCharacters: undefined,
   });
 
   // Menu state
@@ -74,12 +77,12 @@ export class EditorConfigurationService {
   readonly demoContent = this._demoContent.asReadonly();
   readonly toolbarConfig = this._toolbarConfig.asReadonly();
   readonly bubbleMenuConfig = this._bubbleMenuConfig.asReadonly();
-  
+
   // Slash commands config is now computed to be reactive to translations
   readonly slashCommandsConfig = computed<SlashCommandsConfig>(() => {
     const natives = this._nativeSlashCommands();
     const isMagicEnabled = this._isMagicTemplateEnabled();
-    
+
     if (!isMagicEnabled) {
       return natives;
     }
@@ -313,7 +316,10 @@ export class EditorConfigurationService {
       ...state,
       showToolbar: true,
       showBubbleMenu: true,
+      showCharacterCount: true,
+      showWordCount: true,
       enableSlashCommands: true,
+      maxCharacters: undefined,
     }));
 
     this.closeAllMenus();

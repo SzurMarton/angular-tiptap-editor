@@ -31,6 +31,8 @@ export interface AppTranslations {
     slashCommands: string;
     height: string;
     heightSettings: string;
+    footer: string;
+    footerSettings: string;
     autofocus: string;
     autofocusSettings: string;
     language: string;
@@ -296,6 +298,8 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     slashCommands: "Slash Commands",
     height: "Height",
     heightSettings: "Height settings",
+    footer: "Footer",
+    footerSettings: "Footer settings",
     autofocus: "Autofocus",
     autofocusSettings: "Autofocus mode",
     language: "Language",
@@ -547,6 +551,8 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     slashCommands: "Commandes slash",
     height: "Hauteur",
     heightSettings: "Paramètres de hauteur",
+    footer: "Pied de page",
+    footerSettings: "Paramètres du pied de page",
     autofocus: "Autofocus",
     autofocusSettings: "Mode autofocus",
     language: "Langue",

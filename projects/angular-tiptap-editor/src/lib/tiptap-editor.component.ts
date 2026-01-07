@@ -226,15 +226,24 @@ export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
       ></tiptap-cell-bubble-menu>
       }
 
-      <!-- Compteur de caractères -->
-      @if (showCharacterCount()) {
-      <div class="character-count">
-        {{ characterCount() }}
-        {{ i18nService.editor().character
-        }}{{ characterCount() > 1 ? "s" : "" }}, {{ wordCount() }}
-        {{ i18nService.editor().word }}{{ wordCount() > 1 ? "s" : "" }}
-        @if (maxCharacters()) { /
-        {{ maxCharacters() }}
+      <!-- Compteurs -->
+      @if (showCharacterCount() || showWordCount()) {
+      <div class="character-count" [class.limit-reached]="maxCharacters() && characterCount() >= maxCharacters()!">
+        @if (showCharacterCount()) {
+          {{ characterCount() }}
+          {{ i18nService.editor().character }}{{ characterCount() > 1 ? "s" : "" }}
+          @if (maxCharacters()) {
+            / {{ maxCharacters() }}
+          }
+        }
+        
+        @if (showCharacterCount() && showWordCount()) {
+          , 
+        }
+
+        @if (showWordCount()) {
+          {{ wordCount() }}
+          {{ i18nService.editor().word }}{{ wordCount() > 1 ? "s" : "" }}
         }
       </div>
       }
@@ -471,6 +480,12 @@ export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
         text-align: right;
         border-top: 1px solid var(--ate-counter-border-color);
         background: var(--ate-counter-background);
+        transition: color 0.2s ease;
+      }
+
+      .character-count.limit-reached {
+        color: var(--ate-error-color, #ef4444);
+        font-weight: 600;
       }
 
       /* Styles ProseMirror avec :host ::ng-deep */
@@ -953,6 +968,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   fillContainer = input<boolean>(false);
   showToolbar = input<boolean>(true);
   showCharacterCount = input<boolean>(true);
+  showWordCount = input<boolean>(true);
   maxCharacters = input<number | undefined>(undefined);
   enableOfficePaste = input<boolean>(true);
   enableSlashCommands = input<boolean>(true);
@@ -1176,6 +1192,25 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
 
       // Table hover detection supprimée car remplacée par le menu bubble
     });
+
+    // Effect pour mettre à jour la limite de caractères dynamiquement
+    effect(() => {
+      const editor = this.editor();
+      const limit = this.maxCharacters();
+
+      if (editor && editor.extensionManager) {
+        const characterCountExtension = editor.extensionManager.extensions.find(
+          (ext) => ext.name === "characterCount"
+        );
+
+        if (characterCountExtension) {
+          characterCountExtension.options.limit = limit;
+          // Force TipTap to recognize the option change if possible
+          // Some extensions need re-creation, but characterCount plugin 
+          // reads this.options.limit in its filterTransaction.
+        }
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -1249,7 +1284,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       );
     }
 
-    if (this.showCharacterCount()) {
+    if (this.showCharacterCount() || this.showWordCount()) {
       extensions.push(
         CharacterCount.configure({
           limit: this.maxCharacters(),
@@ -1325,7 +1360,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateCharacterCount(editor: Editor) {
-    if (this.showCharacterCount() && editor.storage["characterCount"]) {
+    if ((this.showCharacterCount() || this.showWordCount()) && editor.storage["characterCount"]) {
       const storage = editor.storage["characterCount"];
       this._characterCount.set(storage.characters());
       this._wordCount.set(storage.words());

@@ -12,6 +12,8 @@ export interface EditorState {
   isTransitioning: boolean;
   showToolbar: boolean;
   showBubbleMenu: boolean;
+  showCharacterCount: boolean;
+  showWordCount: boolean;
   enableSlashCommands: boolean;
   placeholder: string;
   locale?: string;
@@ -22,6 +24,7 @@ export interface EditorState {
   fillContainer: boolean;
   // Autofocus configuration
   autofocus: boolean | 'start' | 'end' | 'all' | number;
+  maxCharacters?: number;
   // Theme
   darkMode: boolean;
   // Active panel
