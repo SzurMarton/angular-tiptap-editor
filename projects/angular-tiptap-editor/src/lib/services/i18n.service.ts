@@ -32,6 +32,8 @@ export interface TiptapTranslations {
     redo: string;
     clear: string;
     textColor: string;
+    customColor: string;
+    presets: string;
   };
 
   // Bubble Menu
@@ -53,6 +55,8 @@ export interface TiptapTranslations {
     linkUrl: string;
     linkText: string;
     openLink: string;
+    customColor: string;
+    presets: string;
   };
 
   // Slash Commands
@@ -205,6 +209,8 @@ const ENGLISH_TRANSLATIONS: TiptapTranslations = {
     redo: "Redo",
     clear: "Clear",
     textColor: "Text Color",
+    customColor: "Custom Color",
+    presets: "Presets",
   },
   bubbleMenu: {
     bold: "Bold",
@@ -224,6 +230,8 @@ const ENGLISH_TRANSLATIONS: TiptapTranslations = {
     linkUrl: "Link URL",
     linkText: "Link Text",
     openLink: "Open Link",
+    customColor: "Custom Color",
+    presets: "Presets",
   },
   slashCommands: {
     heading1: {
@@ -366,6 +374,8 @@ const FRENCH_TRANSLATIONS: TiptapTranslations = {
     redo: "Refaire",
     clear: "Vider",
     textColor: "Couleur texte",
+    customColor: "Couleur personnalisée",
+    presets: "Préréglages",
   },
   bubbleMenu: {
     bold: "Gras",
@@ -385,6 +395,8 @@ const FRENCH_TRANSLATIONS: TiptapTranslations = {
     linkUrl: "URL du lien",
     linkText: "Texte du lien",
     openLink: "Ouvrir le lien",
+    customColor: "Couleur personnalisée",
+    presets: "Préréglages",
   },
   slashCommands: {
     heading1: {

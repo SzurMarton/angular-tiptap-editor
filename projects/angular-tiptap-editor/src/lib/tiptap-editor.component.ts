@@ -11,6 +11,7 @@ import {
   AfterViewInit,
   inject,
   DestroyRef,
+  ViewChild,
 } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Editor, EditorOptions, Extension, Node, Mark } from "@tiptap/core";
@@ -169,6 +170,8 @@ export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
         [editor]="editor()!" 
         [config]="toolbarConfig()"
         [imageUpload]="imageUploadConfig()"
+        (mouseenter)="hideBubbleMenus()"
+        (mouseleave)="showBubbleMenus()"
       />
       }
 
@@ -414,8 +417,9 @@ export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
         border: var(--ate-border-width) solid var(--ate-border-color);
         border-radius: var(--ate-border-radius);
         background: var(--ate-background);
-        overflow: hidden;
+        overflow: visible;
         transition: border-color 0.2s ease;
+        position: relative;
       }
 
       /* Mode fill container - l'éditeur remplit son parent */
@@ -483,6 +487,8 @@ export const DEFAULT_CELL_MENU_CONFIG: CellBubbleMenuConfig = {
         border-top: 1px solid var(--ate-counter-border-color);
         background: var(--ate-counter-background);
         transition: color 0.2s ease;
+        border-bottom-left-radius: calc(var(--ate-border-radius) - var(--ate-border-width));
+        border-bottom-right-radius: calc(var(--ate-border-radius) - var(--ate-border-width));
       }
 
       .character-count.limit-reached {
@@ -1026,6 +1032,24 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
 
   // ViewChild avec signal
   editorElement = viewChild.required<ElementRef>("editorElement");
+
+  // Signaux pour les menus (Références vers les composants)
+  private textMenuComp = viewChild(TiptapBubbleMenuComponent);
+  private imageMenuComp = viewChild(TiptapImageBubbleMenuComponent);
+  private tableMenuComp = viewChild(TiptapTableBubbleMenuComponent);
+  private cellMenuComp = viewChild(TiptapCellBubbleMenuComponent);
+
+  hideBubbleMenus() {
+    this.textMenuComp()?.setToolbarInteracting(true);
+    this.imageMenuComp()?.setToolbarInteracting(true);
+    this.tableMenuComp()?.hideTippy();
+    this.cellMenuComp()?.hideTippy();
+  }
+
+  showBubbleMenus() {
+    this.textMenuComp()?.setToolbarInteracting(false);
+    this.imageMenuComp()?.setToolbarInteracting(false);
+  }
 
   // Signals privés pour l'état interne
   private _editor = signal<Editor | null>(null);

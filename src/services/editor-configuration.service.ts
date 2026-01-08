@@ -105,7 +105,7 @@ export class EditorConfigurationService {
           }
         }
       ]
-    };
+    } as SlashCommandsConfig;
   });
 
   // Computed values

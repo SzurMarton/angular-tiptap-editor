@@ -113,9 +113,19 @@ export interface ToolbarConfig {
         (onClick)="toggleHighlight()"
       />
       } @if (config().highlightPicker) {
-      <tiptap-color-picker mode="highlight" [editor]="editor()" />
+      <tiptap-color-picker 
+        mode="highlight" 
+        [editor]="editor()" 
+        (interactionChange)="onColorPickerInteractionChange($event)"
+        (requestUpdate)="onColorPickerUpdate()"
+      />
       } @if (config().textColor) {
-      <tiptap-color-picker mode="text" [editor]="editor()" />
+      <tiptap-color-picker 
+        mode="text" 
+        [editor]="editor()" 
+        (interactionChange)="onColorPickerInteractionChange($event)"
+        (requestUpdate)="onColorPickerUpdate()"
+      />
       }
  @if (config().separator && (config().heading1 || config().heading2 ||
       config().heading3)) {
@@ -265,7 +275,10 @@ export interface ToolbarConfig {
         flex-wrap: wrap;
         min-height: 32px;
         position: relative;
+        z-index: 50;
         backdrop-filter: blur(var(--ate-menu-blur, 16px));
+        border-top-left-radius: calc(var(--ate-border-radius, 8px) - var(--ate-border-width, 2px));
+        border-top-right-radius: calc(var(--ate-border-radius, 8px) - var(--ate-border-width, 2px));
       }
 
       /* Groupe de boutons */
@@ -325,6 +338,8 @@ export class TiptapToolbarComponent {
 
   private imageService = inject(ImageService);
   private i18nService = inject(TiptapI18nService);
+
+  private isColorPickerInteracting = false;
 
   // Computed values pour les traductions
   readonly t = this.i18nService.toolbar;
@@ -426,5 +441,13 @@ export class TiptapToolbarComponent {
 
   onImageError(error: string) {
     this.imageError.emit(error);
+  }
+
+  onColorPickerInteractionChange(isInteracting: boolean) {
+    this.isColorPickerInteracting = isInteracting;
+  }
+
+  onColorPickerUpdate() {
+    // This can be used to trigger external updates if needed
   }
 }

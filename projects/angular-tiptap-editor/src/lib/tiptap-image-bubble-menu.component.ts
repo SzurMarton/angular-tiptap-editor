@@ -8,6 +8,7 @@ import {
   computed,
   inject,
   effect,
+  signal,
 } from "@angular/core";
 import tippy, { Instance as TippyInstance } from "tippy.js";
 import type { Editor } from "@tiptap/core";
@@ -93,6 +94,7 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
   private tippyInstance: TippyInstance | null = null;
   private imageService = inject(ImageService);
   private updateTimeout: any = null;
+  private isToolbarInteracting = signal(false);
 
   imageBubbleMenuConfig = computed(() => ({
     changeImage: true,
@@ -273,6 +275,10 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
       const ed = this.editor();
       if (!ed) return;
 
+      if (this.isToolbarInteracting()) {
+        this.hideTippy();
+        return;
+      }
       const isImageSelected =
         ed.isActive("resizableImage") || ed.isActive("image");
 
@@ -367,5 +373,10 @@ export class TiptapImageBubbleMenuComponent implements OnInit, OnDestroy {
     if (ed) {
       ed.chain().focus().deleteSelection().run();
     }
+  }
+
+  setToolbarInteracting(isInteracting: boolean) {
+    this.isToolbarInteracting.set(isInteracting);
+    this.updateMenu();
   }
 }

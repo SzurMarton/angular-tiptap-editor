@@ -143,6 +143,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
   private updateTimeout: any = null;
 
   private isColorPickerInteracting = false;
+  private isToolbarInteracting = signal(false);
 
   bubbleMenuConfig = computed(() => ({
     bold: true,
@@ -319,6 +320,12 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
 
       const { selection } = ed.state;
       const { from, to } = selection;
+
+      if (this.isToolbarInteracting()) {
+        this.hideTippy();
+        return;
+      }
+
       const hasTextSelection =
         from !== to && !(selection instanceof CellSelection);
       const isImageSelected =
@@ -427,5 +434,10 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
         }
         break;
     }
+  }
+
+  setToolbarInteracting(isInteracting: boolean) {
+    this.isToolbarInteracting.set(isInteracting);
+    this.updateMenu();
   }
 }
