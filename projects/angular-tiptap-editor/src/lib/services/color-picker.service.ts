@@ -147,6 +147,25 @@ export class ColorPickerService {
   }
 
   /**
+   * Calculate the brightness of a color to determine if it's "light" or "dark".
+   * Returns a value between 0 and 255.
+   */
+  getLuminance(color: string): number {
+    const hex = this.normalizeColor(color).replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000;
+  }
+
+  /**
+   * Returns 'black' or 'white' based on the input color contrast.
+   */
+  getContrastColor(color: string): "black" | "white" {
+    return this.getLuminance(color) > 128 ? "black" : "white";
+  }
+
+  /**
    * Apply a color to the current selection.
    */
   applyColor(
@@ -186,6 +205,124 @@ export class ColorPickerService {
     }
 
     (chain as any).unsetColor();
+
+    if (!addToHistory) {
+      (chain as any).setMeta("addToHistory", false);
+    }
+
+    chain.run();
+  }
+
+  /**
+   * Find the first explicitly applied highlight color within a selection.
+   */
+  private findFirstAppliedHighlight(
+    editor: Editor,
+    selection: ColorPickerSelection
+  ): string | null {
+    const { from, to } = selection;
+    let found: string | null = null;
+
+    editor.state.doc.nodesBetween(from, to, (node) => {
+      if (found) return false;
+
+      const highlightMark = node.marks.find((m) => m.type.name === "highlight");
+      const color = (highlightMark?.attrs as any)?.color as string | undefined;
+      if (color) {
+        found = this.normalizeColor(color);
+        return false;
+      }
+
+      return;
+    });
+
+    return found;
+  }
+
+  /**
+   * Get the current highlight color for the selection.
+   */
+  getCurrentHighlight(editor: Editor, selection?: ColorPickerSelection): string {
+    const sel =
+      selection ??
+      ({
+        from: editor.state.selection.from,
+        to: editor.state.selection.to,
+      } satisfies ColorPickerSelection);
+
+    const found = this.findFirstAppliedHighlight(editor, sel);
+    if (found) return found;
+
+    const attrs = (editor.getAttributes("highlight") as any) || {};
+    if (attrs.color) return this.normalizeColor(attrs.color);
+
+    return "#ffff00"; // Default highlight color yellow
+  }
+
+  /**
+   * Check if a highlight is explicitly applied on the selection.
+   */
+  hasHighlightApplied(editor: Editor, selection?: ColorPickerSelection): boolean {
+    const sel =
+      selection ??
+      ({
+        from: editor.state.selection.from,
+        to: editor.state.selection.to,
+      } satisfies ColorPickerSelection);
+    const { from, to } = sel;
+
+    if (from === to) {
+      const attrs = (editor.getAttributes("highlight") as any) || {};
+      return !!attrs.color;
+    }
+
+    const found = this.findFirstAppliedHighlight(editor, sel);
+    if (found) return true;
+
+    const attrs = (editor.getAttributes("highlight") as any) || {};
+    return !!attrs.color;
+  }
+
+  /**
+   * Apply a highlight color to the current selection.
+   */
+  applyHighlight(
+    editor: Editor,
+    color: string,
+    options: { addToHistory?: boolean } = {}
+  ) {
+    const sel = this.getStoredSelection() ?? editor.state.selection;
+    const { addToHistory = true } = options;
+
+    let chain = editor.chain().focus();
+
+    if (sel) {
+      chain = chain.setTextSelection(sel);
+    }
+
+    (chain as any).setHighlight({ color });
+
+    if (!addToHistory) {
+      (chain as any).setMeta("addToHistory", false);
+    }
+
+    chain.run();
+  }
+
+  /**
+   * Unset highlight on the current selection.
+   */
+  unsetHighlight(editor: Editor, options: { addToHistory?: boolean } = {}) {
+    const sel = this.getStoredSelection() ?? editor.state.selection;
+    const { addToHistory = true } = options;
+
+    let chain = editor.chain().focus();
+
+    if (sel) {
+      chain = chain.setTextSelection(sel);
+    }
+
+    (chain as any).unsetHighlight();
 
     if (!addToHistory) {
       (chain as any).setMeta("addToHistory", false);

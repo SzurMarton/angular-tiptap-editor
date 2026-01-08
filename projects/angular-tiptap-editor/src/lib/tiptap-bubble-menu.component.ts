@@ -14,7 +14,7 @@ import tippy, { Instance as TippyInstance } from "tippy.js";
 import type { Editor } from "@tiptap/core";
 import { CellSelection } from "@tiptap/pm/tables";
 import { TiptapButtonComponent } from "./tiptap-button.component";
-import { TiptapTextColorPickerComponent } from "./components/tiptap-text-color-picker.component";
+import { TiptapColorPickerComponent } from "./components/tiptap-color-picker.component";
 import { TiptapI18nService } from "./services/i18n.service";
 
 import { BubbleMenuConfig } from "./models/bubble-menu.model";
@@ -22,7 +22,10 @@ import { BubbleMenuConfig } from "./models/bubble-menu.model";
 @Component({
   selector: "tiptap-bubble-menu",
   standalone: true,
-  imports: [TiptapButtonComponent, TiptapTextColorPickerComponent],
+  imports: [
+    TiptapButtonComponent,
+    TiptapColorPickerComponent,
+  ],
   template: `
     <div #menuRef class="bubble-menu">
       @if (bubbleMenuConfig().bold) {
@@ -74,9 +77,18 @@ import { BubbleMenuConfig } from "./models/bubble-menu.model";
         [active]="isActive('highlight')"
         (click)="onCommand('highlight', $event)"
       ></tiptap-button>
+      } @if (bubbleMenuConfig().highlightPicker) {
+      <tiptap-color-picker
+        #highlightPicker
+        mode="highlight"
+        [editor]="editor()"
+        (interactionChange)="onColorPickerInteractionChange($event)"
+        (requestUpdate)="updateMenu()"
+      />
       } @if (bubbleMenuConfig().textColor) {
-      <tiptap-text-color-picker
+      <tiptap-color-picker
         #textColorPicker
+        mode="text"
         [editor]="editor()"
         (interactionChange)="onColorPickerInteractionChange($event)"
         (requestUpdate)="updateMenu()"
@@ -123,7 +135,9 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
 
   @ViewChild("menuRef", { static: false }) menuRef!: ElementRef<HTMLDivElement>;
   @ViewChild("textColorPicker", { static: false })
-  private textColorPicker?: TiptapTextColorPickerComponent;
+  private textColorPicker?: TiptapColorPickerComponent;
+  @ViewChild("highlightPicker", { static: false })
+  private highlightPicker?: TiptapColorPickerComponent;
 
   private tippyInstance: TippyInstance | null = null;
   private updateTimeout: any = null;
@@ -298,8 +312,9 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
       const ed = this.editor();
       if (!ed) return;
 
-      if (!this.isColorPickerInteracting && this.textColorPicker) {
-        this.textColorPicker.done();
+      if (!this.isColorPickerInteracting) {
+        if (this.textColorPicker) this.textColorPicker.done();
+        if (this.highlightPicker) this.highlightPicker.done();
       }
 
       const { selection } = ed.state;
@@ -337,8 +352,9 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
   handleBlur = () => {
     // Masquer le menu quand l'éditeur perd le focus
     setTimeout(() => {
-      if (!this.isColorPickerInteracting && this.textColorPicker) {
-        this.textColorPicker.done();
+      if (!this.isColorPickerInteracting) {
+        if (this.textColorPicker) this.textColorPicker.done();
+        if (this.highlightPicker) this.highlightPicker.done();
         this.hideTippy();
       }
     }, 100);
@@ -360,6 +376,7 @@ export class TiptapBubbleMenuComponent implements OnInit, OnDestroy {
     this.tippyInstance.show();
 
     this.textColorPicker?.syncColorInputValue();
+    this.highlightPicker?.syncColorInputValue();
   }
 
   hideTippy() {

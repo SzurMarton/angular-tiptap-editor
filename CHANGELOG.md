@@ -5,6 +5,15 @@ All notable changes to `@flogeez/angular-tiptap-editor` will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-01-08
+
+### Added
+- **Unified Color Picker**: Refactored text and highlight color pickers into a single, generic `TiptapColorPickerComponent` for better maintainability (DRY).
+- **Advanced Highlight Picker**: The highlight button now displays the selected color as its background, with automatic icon contrast (black/white) for perfect visibility.
+- **Improved Text Color Picker**: Added an adaptive contrast background to the text color button when a very light color is selected, ensuring the icon remains visible.
+- **Highlight Toggle vs Picker**: Separated the quick "Yellow Highlight" toggle (binary) from the advanced "Color Picker" (precision), allowing both to be configured independently.
+- **New Default Configuration**: The editor now enables the advanced Color Picker and Text Color picker by default in both the toolbar and bubble menu.
+
 ## [0.5.2] - 2026-01-07
 
 ### Added

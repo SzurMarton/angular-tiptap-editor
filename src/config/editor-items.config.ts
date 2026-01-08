@@ -23,6 +23,7 @@ export function createToolbarItems(itemLabels: any): ConfigItem[] {
     },
     { key: "subscript", label: itemLabels["subscript"], icon: "subscript" },
     { key: "highlight", label: itemLabels["highlight"], icon: "highlight" },
+    { key: "highlightPicker", label: itemLabels["highlightPicker"], icon: "format_color_fill" },
     { key: "textColor", label: itemLabels["textColor"], icon: "format_color_text" },
     { key: "heading1", label: itemLabels["heading1"], icon: "title" },
     { key: "heading2", label: itemLabels["heading2"], icon: "title" },
@@ -91,6 +92,7 @@ export function createBubbleMenuItems(itemLabels: any): ConfigItem[] {
     { key: "superscript", label: itemLabels.superscript, icon: "superscript" },
     { key: "subscript", label: itemLabels.subscript, icon: "subscript" },
     { key: "highlight", label: itemLabels.highlight, icon: "highlight" },
+    { key: "highlightPicker", label: itemLabels.highlightPicker, icon: "format_color_fill" },
     { key: "textColor", label: itemLabels.textColor, icon: "format_color_text" },
     { key: "link", label: itemLabels.link, icon: "link" },
     { key: "separator", label: itemLabels.separator, icon: "more_vert" },
@@ -135,6 +137,8 @@ export const TOOLBAR_ITEMS: ConfigItem[] = [
   { key: "superscript", label: "Exposant", icon: "superscript" },
   { key: "subscript", label: "Indice", icon: "subscript" },
   { key: "highlight", label: "Surligner", icon: "highlight" },
+  { key: "highlightPicker", label: "Couleur de fond", icon: "format_color_fill" },
+  { key: "textColor", label: "Couleur texte", icon: "format_color_text" },
   { key: "heading1", label: "Titre 1", icon: "title" },
   { key: "heading2", label: "Titre 2", icon: "title" },
   { key: "heading3", label: "Titre 3", icon: "title" },
@@ -171,6 +175,7 @@ export const BUBBLE_MENU_ITEMS: ConfigItem[] = [
   { key: "superscript", label: "Exposant", icon: "superscript" },
   { key: "subscript", label: "Indice", icon: "subscript" },
   { key: "highlight", label: "Surligner", icon: "highlight" },
+  { key: "highlightPicker", label: "Couleur de fond", icon: "format_color_fill" },
   { key: "textColor", label: "Couleur texte", icon: "format_color_text" },
   { key: "link", label: "Lien", icon: "link" },
   { key: "separator", label: "Séparateur", icon: "more_vert" },
@@ -214,6 +219,7 @@ export const DEFAULT_DEMO_CONTENT = `
   <li><u>Texte souligné</u> pour l'importance</li>
   <li><s>Texte barré</s> pour les corrections</li>
   <li><code>Code inline</code> pour les extraits techniques</li>
+  <li><mark style="background-color: #ffff00">Texte surligné</mark> pour attirer l'attention</li>
 </ul>
 
 <h2>Listes et Organisation</h2>

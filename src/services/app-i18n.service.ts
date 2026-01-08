@@ -236,6 +236,7 @@ export interface AppTranslations {
     superscript: string;
     subscript: string;
     highlight: string;
+    highlightPicker: string;
     heading1: string;
     heading2: string;
     heading3: string;
@@ -489,6 +490,7 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     superscript: "Superscript",
     subscript: "Subscript",
     highlight: "Highlight",
+    highlightPicker: "Background Color",
     heading1: "Heading 1",
     heading2: "Heading 2",
     heading3: "Heading 3",
@@ -744,6 +746,7 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     superscript: "Exposant",
     subscript: "Indice",
     highlight: "Surligner",
+    highlightPicker: "Couleur de fond",
     heading1: "Titre 1",
     heading2: "Titre 2",
     heading3: "Titre 3",

@@ -5,7 +5,7 @@ import { TiptapSeparatorComponent } from "./tiptap-separator.component";
 import { ImageUploadResult, ImageService } from "./services/image.service";
 import { EditorCommandsService } from "./services/editor-commands.service";
 import { TiptapI18nService } from "./services/i18n.service";
-import { TiptapTextColorPickerComponent } from "./components/tiptap-text-color-picker.component";
+import { TiptapColorPickerComponent } from "./components/tiptap-color-picker.component";
 
 export interface ToolbarConfig {
   bold?: boolean;
@@ -16,6 +16,7 @@ export interface ToolbarConfig {
   superscript?: boolean;
   subscript?: boolean;
   highlight?: boolean;
+  highlightPicker?: boolean;
   heading1?: boolean;
   heading2?: boolean;
   heading3?: boolean;
@@ -43,7 +44,7 @@ export interface ToolbarConfig {
   imports: [
     TiptapButtonComponent,
     TiptapSeparatorComponent,
-    TiptapTextColorPickerComponent,
+    TiptapColorPickerComponent,
   ],
   template: `
     <div class="tiptap-toolbar">
@@ -111,9 +112,12 @@ export interface ToolbarConfig {
         [disabled]="!canExecute('toggleHighlight')"
         (onClick)="toggleHighlight()"
       />
+      } @if (config().highlightPicker) {
+      <tiptap-color-picker mode="highlight" [editor]="editor()" />
       } @if (config().textColor) {
-      <tiptap-text-color-picker [editor]="editor()" />
-      } @if (config().separator && (config().heading1 || config().heading2 ||
+      <tiptap-color-picker mode="text" [editor]="editor()" />
+      }
+ @if (config().separator && (config().heading1 || config().heading2 ||
       config().heading3)) {
       <tiptap-separator />
       } @if (config().heading1) {

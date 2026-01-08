@@ -24,20 +24,23 @@ export interface TiptapButtonConfig {
       [class.medium]="size() === 'medium'"
       [class.large]="size() === 'large'"
       [class.has-custom-color]="!!color()"
+      [class.has-custom-bg]="!!backgroundColor()"
       [disabled]="disabled()"
       [style.color]="color()"
+      [style.background-color]="backgroundColor()"
       [attr.title]="title()"
       (mousedown)="onMouseDown($event)"
       (click)="onClick.emit($event)"
       type="button"
     >
-      <span
-        class="material-symbols-outlined"
-        [class.icon-small]="iconSize() === 'small'"
-        [class.icon-medium]="iconSize() === 'medium'"
-        [class.icon-large]="iconSize() === 'large'"
-        >{{ icon() }}</span
-      >
+      @if (icon()) {
+        <span
+          class="material-symbols-outlined"
+          [class.icon-small]="iconSize() === 'small'"
+          [class.icon-medium]="iconSize() === 'medium'"
+          [class.icon-large]="iconSize() === 'large'"
+          >{{ icon() }}</span>
+      }
       <ng-content></ng-content>
     </button>
   `,
@@ -80,9 +83,14 @@ export interface TiptapButtonConfig {
       }
       
       /* If has custom color, we still want the hover background but not the color change */
-      .tiptap-button.has-custom-color:hover {
+      .tiptap-button.has-custom-color:hover:not(.has-custom-bg) {
         background: var(--ate-toolbar-button-hover-background, transparent);
         transform: translateY(-1px);
+      }
+
+      .tiptap-button.has-custom-bg:hover {
+        transform: translateY(-1px);
+        filter: brightness(0.9);
       }
 
       .tiptap-button:hover::before {
@@ -221,11 +229,12 @@ export interface TiptapButtonConfig {
 })
 export class TiptapButtonComponent {
   // Inputs
-  icon = input.required<string>();
+  icon = input<string>("");
   title = input.required<string>();
   active = input(false);
   disabled = input(false);
   color = input<string>();
+  backgroundColor = input<string>();
   variant = input<"default" | "text" | "danger">("default");
   size = input<"small" | "medium" | "large">("medium");
   iconSize = input<"small" | "medium" | "large">("medium");
