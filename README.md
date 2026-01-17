@@ -4,23 +4,6 @@ A modern, customizable rich-text editor for Angular applications, built with Tip
 
 [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge&logo=google-chrome)](https://flogeez.github.io/angular-tiptap-editor/) [![Try it on StackBlitz](https://img.shields.io/badge/Try%20it-StackBlitz-blue?style=for-the-badge&logo=stackblitz)](https://stackblitz.com/edit/angular-tiptap-editor)
 
-## 📖 Table of Contents
-
-- [Features](#-features)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-  - [Basic Usage](#1-basic-usage)
-  - [Form Integration](#4-with-form-integration)
-  - [Editor Commands](#5-using-editorcommandsservice)
-  - [Reactive State](#6-extending-reactive-editor-state)
-- [Key Features](#-key-features)
-  - [Table Management](#-table-management)
-  - [Slash Commands](#-slash-commands)
-  - [Advanced Image Handling](#️-advanced-image-handling)
-- [Documentation](#-documentation)
-- [Theming & Dark Mode](#-css-custom-properties)
-- [Architecture](#-architecture)
-
 ## 🚀 Features
 
 - **Modern Angular**: Built with Angular 18+ using Signals and modern patterns for peak performance.

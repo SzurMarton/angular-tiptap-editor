@@ -5,7 +5,11 @@ All notable changes to `@flogeez/angular-tiptap-editor` will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.0] - 2026-01-17
+## [2.0.0] - 2026-01-17
+🚀 **Major Release**
+
+> **Note:** I decided to skip v1.0.0 to align the version number with **Tiptap v2**.
+> This structure prepares the project for the upcoming migration to **Tiptap v3** (which will correspond to my v3.0.0).
 
 ### Added
 - **Extensible I18n**: The translation system is now open. You can add any language (e.g., `es`, `it`) via `addTranslations()`, and the `SupportedLocale` type now accepts any string with autocomplete for default languages.
