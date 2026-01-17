@@ -41,7 +41,7 @@ export class EditorConfigurationService {
     fillContainer: false,
     // Autofocus configuration
     autofocus: false,
-    darkMode: true,
+    darkMode: false,
     activePanel: 'config',
     showInspector: false,
     enableTaskExtension: false,
