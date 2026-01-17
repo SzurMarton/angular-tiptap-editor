@@ -203,7 +203,7 @@ import { concat, defer, of, tap } from "rxjs";
       }
 
       <!-- Counters -->
-      @if (editable() && !mergedDisabled() && (showCharacterCount() || showWordCount())) {
+      @if (editable() && !mergedDisabled() && showFooter() && (showCharacterCount() || showWordCount())) {
       <div class="character-count" [class.limit-reached]="maxCharacters() && characterCount() >= maxCharacters()!">
         @if (showCharacterCount()) {
           {{ characterCount() }}
@@ -267,6 +267,7 @@ import { concat, defer, of, tap } from "rxjs";
         --ate-border-radius: 12px;
         --ate-focus-color: var(--ate-primary);
         --ate-background: var(--ate-surface);
+        --ate-sub-border-radius: 8px;
         
         /* Content */
         --ate-text-color: var(--ate-text);
@@ -277,7 +278,6 @@ import { concat, defer, of, tap } from "rxjs";
         /* ===== MENUS (Slash/Bubble) ===== */
         --ate-menu-bg: var(--ate-surface-secondary);
         --ate-menu-border: var(--ate-border);
-        --ate-menu-border-radius: var(--ate-border-radius, 8px);
         --ate-menu-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         --ate-menu-padding: 6px;
         
@@ -313,7 +313,7 @@ import { concat, defer, of, tap } from "rxjs";
         --ate-code-block-border-color: var(--ate-border);
         
         /* Images */
-        --ate-image-border-radius: 8px;
+        --ate-image-border-radius: var(--ate-sub-border-radius);
         --ate-image-selected-color: var(--ate-primary);
         
         /* Scrollbars */
@@ -330,9 +330,6 @@ import { concat, defer, of, tap } from "rxjs";
         --ate-table-cell-selected-background: var(--ate-primary-light);
         --ate-table-resize-handle-color: var(--ate-primary);
         --ate-table-row-hover-background: var(--ate-primary-lighter);
-
-        /* Button */
-        --ate-button-border-radius: 8px;
       }
 
       /* Manual dark mode with class or data attribute */
@@ -974,6 +971,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   maxHeight = input<number | undefined>(undefined);
   fillContainer = input<boolean>(false);
   showToolbar = input<boolean>(true);
+  showFooter = input<boolean>(true);
   showCharacterCount = input<boolean>(true);
   showWordCount = input<boolean>(true);
   maxCharacters = input<number | undefined>(undefined);

@@ -170,7 +170,7 @@ ${editorState.enableTaskExtension ? this.generateTaskExtensionSource() : ""}`;
   ): string {
     const imports = [
       "import { Component } from '@angular/core';",
-      "import { TiptapEditorComponent } from 'tiptap-editor';",
+      "import { AngularTiptapEditorComponent } from '@flogeez/angular-tiptap-editor';",
     ];
 
     // Add conditional imports based on used features
@@ -220,9 +220,28 @@ ${imports.join("\n")}`;
       `[showBubbleMenu]="${editorState.showBubbleMenu}"`,
       `[enableSlashCommands]="${editorState.enableSlashCommands}"`,
       `[showToolbar]="${editorState.showToolbar}"`,
-      `[placeholder]="${editorState.placeholder}"`,
-      `(contentChange)="${this.appI18nService.codeGeneration().onContentChangeVar
-      }($event)"`
+      `[showFooter]="${editorState.showFooter}"`,
+      `[placeholder]="${editorState.placeholder}"`
+    );
+
+    // New configuration options (only if they differ from default)
+    if (editorState.seamless) templateProps.push(`[seamless]="true"`);
+    if (editorState.floatingToolbar) templateProps.push(`[floatingToolbar]="true"`);
+    if (editorState.disabled) templateProps.push(`[disabled]="true"`);
+    if (editorState.fillContainer) templateProps.push(`[fillContainer]="true"`);
+    if (!editorState.editable) templateProps.push(`[editable]="false"`);
+    
+    if (editorState.showCharacterCount === false) templateProps.push(`[showCharacterCount]="false"`);
+    if (editorState.showWordCount === false) templateProps.push(`[showWordCount]="false"`);
+    if (editorState.maxCharacters) templateProps.push(`[maxCharacters]="${editorState.maxCharacters}"`);
+    
+    if (editorState.minHeight !== 200) templateProps.push(`[minHeight]="${editorState.minHeight}"`);
+    if (editorState.height) templateProps.push(`[height]="${editorState.height}"`);
+    if (editorState.maxHeight) templateProps.push(`[maxHeight]="${editorState.maxHeight}"`);
+    if (editorState.autofocus) templateProps.push(`[autofocus]="${editorState.autofocus}"`);
+
+    templateProps.push(
+      `(contentChange)="${this.appI18nService.codeGeneration().onContentChangeVar}($event)"`
     );
 
     if (hasTaskExtension) {
@@ -234,8 +253,7 @@ ${imports.join("\n")}`;
       templateProps.splice(
         4,
         0,
-        `[slashCommands]="${this.appI18nService.codeGeneration().slashCommandsConfigVar
-        }"`
+        `[slashCommands]="${this.appI18nService.codeGeneration().slashCommandsConfigVar}"`
       );
     }
 
@@ -247,12 +265,12 @@ ${imports.join("\n")}`;
     return `@Component({
   selector: 'app-tiptap-demo',
   standalone: true,
-  imports: [TiptapEditorComponent],
+  imports: [AngularTiptapEditorComponent],
   template: \`
-    <tiptap-editor
+    <angular-tiptap-editor
       ${templateProps.join("\n      ")}
     >
-    </tiptap-editor>
+    </angular-tiptap-editor>
   \`
 })`;
   }

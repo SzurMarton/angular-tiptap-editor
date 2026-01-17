@@ -11,6 +11,7 @@ export interface EditorState {
   showCodeMode: boolean;
   isTransitioning: boolean;
   showToolbar: boolean;
+  showFooter: boolean;
   showBubbleMenu: boolean;
   showCharacterCount: boolean;
   showWordCount: boolean;

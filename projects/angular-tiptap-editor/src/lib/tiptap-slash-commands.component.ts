@@ -68,7 +68,7 @@ export interface CustomSlashCommands {
         border: 1px solid var(--ate-menu-border);
         border-radius: var(--ate-border-radius, 12px);
         box-shadow: var(--ate-menu-shadow);
-        padding: 6px;
+        padding: var(--ate-menu-padding);
         max-height: 320px;
         overflow-y: auto;
         min-width: 280px;
@@ -107,7 +107,7 @@ export interface CustomSlashCommands {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 8px 12px;
+        padding: var(--ate-menu-padding);
         border-radius: var(--ate-border-radius, 8px);
         cursor: pointer;
         transition: all 0.15s ease;
@@ -136,7 +136,7 @@ export interface CustomSlashCommands {
         width: 32px;
         height: 32px;
         background: var(--ate-surface-tertiary);
-        border-radius: var(--ate-border-radius, 8px);
+        border-radius: var(--ate-sub-border-radius, 8px);
         color: var(--ate-primary);
         flex-shrink: 0;
         transition: all 0.15s ease;

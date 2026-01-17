@@ -57,6 +57,7 @@ export interface AppTranslations {
     seamless: string;
     notionMode: string;
     floatingToolbar: string;
+    showFooter: string;
     variant: string;
   };
 
@@ -343,6 +344,7 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     seamless: "Seamless mode (minimalist)",
     notionMode: "Notion mode",
     floatingToolbar: "Floating toolbar",
+    showFooter: "Show footer",
     variant: "Editor Variant (Default/Naked)",
   },
   messages: {
@@ -615,6 +617,7 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     seamless: "Mode sans bordures (Seamless)",
     notionMode: "Mode Notion",
     floatingToolbar: "Barre d'outils flottante",
+    showFooter: "Afficher le pied de page",
     variant: "Variante (Défaut/Naked)",
   },
   messages: {

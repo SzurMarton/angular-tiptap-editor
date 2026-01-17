@@ -34,6 +34,22 @@ import { AppI18nService } from "../services/app-i18n.service";
             [title]="appI18n.config().footerSettings + ' (' + activeCount() + ')'"
           >
             <div class="footer-options">
+              <!-- Global Footer Toggle -->
+              <div class="footer-option-item main-toggle">
+                <div class="option-info">
+                  <span class="material-symbols-outlined">visibility</span>
+                  <span>{{ appI18n.translations().config.showFooter }}</span>
+                </div>
+                <app-toggle-switch
+                  [checked]="state().showFooter"
+                  (checkedChange)="toggleFooter()"
+                  [disabled]="disabled()"
+                />
+              </div>
+
+              <div class="footer-divider" *ngIf="state().showFooter"></div>
+
+              @if (state().showFooter) {
               <!-- Word Count Toggle -->
               <div class="footer-option-item">
                 <div class="option-info">
@@ -76,6 +92,7 @@ import { AppI18nService } from "../services/app-i18n.service";
                     [disabled]="disabled()"
                   />
                 </div>
+                }
               }
             </div>
  
@@ -152,6 +169,18 @@ import { AppI18nService } from "../services/app-i18n.service";
         border-color: var(--primary-color);
         box-shadow: 0 0 0 3px var(--primary-light-alpha);
       }
+
+      .footer-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, var(--app-border), transparent);
+        margin: 0.25rem 1rem;
+        opacity: 0.6;
+      }
+
+      .main-toggle {
+        border-color: var(--primary-color-light-alpha);
+        background: var(--app-primary-lighter);
+      }
     `,
   ],
 })
@@ -190,6 +219,10 @@ export class FooterConfigComponent {
       ? "Les compteurs s'affichent en bas de l'éditeur pour un suivi en temps réel."
       : "Counters appear at the bottom of the editor for real-time tracking.";
   });
+
+  toggleFooter() {
+    this.configService.toggleFooter();
+  }
 
   toggleChar() {
     this.configService.updateEditorState({

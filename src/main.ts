@@ -68,6 +68,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
                 [enableSlashCommands]="editorState().enableSlashCommands"
                 [slashCommands]="slashCommandsConfig()"
                 [showToolbar]="editorState().showToolbar"
+                [showFooter]="editorState().showFooter"
                 [showCharacterCount]="editorState().showCharacterCount"
                 [showWordCount]="editorState().showWordCount"
                 [maxCharacters]="editorState().maxCharacters"

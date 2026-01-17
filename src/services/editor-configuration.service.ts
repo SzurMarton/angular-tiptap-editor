@@ -28,6 +28,7 @@ export class EditorConfigurationService {
     showCodeMode: false,
     isTransitioning: false,
     showToolbar: true,
+    showFooter: true,
     showBubbleMenu: true,
     showCharacterCount: true,
     showWordCount: true,
@@ -40,7 +41,7 @@ export class EditorConfigurationService {
     fillContainer: false,
     // Autofocus configuration
     autofocus: false,
-    darkMode: false,
+    darkMode: true,
     activePanel: 'config',
     showInspector: false,
     enableTaskExtension: false,
@@ -346,9 +347,13 @@ export class EditorConfigurationService {
       notionMode: isNotion,
       // On synchronise l'état pour que le panneau de config reflète le mode
       showToolbar: !isNotion,
+      showFooter: !isNotion,
+      showBubbleMenu: true,
+      showSlashCommandsMenu: true,
       showCharacterCount: !isNotion,
       showWordCount: !isNotion,
       seamless: isNotion,
+      floatingToolbar: false,
     }));
   }
 
@@ -357,6 +362,14 @@ export class EditorConfigurationService {
     this._editorState.update((state) => ({
       ...state,
       floatingToolbar: !state.floatingToolbar,
+    }));
+  }
+
+  // Footer toggle
+  toggleFooter() {
+    this._editorState.update((state) => ({
+      ...state,
+      showFooter: !state.showFooter,
     }));
   }
 
@@ -404,6 +417,7 @@ export class EditorConfigurationService {
     this._editorState.update((state) => ({
       ...state,
       showToolbar: true,
+      showFooter: true,
       showBubbleMenu: true,
       showCharacterCount: true,
       showWordCount: true,
