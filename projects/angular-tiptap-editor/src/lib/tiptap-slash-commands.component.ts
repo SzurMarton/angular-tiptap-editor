@@ -20,8 +20,8 @@ import {
   filterSlashCommands,
   createDefaultSlashCommands
 } from "./config/slash-commands.config";
-import { Plugin, PluginKey } from "prosemirror-state";
-import { EditorView } from "prosemirror-view";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { EditorView } from "@tiptap/pm/view";
 
 export interface SlashCommandItem {
   title: string;
