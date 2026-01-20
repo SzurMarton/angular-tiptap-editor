@@ -507,6 +507,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
 
       /* Compteur de caractères */
       .character-count {
+        padding: 6px 8px;
         font-size: 12px;
         color: var(--ate-counter-color);
         text-align: right;
@@ -1298,7 +1299,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       const needsScroll = height !== undefined || maxHeight !== undefined;
 
       if (element) {
-        element.style.setProperty("--editor-min-height", `${minHeight}px`);
+        element.style.setProperty("--editor-min-height", minHeight ?? "auto");
         element.style.setProperty(
           "--editor-height",
           height ?? "auto"
