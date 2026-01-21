@@ -98,7 +98,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
   host: {
     '[class.fill-container]': 'finalFillContainer()',
     '[class.floating-toolbar]': 'finalFloatingToolbar()',
-    '[class.is-readonly]': '!editable() && !mergedDisabled()',
+    '[class.is-readonly]': '!finalEditable() && !mergedDisabled()',
     '[class.is-disabled]': 'mergedDisabled()',
     '[style.--ate-border-width]': "finalSeamless() || mergedDisabled() ? '0' : null",
     '[style.--ate-background]': "finalSeamless() ? 'transparent' : (mergedDisabled() ? 'var(--ate-surface-tertiary)' : null)",
@@ -128,7 +128,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
   template: `
     <div class="tiptap-editor">
       <!-- Toolbar -->
-      @if (editable() && !mergedDisabled() && finalShowToolbar() && editor()) {
+      @if (finalEditable() && !mergedDisabled() && finalShowToolbar() && editor()) {
       <tiptap-toolbar 
         [editor]="editor()!" 
         [config]="finalToolbarConfig()"
@@ -141,7 +141,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
 
       @if (finalShowEditToggle() && !mergedDisabled()) {
       <tiptap-edit-toggle 
-        [editable]="editable()" 
+        [editable]="finalEditable()" 
         [translations]="currentTranslations()"
         (toggle)="toggleEditMode($event)"
       />
@@ -158,7 +158,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       ></div>
 
       <!-- Text Bubble Menu -->
-      @if (editable() && finalShowBubbleMenu() && editor()) {
+      @if (finalEditable() && finalShowBubbleMenu() && editor()) {
       <tiptap-bubble-menu
         [editor]="editor()!"
         [config]="finalBubbleMenuConfig()"
@@ -167,7 +167,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Image Bubble Menu -->
-      @if (editable() && finalShowImageBubbleMenu() && editor()) {
+      @if (finalEditable() && finalShowImageBubbleMenu() && editor()) {
       <tiptap-image-bubble-menu
         [editor]="editor()!"
         [config]="finalImageBubbleMenuConfig()"
@@ -177,7 +177,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Link Bubble Menu -->
-      @if (editable() && editor()) {
+      @if (finalEditable() && editor()) {
       <tiptap-link-bubble-menu
         [editor]="editor()!"
         [style.display]="editorFullyInitialized() ? 'block' : 'none'"
@@ -185,7 +185,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Color Bubble Menu -->
-      @if (editable() && editor()) {
+      @if (finalEditable() && editor()) {
       <tiptap-color-bubble-menu
         [editor]="editor()!"
         [style.display]="editorFullyInitialized() ? 'block' : 'none'"
@@ -193,7 +193,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Slash Commands -->
-      @if (editable() && finalEnableSlashCommands() && editor()) {
+      @if (finalEditable() && finalEnableSlashCommands() && editor()) {
       <tiptap-slash-commands
         [editor]="editor()!"
         [config]="finalSlashCommandsConfig()"
@@ -202,7 +202,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Table Menu -->
-      @if (editable() && finalShowTableBubbleMenu() && editor()) {
+      @if (finalEditable() && finalShowTableBubbleMenu() && editor()) {
       <tiptap-table-bubble-menu
         [editor]="editor()!"
         [config]="finalTableBubbleMenuConfig()"
@@ -211,7 +211,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Cell Menu -->
-      @if (editable() && finalShowCellBubbleMenu() && editor()) {
+      @if (finalEditable() && finalShowCellBubbleMenu() && editor()) {
       <tiptap-cell-bubble-menu
         [editor]="editor()!"
         [config]="finalCellBubbleMenuConfig()"
@@ -220,7 +220,7 @@ import { ImageUploadHandler, ImageUploadOptions } from "./models/image.model";
       }
 
       <!-- Counters -->
-      @if (editable() && !mergedDisabled() && finalShowFooter() && (finalShowCharacterCount() || finalShowWordCount())) {
+      @if (finalEditable() && !mergedDisabled() && finalShowFooter() && (finalShowCharacterCount() || finalShowWordCount())) {
       <div class="character-count" [class.limit-reached]="finalMaxCharacters() && characterCount() >= finalMaxCharacters()!">
         @if (finalShowCharacterCount()) {
           {{ characterCount() }}
@@ -1131,6 +1131,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
     return this.seamless();
   });
 
+  readonly finalEditable = computed(() => this.config().editable ?? this.editable());
   readonly finalPlaceholder = computed(() => this.config().placeholder ?? (this.placeholder() || this.currentTranslations().editor.placeholder));
   readonly finalFillContainer = computed(() => this.config().fillContainer ?? this.fillContainer());
   readonly finalShowFooter = computed(() => this.config().showFooter ?? this.showFooter());
@@ -1319,9 +1320,9 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
     effect(() => {
       const currentEditor = this.editor();
       // An editor is "editable" if it's not disabled and editable mode is ON
-      const isEditable = this.editable() && !this.mergedDisabled();
+      const isEditable = this.finalEditable() && !this.mergedDisabled();
       // An editor is "readonly" if it's explicitly non-editable and not disabled
-      const isReadOnly = !this.editable() && !this.mergedDisabled();
+      const isReadOnly = !this.finalEditable() && !this.mergedDisabled();
 
       if (currentEditor) {
         this.editorCommandsService.setEditable(currentEditor, isEditable);
@@ -1468,7 +1469,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       element: this.editorElement().nativeElement,
       extensions: extensions,
       content: this.content(),
-      editable: this.editable() && !this.mergedDisabled(),
+      editable: this.finalEditable() && !this.mergedDisabled(),
       autofocus: this.finalAutofocus(),
       editorProps: {
         attributes: {
@@ -1520,7 +1521,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   toggleEditMode(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    const newEditable = !this.editable();
+    const newEditable = !this.finalEditable();
     this.editableChange.emit(newEditable);
   }
 
@@ -1655,7 +1656,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
 
   onEditorClick(event: MouseEvent) {
     const editor = this.editor();
-    if (!editor || !this.editable()) return;
+    if (!editor || !this.finalEditable()) return;
 
     // Verify if click is on the container element and not on the content
     const target = event.target as HTMLElement;

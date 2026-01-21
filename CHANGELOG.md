@@ -5,6 +5,12 @@ All notable changes to `@flogeez/angular-tiptap-editor` will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-01-21
+
+### Fixed
+
+- **Editable State Synchronization**: Fixed an issue where the `editable` state from the `[config]` input was ignored in favor of the standalone `[editable]` input. Both are now correctly merged, with `config.editable` taking precedence.
+
 ## [2.1.1] - 2026-01-20
 
 ### Fixed
