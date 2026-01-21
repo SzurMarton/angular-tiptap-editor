@@ -44,7 +44,10 @@
   --panel-left-offset: 1.5rem;
   --panel-height: calc(100vh - 6rem);
   --editor-width: min(900px, calc(100vw - 2rem));
-  --editor-width-with-panel: min(900px, calc(100vw - var(--panel-width) - var(--panel-right-offset) - 2rem));
+  --editor-width-with-panel: min(
+    900px,
+    calc(100vw - var(--panel-width) - var(--panel-right-offset) - 2rem)
+  );
   --editor-margin-right-with-panel: calc(var(--panel-width) + var(--panel-right-offset));
 }
 
@@ -90,7 +93,8 @@
 @media (max-width: 768px) {
   :root {
     --panel-right-offset: 1rem;
-    --panel-width: calc(100vw - 3rem);
+    --panel-left-offset: 1rem;
+    --panel-width: calc(100vw - 2rem);
     --editor-width: calc(100vw - 1rem);
     --editor-width-with-panel: calc(100vw - 1rem);
   }

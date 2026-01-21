@@ -244,3 +244,92 @@
 .panel-select:hover {
   border-color: var(--text-muted);
 }
+@media (max-width: 768px) {
+  .sidebar {
+    top: auto;
+    bottom: 1rem;
+    height: calc(100vh - 6rem);
+    width: var(--panel-width);
+    z-index: 1005;
+  }
+
+  .sidebar.right {
+    right: var(--panel-right-offset);
+    left: auto;
+  }
+
+  .sidebar.left {
+    left: var(--panel-left-offset);
+    right: auto;
+  }
+
+  /* Version simplifiée des animations d'expansion (même style que desktop, mais depuis le bas) */
+  @keyframes sidebarExpandRightMobile {
+    0% {
+      right: 1.25rem;
+      bottom: 1.25rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+    100% {
+      right: var(--panel-right-offset);
+      bottom: 1rem;
+      width: var(--panel-width);
+      height: calc(100vh - 6rem);
+      border-radius: 16px;
+      opacity: 1;
+    }
+  }
+
+  @keyframes sidebarExpandLeftMobile {
+    0% {
+      left: 1.25rem;
+      bottom: 1.25rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+    100% {
+      left: var(--panel-left-offset);
+      bottom: 1rem;
+      width: var(--panel-width);
+      height: calc(100vh - 6rem);
+      border-radius: 16px;
+      opacity: 1;
+    }
+  }
+
+  .sidebar.right.expanding {
+    animation: sidebarExpandRightMobile 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  }
+
+  .sidebar.left.expanding {
+    animation: sidebarExpandLeftMobile 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+  }
+
+  .open-panel-btn {
+    top: auto;
+    bottom: 1.25rem;
+  }
+
+  .open-panel-btn.right {
+    right: 1.25rem;
+  }
+
+  .open-panel-btn.left {
+    left: 1.25rem;
+  }
+
+  /* Masquer l'inspecteur sur mobile */
+  .open-panel-btn.bottom {
+    display: none !important;
+  }
+
+  /* Désactiver les overrides de la version "Wow" précédente */
+  .sidebar.hidden {
+    display: none !important;
+  }
+}

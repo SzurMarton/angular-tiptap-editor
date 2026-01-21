@@ -24,7 +24,7 @@ export class EditorConfigurationService {
   private appI18nService = inject(AppI18nService);
   // Editor state
   private _editorState = signal<EditorState>({
-    showSidebar: true,
+    showSidebar: typeof window !== "undefined" && window.innerWidth < 768 ? false : true,
     showCodeMode: false,
     isTransitioning: false,
     showToolbar: true,
@@ -46,7 +46,7 @@ export class EditorConfigurationService {
     // Autofocus configuration
     autofocus: false,
     darkMode: false,
-    activePanel: "config",
+    activePanel: typeof window !== "undefined" && window.innerWidth < 768 ? "none" : "config",
     showInspector: false,
     enableTaskExtension: false,
     maxCharacters: undefined,
@@ -75,7 +75,9 @@ export class EditorConfigurationService {
   private _toolbarConfig = signal<Partial<AteToolbarConfig>>(ATE_DEFAULT_TOOLBAR_CONFIG);
   private _bubbleMenuConfig = signal<Partial<AteBubbleMenuConfig>>(ATE_DEFAULT_BUBBLE_MENU_CONFIG);
   // Changed _activeSlashCommands to _slashCommandsConfig and initialized with DEFAULT_SLASH_COMMANDS_CONFIG
-  private _nativeSlashCommands = signal<Record<AteSlashCommandKey, boolean>>(ATE_DEFAULT_SLASH_COMMANDS_CONFIG);
+  private _nativeSlashCommands = signal<Record<AteSlashCommandKey, boolean>>(
+    ATE_DEFAULT_SLASH_COMMANDS_CONFIG
+  );
   private _isMagicTemplateEnabled = signal<boolean>(false);
   private _magicTemplateTitle = signal<string>("");
 
@@ -121,7 +123,9 @@ export class EditorConfigurationService {
           editor
             .chain()
             .focus()
-            .insertContent('<ul data-type="taskList"><li data-type="taskItem" data-checked="false"></li></ul>')
+            .insertContent(
+              '<ul data-type="taskList"><li data-type="taskItem" data-checked="false"></li></ul>'
+            )
             .run();
         },
       });

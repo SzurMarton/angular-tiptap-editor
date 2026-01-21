@@ -3,7 +3,12 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
 import { AppI18nService } from "../services/app-i18n.service";
-import { ThemeSwitchComponent, PanelButtonComponent, PanelHeaderComponent, DropdownSectionComponent } from "./ui";
+import {
+  ThemeSwitchComponent,
+  PanelButtonComponent,
+  PanelHeaderComponent,
+  DropdownSectionComponent,
+} from "./ui";
 
 interface ThemeVariable {
   name: string;
@@ -38,7 +43,10 @@ type ThemeMode = "light" | "dark";
     <aside class="sidebar left" [class.hidden]="!isOpen()" [class.expanding]="isExpanding()">
       <div class="sidebar-container">
         <!-- Header -->
-        <app-panel-header [title]="appI18n.titles().themeCustomizer" icon="palette" (close)="close()">
+        <app-panel-header
+          [title]="appI18n.titles().themeCustomizer"
+          icon="palette"
+          (headerClose)="close()">
           <app-panel-button
             actions
             icon="restart_alt"
@@ -67,7 +75,10 @@ type ThemeMode = "light" | "dark";
                 <div class="config-items-grid">
                   @for (variable of section.variables; track variable.cssVar) {
                     <div class="config-item-row">
-                      <label [for]="'theme-var-' + variable.cssVar" class="config-item-label" [title]="variable.cssVar">
+                      <label
+                        [for]="'theme-var-' + variable.cssVar"
+                        class="config-item-label"
+                        [title]="variable.cssVar">
                         {{ variable.name }}
                       </label>
                       <div class="variable-input">
@@ -138,7 +149,9 @@ type ThemeMode = "light" | "dark";
         <!-- Export Button (fixed at bottom) -->
         <div class="export-section">
           <button class="export-btn" [class.success]="isCopied()" (click)="exportTheme()">
-            <span class="material-symbols-outlined">{{ isCopied() ? "check" : "content_copy" }}</span>
+            <span class="material-symbols-outlined">{{
+              isCopied() ? "check" : "content_copy"
+            }}</span>
             {{ isCopied() ? appI18n.ui().copied : appI18n.theme().copyCssToClipboard }}
           </button>
         </div>
@@ -147,7 +160,10 @@ type ThemeMode = "light" | "dark";
 
     <!-- Open Button -->
     @if (!isOpen() && !isExpanding()) {
-      <button class="open-panel-btn left" (click)="open()" [title]="appI18n.theme().openThemeCustomizer">
+      <button
+        class="open-panel-btn left"
+        (click)="open()"
+        [title]="appI18n.theme().openThemeCustomizer">
         <span class="material-symbols-outlined">palette</span>
       </button>
     }
@@ -732,7 +748,8 @@ export class ThemeCustomizerComponent implements OnDestroy {
     }
 
     if (hasDarkValues) {
-      css += '/* Dark Mode */\nangular-tiptap-editor.dark,\nangular-tiptap-editor[data-theme="dark"] {\n';
+      css +=
+        '/* Dark Mode */\nangular-tiptap-editor.dark,\nangular-tiptap-editor[data-theme="dark"] {\n';
       this.darkCustomValues.forEach((value, cssVar) => {
         css += `  ${cssVar}: ${value};\n`;
       });
