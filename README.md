@@ -92,7 +92,7 @@ import { Component } from "@angular/core";
 import {
   AngularTiptapEditorComponent,
   AteEditorConfig,
-  DEFAULT_TOOLBAR_CONFIG,
+  ATE_DEFAULT_TOOLBAR_CONFIG,
 } from "@flogeez/angular-tiptap-editor";
 
 @Component({
@@ -118,7 +118,7 @@ export class AdvancedComponent {
 
     // Customize the toolbar by enabling specific features
     toolbar: {
-      ...DEFAULT_TOOLBAR_CONFIG,
+      ...ATE_DEFAULT_TOOLBAR_CONFIG,
       clear: true, // Enable the 'Clear' button
       highlight: false, // Disable the highlight button
     },
@@ -199,7 +199,7 @@ export class FormComponent {
 
 ```typescript
 import { Component, inject } from "@angular/core";
-import { EditorCommandsService } from "@flogeez/angular-tiptap-editor";
+import { AteEditorCommandsService } from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-commands",
@@ -217,7 +217,7 @@ import { EditorCommandsService } from "@flogeez/angular-tiptap-editor";
   `,
 })
 export class CommandsComponent {
-  private editorCommandsService = inject(EditorCommandsService);
+  private editorCommandsService = inject(AteEditorCommandsService);
   private editor: Editor | null = null;
 
   onEditorCreated(editor: Editor) {
@@ -259,13 +259,13 @@ Any TipTap **Mark** or **Node** you add to `tiptapExtensions` is automatically t
 
 If you need to extract complex data (like attributes, depth, or custom logic), you can provide a custom `StateCalculator`.
 
-1. **Define a Calculator**:
+1.  **Define a Calculator**:
 
 ```typescript
-import { StateCalculator } from "@flogeez/angular-tiptap-editor";
+import { AteStateCalculator } from "@flogeez/angular-tiptap-editor";
 
 // This function will be called on every editor update
-export const MyCustomCalculator: StateCalculator = editor => {
+export const MyCustomCalculator: AteStateCalculator = editor => {
   return {
     custom: {
       hasHighPriority: editor.isActive("priority"),
@@ -276,18 +276,18 @@ export const MyCustomCalculator: StateCalculator = editor => {
 };
 ```
 
-2. **Register it in the Template**:
+2.  **Register it in the Template**:
 
 ```html
 <angular-tiptap-editor [stateCalculators]="[MyCustomCalculator]" />
 ```
 
-3. **Consume it anywhere**:
+3.  **Consume it anywhere**:
 
 ```typescript
 @Component({ ... })
 export class MyToolbarComponent {
-  private editorCommands = inject(EditorCommandsService);
+  private editorCommands = inject(AteEditorCommandsService);
 
   // Access your custom data reactively!
   isHighPriority = computed(() => this.editorCommands.editorState().custom?.hasHighPriority);
@@ -321,9 +321,9 @@ Quick content insertion with slash commands:
 The `slashCommands` object also allows you to add completely custom command items:
 
 ```typescript
-import { SlashCommandsConfig } from "@flogeez/angular-tiptap-editor";
+import { AteSlashCommandsConfig } from "@flogeez/angular-tiptap-editor";
 
-slashCommands: SlashCommandsConfig = {
+slashCommands: AteSlashCommandsConfig = {
   // Toggle native commands
   heading1: true,
   image: false,
@@ -363,7 +363,10 @@ The handler can return either an **Observable** or a **Promise**.
 import { Component, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { map } from "rxjs/operators";
-import { AngularTiptapEditorComponent, ImageUploadHandler } from "@flogeez/angular-tiptap-editor";
+import {
+  AngularTiptapEditorComponent,
+  AteImageUploadHandler,
+} from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-custom-upload",
@@ -380,7 +383,7 @@ export class CustomUploadComponent {
   private http = inject(HttpClient);
   content = "";
 
-  uploadHandler: ImageUploadHandler = ctx => {
+  uploadHandler: AteImageUploadHandler = ctx => {
     const formData = new FormData();
     formData.append("image", ctx.file);
 
@@ -398,7 +401,7 @@ export class CustomUploadComponent {
 #### Using Promise (async/await)
 
 ```typescript
-uploadHandler: ImageUploadHandler = async ctx => {
+uploadHandler: AteImageUploadHandler = async ctx => {
   const formData = new FormData();
   formData.append("image", ctx.file);
 
@@ -477,11 +480,11 @@ Open [http://localhost:4200](http://localhost:4200) to view the demo.
 | `enableOfficePaste`   | `boolean`                                        | `true`              | Enable smart Office pasting                   |
 | `showCharacterCount`  | `boolean`                                        | `true`              | Show character counter                        |
 | `showWordCount`       | `boolean`                                        | `true`              | Show word counter                             |
-| `toolbar`             | `ToolbarConfig`                                  | All enabled         | Detailed toolbar configuration                |
-| `bubbleMenu`          | `BubbleMenuConfig`                               | All enabled         | Detailed bubble menu configuration            |
-| `slashCommands`       | `SlashCommandsConfig`                            | All enabled         | Detailed slash commands config                |
-| `imageUploadHandler`  | `ImageUploadHandler`                             | `undefined`         | Custom image upload function                  |
-| `stateCalculators`    | `StateCalculator[]`                              | `[]`                | Custom reactive state logic                   |
+| `toolbar`             | `AteToolbarConfig`                               | All enabled         | Detailed toolbar configuration                |
+| `bubbleMenu`          | `AteBubbleMenuConfig`                            | All enabled         | Detailed bubble menu configuration            |
+| `slashCommands`       | `AteSlashCommandsConfig`                         | All enabled         | Detailed slash commands config                |
+| `imageUploadHandler`  | `AteImageUploadHandler`                          | `undefined`         | Custom image upload function                  |
+| `stateCalculators`    | `AteStateCalculator[]`                           | `[]`                | Custom reactive state logic                   |
 | `tiptapExtensions`    | `(Extension \| Node \| Mark)[]`                  | `[]`                | Additional Tiptap extensions                  |
 | `tiptapOptions`       | `Partial<EditorOptions>`                         | `{}`                | Additional Tiptap editor options              |
 
@@ -521,12 +524,12 @@ export interface AteEditorConfig {
   maxCharacters?: number;
 
   // Complex Modules
-  toolbar?: ToolbarConfig;
-  bubbleMenu?: BubbleMenuConfig;
-  imageBubbleMenu?: ImageBubbleMenuConfig;
-  tableBubbleMenu?: TableBubbleMenuConfig;
-  cellBubbleMenu?: CellBubbleMenuConfig;
-  slashCommands?: SlashCommandsConfig;
+  toolbar?: AteToolbarConfig;
+  bubbleMenu?: AteBubbleMenuConfig;
+  imageBubbleMenu?: AteImageBubbleMenuConfig;
+  tableBubbleMenu?: AteTableBubbleMenuConfig;
+  cellBubbleMenu?: AteCellBubbleMenuConfig;
+  slashCommands?: AteSlashCommandsConfig;
   imageUpload?: AteImageUploadConfig;
 }
 ```
@@ -538,7 +541,7 @@ The `imageUpload` property in `AteEditorConfig` provides fine-grained control ov
 ```typescript
 export interface AteImageUploadConfig {
   /** Custom handler to upload files to a server */
-  handler?: ImageUploadHandler;
+  handler?: AteImageUploadHandler;
   /** Maximum file size in bytes (default: 10MB) */
   maxFileSize?: number;
   /** Accepted file types (default: 'image/*') */
@@ -574,14 +577,14 @@ The editor comes with built-in support for **English (en)** and **French (fr)**,
 
 ### Adding Custom Languages
 
-You can easily extend the editor with new languages or override existing labels using the `TiptapI18nService`:
+You can easily extend the editor with new languages or override existing labels using the `AteI18nService`:
 
 ```typescript
-import { TiptapI18nService } from "@flogeez/angular-tiptap-editor";
+import { AteI18nService } from "@flogeez/angular-tiptap-editor";
 
 @Component({ ... })
 export class MyComponent {
-  constructor(private i18nService: TiptapI18nService) {
+  constructor(private i18nService: AteI18nService) {
     // Add Spanish support
     this.i18nService.addTranslations('es', {
        toolbar: { bold: 'Negrita', italic: 'Cursiva', ... },
@@ -665,7 +668,7 @@ angular-tiptap-editor {
 
 ### ⚡ Reactive State & OnPush
 
-The library exposes a reactive `editorState` signal via the `EditorCommandsService`. This signal contains everything you need to build custom UIs around the editor:
+The library exposes a reactive `editorState` signal via the `AteEditorCommandsService`. This signal contains everything you need to build custom UIs around the editor:
 
 - **Active State**: Check if `bold`, `italic`, or custom marks are active.
 - **Commands Availability**: Check if `undo`, `redo`, or custom commands can be executed.
@@ -700,13 +703,13 @@ The library uses a **Snapshot & Signal** pattern to bridge Tiptap and Angular.
 
 ### Core Services
 
-- **`EditorCommandsService`**: Exposes the `editorState` signal and provides a centralized API for executing Tiptap commands.
-- **`ImageService`**: Manages the image processing pipeline (selection, compression, and server-side upload handling).
-- **`TiptapI18nService`**: Reactive translation service with support for browser locale auto-detection.
+- **`AteEditorCommandsService`**: Exposes the `editorState` signal and provides a centralized API for executing Tiptap commands.
+- **`AteImageService`**: Manages the image processing pipeline (selection, compression, and server-side upload handling).
+- **`AteI18nService`**: Reactive translation service with support for browser locale auto-detection.
 
 ### Isolated Instances
 
-Each component instance provides its own set of services (`EditorCommandsService`, `ImageService`, etc.) at the component level. This ensures that multiple editors on the same page maintain independent states and configurations without interference.
+Each component instance provides its own set of services (`AteEditorCommandsService`, `AteImageService`, etc.) at the component level. This ensures that multiple editors on the same page maintain independent states and configurations without interference.
 
 ### Modern Angular Integration
 
@@ -720,11 +723,11 @@ The library provides default configurations that can be imported and customized:
 
 ```typescript
 import {
-  DEFAULT_TOOLBAR_CONFIG,
-  DEFAULT_BUBBLE_MENU_CONFIG,
-  DEFAULT_IMAGE_BUBBLE_MENU_CONFIG,
-  DEFAULT_TABLE_MENU_CONFIG,
-  SLASH_COMMAND_KEYS,
+  ATE_DEFAULT_TOOLBAR_CONFIG,
+  ATE_DEFAULT_BUBBLE_MENU_CONFIG,
+  ATE_DEFAULT_IMAGE_BUBBLE_MENU_CONFIG,
+  ATE_DEFAULT_TABLE_MENU_CONFIG,
+  ATE_SLASH_COMMAND_KEYS,
 } from "@flogeez/angular-tiptap-editor";
 ```
 
