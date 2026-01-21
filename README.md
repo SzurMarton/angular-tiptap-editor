@@ -2,7 +2,7 @@
 
 A modern, customizable rich-text editor for Angular applications, built with Tiptap and featuring complete internationalization support.
 
-[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge&logo=google-chrome)](https://flogeez.github.io/angular-tiptap-editor/) [![Try it on StackBlitz](https://img.shields.io/badge/Try%20it-StackBlitz-blue?style=for-the-badge&logo=stackblitz)](https://stackblitz.com/edit/angular-tiptap-editor)
+[![NPM Version](https://img.shields.io/npm/v/@flogeez/angular-tiptap-editor?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@flogeez/angular-tiptap-editor) [![Demo](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge&logo=google-chrome)](https://flogeez.github.io/angular-tiptap-editor/) [![Try it on StackBlitz](https://img.shields.io/badge/Try%20it-StackBlitz-blue?style=for-the-badge&logo=stackblitz)](https://stackblitz.com/edit/angular-tiptap-editor)
 
 ## 🚀 Features
 
@@ -69,7 +69,9 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
   selector: "app-example",
   standalone: true,
   imports: [AngularTiptapEditorComponent],
-  template: ` <angular-tiptap-editor [content]="content" (contentChange)="onContentChange($event)" /> `,
+  template: `
+    <angular-tiptap-editor [content]="content" (contentChange)="onContentChange($event)" />
+  `,
 })
 export class ExampleComponent {
   content = "<p>Hello <strong>World</strong>!</p>";
@@ -87,14 +89,21 @@ The editor can be fully configured using a single `[config]` object, which provi
 
 ```typescript
 import { Component } from "@angular/core";
-import { AngularTiptapEditorComponent, AteEditorConfig, DEFAULT_TOOLBAR_CONFIG } from "@flogeez/angular-tiptap-editor";
+import {
+  AngularTiptapEditorComponent,
+  AteEditorConfig,
+  DEFAULT_TOOLBAR_CONFIG,
+} from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-advanced",
   standalone: true,
   imports: [AngularTiptapEditorComponent],
   template: `
-    <angular-tiptap-editor [content]="content" [config]="editorConfig" (contentChange)="onContentChange($event)" />
+    <angular-tiptap-editor
+      [content]="content"
+      [config]="editorConfig"
+      (contentChange)="onContentChange($event)" />
   `,
 })
 export class AdvancedComponent {
@@ -142,7 +151,10 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
   standalone: true,
   imports: [AngularTiptapEditorComponent],
   template: `
-    <angular-tiptap-editor [content]="content" [tiptapExtensions]="extensions" (contentChange)="content = $event" />
+    <angular-tiptap-editor
+      [content]="content"
+      [tiptapExtensions]="extensions"
+      (contentChange)="content = $event" />
   `,
 })
 export class CustomExtensionsComponent {
@@ -372,7 +384,9 @@ export class CustomUploadComponent {
     const formData = new FormData();
     formData.append("image", ctx.file);
 
-    return this.http.post<{ url: string }>("/api/upload", formData).pipe(map(result => ({ src: result.url })));
+    return this.http
+      .post<{ url: string }>("/api/upload", formData)
+      .pipe(map(result => ({ src: result.url })));
   };
 
   onContentChange(newContent: string) {
