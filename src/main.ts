@@ -30,7 +30,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
     StateDebugComponent,
   ],
   template: `
-    <div class="app" #appRef [class.dark]="editorState().darkMode">
+    <div class="app" #appRef data-testid="app-root" [class.dark]="editorState().darkMode">
       <!-- Theme Customizer Panel (Left) - Self-managed -->
       <app-theme-customizer />
 

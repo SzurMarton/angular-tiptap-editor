@@ -14,6 +14,7 @@ import { LanguageSwitchComponent, ThemeSwitchComponent, ActionButtonComponent, N
       <div class="app-segmented-control">
         <button
           class="app-segmented-btn"
+          data-testid="mode-editor"
           [class.active]="!editorState().showCodeMode"
           (click)="toggleCodeMode(false)"
           [title]="appI18n.tooltips().switchToEditor">
@@ -22,6 +23,7 @@ import { LanguageSwitchComponent, ThemeSwitchComponent, ActionButtonComponent, N
         </button>
         <button
           class="app-segmented-btn"
+          data-testid="mode-code"
           [class.active]="editorState().showCodeMode"
           (click)="toggleCodeMode(true)"
           [title]="appI18n.tooltips().switchToCode">
@@ -33,17 +35,18 @@ import { LanguageSwitchComponent, ThemeSwitchComponent, ActionButtonComponent, N
       <div class="action-separator"></div>
 
       <!-- Switch de thème -->
-      <app-theme-switch></app-theme-switch>
+      <app-theme-switch data-testid="theme-switch"></app-theme-switch>
 
       <!-- Switch de langue -->
-      <app-language-switch></app-language-switch>
+      <app-language-switch data-testid="lang-switch"></app-language-switch>
 
       <!-- Switch Notion -->
-      <app-notion-switch></app-notion-switch>
+      <app-notion-switch data-testid="notion-switch"></app-notion-switch>
 
       <div class="action-separator"></div>
 
       <app-action-button
+        data-testid="clear-button"
         icon="delete"
         [label]="appI18n.ui().clear"
         variant="danger"

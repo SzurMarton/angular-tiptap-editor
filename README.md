@@ -69,9 +69,7 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
   selector: "app-example",
   standalone: true,
   imports: [AngularTiptapEditorComponent],
-  template: `
-    <angular-tiptap-editor [content]="content" (contentChange)="onContentChange($event)" />
-  `,
+  template: ` <angular-tiptap-editor [content]="content" (contentChange)="onContentChange($event)" /> `,
 })
 export class ExampleComponent {
   content = "<p>Hello <strong>World</strong>!</p>";
@@ -100,10 +98,7 @@ import {
   standalone: true,
   imports: [AngularTiptapEditorComponent],
   template: `
-    <angular-tiptap-editor
-      [content]="content"
-      [config]="editorConfig"
-      (contentChange)="onContentChange($event)" />
+    <angular-tiptap-editor [content]="content" [config]="editorConfig" (contentChange)="onContentChange($event)" />
   `,
 })
 export class AdvancedComponent {
@@ -151,10 +146,7 @@ import { AngularTiptapEditorComponent } from "@flogeez/angular-tiptap-editor";
   standalone: true,
   imports: [AngularTiptapEditorComponent],
   template: `
-    <angular-tiptap-editor
-      [content]="content"
-      [tiptapExtensions]="extensions"
-      (contentChange)="content = $event" />
+    <angular-tiptap-editor [content]="content" [tiptapExtensions]="extensions" (contentChange)="content = $event" />
   `,
 })
 export class CustomExtensionsComponent {
@@ -363,10 +355,7 @@ The handler can return either an **Observable** or a **Promise**.
 import { Component, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { map } from "rxjs/operators";
-import {
-  AngularTiptapEditorComponent,
-  AteImageUploadHandler,
-} from "@flogeez/angular-tiptap-editor";
+import { AngularTiptapEditorComponent, AteImageUploadHandler } from "@flogeez/angular-tiptap-editor";
 
 @Component({
   selector: "app-custom-upload",
@@ -387,9 +376,7 @@ export class CustomUploadComponent {
     const formData = new FormData();
     formData.append("image", ctx.file);
 
-    return this.http
-      .post<{ url: string }>("/api/upload", formData)
-      .pipe(map(result => ({ src: result.url })));
+    return this.http.post<{ url: string }>("/api/upload", formData).pipe(map(result => ({ src: result.url })));
   };
 
   onContentChange(newContent: string) {
