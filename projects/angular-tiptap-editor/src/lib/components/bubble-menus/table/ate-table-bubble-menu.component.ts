@@ -7,9 +7,13 @@ import { AteBaseBubbleMenu } from "../base/ate-base-bubble-menu";
 
 import {
   AteTableBubbleMenuConfig,
+  AteTableBubbleMenuKey,
   ATE_TABLE_BUBBLE_MENU_KEYS,
 } from "../../../models/ate-bubble-menu.model";
 import { ATE_DEFAULT_TABLE_MENU_CONFIG } from "../../../config/ate-editor.config";
+
+type TableAlignment = "left" | "center" | "right";
+type ResolvedTableBubbleMenuConfig = Record<AteTableBubbleMenuKey, boolean>;
 
 @Component({
   selector: "ate-table-bubble-menu",
@@ -89,9 +93,34 @@ import { ATE_DEFAULT_TABLE_MENU_CONFIG } from "../../../config/ate-editor.config
           [disabled]="!state().can.toggleHeaderColumn"
           (buttonClick)="onCommand('toggleHeaderColumn', $event)"></ate-button>
       }
-      @if (
-        tableBubbleMenuConfig().separator !== false && tableBubbleMenuConfig().deleteTable !== false
-      ) {
+
+      <!-- Table alignment -->
+      @if (enableAlignment() && tableBubbleMenuConfig().alignLeft !== false) {
+        <ate-button
+          icon="format_align_left"
+          [title]="t().alignLeft"
+          [active]="state().nodes.tableAlignLeft"
+          [disabled]="!state().can.setTableAlignLeft"
+          (buttonClick)="onSetTableAlignment('left', $event)"></ate-button>
+      }
+      @if (enableAlignment() && tableBubbleMenuConfig().alignCenter !== false) {
+        <ate-button
+          icon="format_align_center"
+          [title]="t().alignCenter"
+          [active]="state().nodes.tableAlignCenter"
+          [disabled]="!state().can.setTableAlignCenter"
+          (buttonClick)="onSetTableAlignment('center', $event)"></ate-button>
+      }
+      @if (enableAlignment() && tableBubbleMenuConfig().alignRight !== false) {
+        <ate-button
+          icon="format_align_right"
+          [title]="t().alignRight"
+          [active]="state().nodes.tableAlignRight"
+          [disabled]="!state().can.setTableAlignRight"
+          (buttonClick)="onSetTableAlignment('right', $event)"></ate-button>
+      }
+
+      @if (tableBubbleMenuConfig().separator !== false && tableBubbleMenuConfig().deleteTable !== false) {
         <ate-separator />
       }
 
@@ -112,14 +141,15 @@ export class AteTableBubbleMenuComponent extends AteBaseBubbleMenu {
   readonly t = this.i18nService.table;
 
   config = input<AteTableBubbleMenuConfig>(ATE_DEFAULT_TABLE_MENU_CONFIG);
+  enableAlignment = input<boolean>(false);
 
-  tableBubbleMenuConfig = computed(() => {
+  tableBubbleMenuConfig = computed<ResolvedTableBubbleMenuConfig>(() => {
     const c = this.config();
-    const result: Record<string, boolean> = {};
+    const result = {} as ResolvedTableBubbleMenuConfig;
     ATE_TABLE_BUBBLE_MENU_KEYS.forEach(key => {
       result[key] = c[key] ?? true;
     });
-    return result as Required<AteTableBubbleMenuConfig>;
+    return result;
   });
 
   override shouldShow(): boolean {
@@ -157,11 +187,11 @@ export class AteTableBubbleMenuComponent extends AteBaseBubbleMenu {
 
       // Find closest table element
       const tableElement =
-        dom instanceof HTMLElement
+        dom instanceof Element
           ? dom.closest("table")
-          : (dom.parentElement as HTMLElement)?.closest("table");
+          : dom.parentElement?.closest("table");
 
-      if (tableElement) {
+      if (tableElement instanceof HTMLElement) {
         return tableElement.getBoundingClientRect();
       }
     } catch (_e) {
@@ -172,15 +202,15 @@ export class AteTableBubbleMenuComponent extends AteBaseBubbleMenu {
     const coords = ed.view.coordsAtPos(from);
     if (coords) {
       // Search for table element at these coordinates
-      const element = document.elementFromPoint(coords.left, coords.top);
-      const table = (element as Element)?.closest("table");
-      if (table) {
+      const element = document.elementFromPoint(coords.left, coords.top) as Element | null;
+      const table = element?.closest("table");
+      if (table instanceof HTMLElement) {
         return table.getBoundingClientRect();
       }
     }
 
     // 3. Ultimate fallback if selection is ambiguous
-    const activeTable = ed.view.dom.querySelector(
+    const activeTable = ed.view.dom.querySelector<HTMLElement>(
       "table.selected, table:has(.selected), table:has(.selected-cell), table:has(.selected-node)"
     );
     if (activeTable) {
@@ -192,5 +222,20 @@ export class AteTableBubbleMenuComponent extends AteBaseBubbleMenu {
 
   protected override executeCommand(editor: Editor, command: string, ...args: unknown[]): void {
     this.editorCommands.execute(editor, command, ...args);
+  }
+
+  onSetTableAlignment(alignment: TableAlignment, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const editor = this.editor();
+    if (!editor) {
+      return;
+    }
+
+    this.editorCommands.execute(editor, "setTableAlignment", alignment);
+    this.updateMenu();
   }
 }
