@@ -77,6 +77,8 @@ export interface AteEditorConfig {
   showImageBubbleMenu?: boolean;
   /** Show or hide the table menu */
   showTableMenu?: boolean;
+  /** Enable table alignment feature (extension + table bubble menu alignment actions) */
+  enableTableAlignment?: boolean;
   /** Show or hide the cell menu */
   showCellMenu?: boolean;
   /** Whether to allow image downloading from bubble menu */

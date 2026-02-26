@@ -125,6 +125,9 @@ export interface AteTranslations {
     deleteTable: string;
     toggleHeaderRow: string;
     toggleHeaderColumn: string;
+    alignLeft: string;
+    alignCenter: string;
+    alignRight: string;
     mergeCells: string;
     splitCell: string;
   };
@@ -305,6 +308,9 @@ const ENGLISH_TRANSLATIONS: AteTranslations = {
     deleteTable: "Delete table",
     toggleHeaderRow: "Toggle header row",
     toggleHeaderColumn: "Toggle header column",
+    alignLeft: "Align table left",
+    alignCenter: "Align table center",
+    alignRight: "Align table right",
     mergeCells: "Merge cells",
     splitCell: "Split cell",
   },
@@ -479,6 +485,9 @@ const FRENCH_TRANSLATIONS: AteTranslations = {
     deleteTable: "Supprimer le tableau",
     toggleHeaderRow: "Basculer ligne d'en-tête",
     toggleHeaderColumn: "Basculer colonne d'en-tête",
+    alignLeft: "Aligner le tableau à gauche",
+    alignCenter: "Centrer le tableau",
+    alignRight: "Aligner le tableau à droite",
     mergeCells: "Fusionner les cellules",
     splitCell: "Diviser la cellule",
   },

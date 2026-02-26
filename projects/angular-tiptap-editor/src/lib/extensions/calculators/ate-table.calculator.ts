@@ -11,11 +11,19 @@ export const AteTableCalculator: AteStateCalculator = editor => {
         isTableCell: false,
         isTableHeaderRow: false,
         isTableHeaderColumn: false,
+        tableAlignLeft: false,
+        tableAlignCenter: false,
+        tableAlignRight: false,
       },
     };
   }
 
   const { selection } = editor.state;
+  const tableAttrs = editor.getAttributes("table");
+  const align = tableAttrs["align"];
+  const tableAlignCenter = align === "center";
+  const tableAlignRight = align === "right";
+  const tableAlignLeft = align === "left" || (!tableAlignCenter && !tableAlignRight);
 
   return {
     nodes: {
@@ -25,6 +33,9 @@ export const AteTableCalculator: AteStateCalculator = editor => {
       isTableCell: editor.isActive("tableCell") || editor.isActive("tableHeader"),
       isTableHeaderRow: editor.isActive("tableHeader", { row: true }),
       isTableHeaderColumn: editor.isActive("tableHeader", { column: true }),
+      tableAlignLeft,
+      tableAlignCenter,
+      tableAlignRight,
     },
     can: {
       addRowBefore: editor.can().addRowBefore(),
@@ -38,6 +49,19 @@ export const AteTableCalculator: AteStateCalculator = editor => {
       splitCell: editor.can().splitCell(),
       toggleHeaderRow: editor.can().toggleHeaderRow(),
       toggleHeaderColumn: editor.can().toggleHeaderColumn(),
+      setTableAlignLeft: editor.can().chain().focus().updateAttributes("table", { align: "left" }).run(),
+      setTableAlignCenter: editor
+        .can()
+        .chain()
+        .focus()
+        .updateAttributes("table", { align: "center" })
+        .run(),
+      setTableAlignRight: editor
+        .can()
+        .chain()
+        .focus()
+        .updateAttributes("table", { align: "right" })
+        .run(),
     },
   };
 };

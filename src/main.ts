@@ -338,6 +338,7 @@ export class App {
       showBubbleMenu: state.showBubbleMenu,
       showImageBubbleMenu: state.showImageBubbleMenu,
       showTableMenu: state.showTableBubbleMenu,
+      enableTableAlignment: true,
       showCellMenu: state.showCellBubbleMenu,
       enableSlashCommands: state.enableSlashCommands,
       angularNodes: this.finalAngularNodes(),
@@ -390,5 +391,5 @@ export class App {
 }
 
 bootstrapApplication(App, {
-  providers: [provideAteEditor()],
+  providers: [provideAteEditor({ enableTableAlignment: true })],
 });

@@ -81,6 +81,9 @@ export const ATE_DEFAULT_TABLE_MENU_CONFIG: AteTableBubbleMenuConfig = {
   deleteColumn: true,
   toggleHeaderRow: true,
   toggleHeaderColumn: true,
+  alignLeft: true,
+  alignCenter: true,
+  alignRight: true,
   deleteTable: true,
   separator: true,
 };
@@ -131,6 +134,7 @@ export const ATE_DEFAULT_CONFIG: AteEditorConfig = {
   showImageBubbleMenu: true,
   downloadImage: true,
   showTableMenu: true,
+  enableTableAlignment: false,
   showCellMenu: true,
   enableSlashCommands: true,
   blockControls: "none",

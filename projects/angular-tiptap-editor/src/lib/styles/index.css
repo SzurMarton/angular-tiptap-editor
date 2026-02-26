@@ -39,3 +39,36 @@
 .ProseMirror .has-text-align-justify {
   text-align: justify;
 }
+
+/* Rendered content table alignment (outside editable ProseMirror wrapper) */
+.rendered-content .tableWrapper {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.rendered-content table[data-align] {
+  border-collapse: collapse;
+  width: auto;
+  max-width: 100%;
+}
+
+.rendered-content th,
+.rendered-content td {
+  border: 1px solid var(--ate-table-border-color, #ccc);
+  padding: 6px 10px;
+}
+
+.rendered-content table[data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rendered-content table[data-align="left"] {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.rendered-content table[data-align="right"] {
+  margin-left: auto;
+  margin-right: 0;
+}

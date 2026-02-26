@@ -70,6 +70,9 @@ export interface AteEditorStateSnapshot {
     splitCell: boolean;
     toggleHeaderRow: boolean;
     toggleHeaderColumn: boolean;
+    setTableAlignLeft: boolean;
+    setTableAlignCenter: boolean;
+    setTableAlignRight: boolean;
 
     /** Structure/Node capabilities */
     toggleHeading1: boolean;
@@ -113,6 +116,9 @@ export interface AteEditorStateSnapshot {
     /** Table specific */
     isTableHeaderRow: boolean;
     isTableHeaderColumn: boolean;
+    tableAlignLeft: boolean;
+    tableAlignCenter: boolean;
+    tableAlignRight: boolean;
 
     /** Name of the active node at selection head */
     activeNodeName: string | null;
@@ -174,6 +180,9 @@ export const ATE_INITIAL_EDITOR_STATE: AteEditorStateSnapshot = {
     splitCell: false,
     toggleHeaderRow: false,
     toggleHeaderColumn: false,
+    setTableAlignLeft: false,
+    setTableAlignCenter: false,
+    setTableAlignRight: false,
     toggleHeading1: false,
     toggleHeading2: false,
     toggleHeading3: false,
@@ -207,6 +216,9 @@ export const ATE_INITIAL_EDITOR_STATE: AteEditorStateSnapshot = {
     alignJustify: false,
     isTableHeaderRow: false,
     isTableHeaderColumn: false,
+    tableAlignLeft: false,
+    tableAlignCenter: false,
+    tableAlignRight: false,
     activeNodeName: null,
   },
   custom: {},

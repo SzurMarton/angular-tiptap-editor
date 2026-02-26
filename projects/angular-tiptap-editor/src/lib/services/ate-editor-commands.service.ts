@@ -225,6 +225,9 @@ export class AteEditorCommandsService {
       case "toggleHeaderRow":
         this.toggleHeaderRow(editor);
         break;
+      case "setTableAlignment":
+        this.setTableAlignment(editor, args[0] as "left" | "center" | "right");
+        break;
       case "applyColor":
         this.colorPickerSvc.applyColor(
           editor,
@@ -467,6 +470,14 @@ export class AteEditorCommandsService {
       return;
     }
     editor.chain().focus().toggleHeaderRow().run();
+  }
+
+  setTableAlignment(editor: Editor, alignment: "left" | "center" | "right"): void {
+    if (!editor) {
+      return;
+    }
+
+    editor.chain().focus().updateAttributes("table", { align: alignment }).run();
   }
 
   // --- Utility Commands ---

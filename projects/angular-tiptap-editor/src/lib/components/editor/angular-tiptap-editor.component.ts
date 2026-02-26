@@ -30,6 +30,7 @@ import { Node as PMNode } from "@tiptap/pm/model";
 import { AteResizableImage } from "../../extensions/ate-resizable-image.extension";
 import { AteUploadProgress } from "../../extensions/ate-upload-progress.extension";
 import { AteTableExtension } from "../../extensions/ate-table.extension";
+import { AteTableAlignmentExtension } from "../../extensions/ate-table-alignment.extension";
 import { AteTiptapStateExtension } from "../../extensions/ate-tiptap-state.extension";
 import { AteToolbarComponent } from "../toolbar/ate-toolbar.component";
 import { AteBubbleMenuComponent } from "../bubble-menus/text/ate-bubble-menu.component";
@@ -223,6 +224,7 @@ import { AteImageUploadHandler, AteImageUploadOptions } from "../../models/ate-i
         <ate-table-bubble-menu
           [editor]="editor()!"
           [config]="finalTableBubbleMenuConfig()"
+          [enableAlignment]="finalEnableTableAlignment()"
           [style.display]="editorFullyInitialized() ? 'block' : 'none'"></ate-table-bubble-menu>
       }
 
@@ -842,15 +844,48 @@ import { AteImageUploadHandler, AteImageUploadOptions } from "../../models/ate-i
       :host ::ng-deep .resizable-image-container:hover .image-size-info {
         opacity: 1;
       }
-      /* Styles pour les tables */
+      /* Table styles */
+      :host ::ng-deep .ProseMirror .tableWrapper {
+        overflow-x: auto;
+        margin: 1rem 0;
+        border-radius: 8px;
+        width: 100%;
+      }
+
+      /* Baseline table styling */
       :host ::ng-deep .ProseMirror table {
         border-collapse: separate;
         border-spacing: 0;
-        margin: 0;
         table-layout: fixed;
         width: 100%;
+        min-width: max-content;
+        margin: 0;
         border-radius: 8px;
         overflow: hidden;
+      }
+
+      /* Keep explicitly aligned tables content-sized (so center/right has visual effect) */
+      :host ::ng-deep .ProseMirror .tableWrapper[data-align] > table {
+        width: max-content !important;
+        min-width: max-content;
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      /* Editable table alignment via tableWrapper[data-align] */
+      :host ::ng-deep .ProseMirror .tableWrapper[data-align="left"] {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      :host ::ng-deep .ProseMirror .tableWrapper[data-align="center"] {
+        display: flex;
+        justify-content: center;
+      }
+
+      :host ::ng-deep .ProseMirror .tableWrapper[data-align="right"] {
+        display: flex;
+        justify-content: flex-end;
       }
 
       :host ::ng-deep .ProseMirror table td,
@@ -938,20 +973,6 @@ import { AteImageUploadHandler, AteImageUploadOptions } from "../../models/ate-i
         background-color: var(--ate-focus-color);
       }
 
-      /* Container avec scroll horizontal */
-      :host ::ng-deep .ProseMirror .tableWrapper {
-        overflow-x: auto;
-        margin: 1em 0;
-        border-radius: 8px;
-      }
-
-      :host ::ng-deep .ProseMirror .tableWrapper table {
-        margin: 0;
-        border-radius: 8px;
-        min-width: 600px;
-        overflow: hidden;
-      }
-
       /* Paragraphes dans les tables */
       :host ::ng-deep .ProseMirror table p {
         margin: 0;
@@ -982,6 +1003,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   showWordCount = input<boolean | undefined>(undefined);
   maxCharacters = input<number | undefined>(undefined);
   enableOfficePaste = input<boolean | undefined>(undefined);
+  enableTableAlignment = input<boolean | undefined>(undefined);
   enableSlashCommands = input<boolean | undefined>(undefined);
   slashCommands = input<AteSlashCommandsConfig | undefined>(undefined);
   customSlashCommands = input<AteCustomSlashCommands | undefined>(undefined);
@@ -1144,6 +1166,9 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
   );
   readonly finalEnableOfficePaste = computed(
     () => this.enableOfficePaste() ?? this.effectiveConfig().enableOfficePaste ?? true
+  );
+  readonly finalEnableTableAlignment = computed(
+    () => this.enableTableAlignment() ?? this.effectiveConfig().enableTableAlignment ?? false
   );
 
   // Features
@@ -1449,6 +1474,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
       this.finalTiptapOptions();
       this.finalAngularNodesConfig();
       this.finalBlockControls();
+      this.finalEnableTableAlignment();
 
       untracked(() => {
         // Only if already initialized (post AfterViewInit)
@@ -1523,6 +1549,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
         uploadMessage: () => this.editorCommandsService.uploadMessage(),
       }),
       AteTableExtension,
+      ...(this.finalEnableTableAlignment() ? [AteTableAlignmentExtension] : []),
       AteTiptapStateExtension.configure({
         onUpdate: state => this.editorCommandsService.updateState(state),
         calculators: [
