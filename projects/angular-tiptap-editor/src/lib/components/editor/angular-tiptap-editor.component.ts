@@ -31,6 +31,7 @@ import { AteResizableImage } from "../../extensions/ate-resizable-image.extensio
 import { AteUploadProgress } from "../../extensions/ate-upload-progress.extension";
 import { AteTableExtension } from "../../extensions/ate-table.extension";
 import { AteTableAlignmentExtension } from "../../extensions/ate-table-alignment.extension";
+import { AteFontSizeExtension } from "../../extensions/ate-font-size.extension";
 import { AteTiptapStateExtension } from "../../extensions/ate-tiptap-state.extension";
 import { AteToolbarComponent } from "../toolbar/ate-toolbar.component";
 import { AteBubbleMenuComponent } from "../bubble-menus/text/ate-bubble-menu.component";
@@ -1518,6 +1519,7 @@ export class AngularTiptapEditorComponent implements AfterViewInit, OnDestroy {
         },
       }),
       TextStyle,
+      AteFontSizeExtension,
       Color.configure({
         types: ["textStyle"],
       }),

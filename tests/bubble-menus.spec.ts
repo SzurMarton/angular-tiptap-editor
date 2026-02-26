@@ -68,4 +68,31 @@ test.describe("Editor Bubble Menus", () => {
     // Vérification du lien créé
     await expect(editor.locator("a")).toHaveAttribute("href", "https://playwright.dev");
   });
+  test("should increase font size via bubble menu", async ({ page }) => {
+    const editor = page.locator(".ProseMirror");
+    await editor.focus();
+    await page.keyboard.type("BubbleSize");
+    await editor.selectText();
+
+    const bubbleMenu = page.locator(".tippy-box");
+    await expect(bubbleMenu).toBeVisible();
+
+    const sizeDisplay = bubbleMenu.locator(".font-size-display").first();
+    await expect(sizeDisplay).toBeVisible();
+    const initialSize = Number.parseInt((await sizeDisplay.innerText()).trim(), 10);
+    expect(Number.isNaN(initialSize)).toBeFalsy();
+
+    const increaseBtn = bubbleMenu.getByRole("button", { name: /increase font size/i }).first();
+    await expect(increaseBtn).toBeEnabled();
+    await increaseBtn.click();
+
+    const increasedSize = Number.parseInt((await sizeDisplay.innerText()).trim(), 10);
+    expect(increasedSize).toBe(initialSize + 2);
+
+    const styledText = editor.locator('span[style*="font-size"]').filter({ hasText: "BubbleSize" });
+    await expect(styledText).toHaveAttribute(
+      "style",
+      new RegExp(`font-size:\\s*${increasedSize}px`, "i")
+    );
+  });
 });

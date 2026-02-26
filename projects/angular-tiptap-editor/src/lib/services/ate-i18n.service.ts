@@ -33,6 +33,9 @@ export interface AteTranslations {
     redo: string;
     clear: string;
     textColor: string;
+    fontSizeDecrease: string;
+    fontSizeIncrease: string;
+    fontSizeDisplay: string;
     customColor: string;
     presets: string;
   };
@@ -49,6 +52,9 @@ export interface AteTranslations {
     highlight: string;
     highlightPicker: string;
     textColor: string;
+    fontSizeDecrease: string;
+    fontSizeIncrease: string;
+    fontSizeDisplay: string;
     link: string;
     addLink: string;
     editLink: string;
@@ -222,6 +228,9 @@ const ENGLISH_TRANSLATIONS: AteTranslations = {
     redo: "Redo\nCtrl+Shift+Z",
     clear: "Clear",
     textColor: "Text Color",
+    fontSizeDecrease: "Decrease Font Size",
+    fontSizeIncrease: "Increase Font Size",
+    fontSizeDisplay: "Font Size",
     customColor: "Custom Color",
     presets: "Presets",
   },
@@ -236,6 +245,9 @@ const ENGLISH_TRANSLATIONS: AteTranslations = {
     highlight: "Highlight",
     highlightPicker: "Background Color",
     textColor: "Text Color",
+    fontSizeDecrease: "Decrease Font Size",
+    fontSizeIncrease: "Increase Font Size",
+    fontSizeDisplay: "Font Size",
     link: "Link",
     addLink: "Add Link",
     editLink: "Edit Link",
@@ -399,6 +411,9 @@ const FRENCH_TRANSLATIONS: AteTranslations = {
     redo: "Refaire\nCtrl+Shift+Z",
     clear: "Vider",
     textColor: "Couleur du texte",
+    fontSizeDecrease: "Diminuer la taille de police",
+    fontSizeIncrease: "Augmenter la taille de police",
+    fontSizeDisplay: "Taille de police",
     customColor: "Couleur personnalisée",
     presets: "Préréglages",
   },
@@ -413,6 +428,9 @@ const FRENCH_TRANSLATIONS: AteTranslations = {
     highlight: "Surligner",
     highlightPicker: "Couleur de fond",
     textColor: "Couleur du texte",
+    fontSizeDecrease: "Diminuer la taille de police",
+    fontSizeIncrease: "Augmenter la taille de police",
+    fontSizeDisplay: "Taille de police",
     link: "Lien",
     addLink: "Ajouter un lien",
     editLink: "Modifier le lien",

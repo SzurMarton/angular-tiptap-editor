@@ -14,6 +14,7 @@ export const ATE_BUBBLE_MENU_KEYS = [
   "highlight",
   "highlightPicker",
   "textColor",
+  "fontSize",
   "link",
   "separator",
 ] as const;

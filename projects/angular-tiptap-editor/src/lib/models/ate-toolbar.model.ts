@@ -32,6 +32,7 @@ export const ATE_TOOLBAR_KEYS = [
   "redo",
   "clear",
   "textColor",
+  "fontSize",
   "separator",
 ] as const;
 

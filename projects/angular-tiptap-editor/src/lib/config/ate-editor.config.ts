@@ -37,6 +37,7 @@ export const ATE_DEFAULT_TOOLBAR_CONFIG: AteToolbarConfig = {
   redo: true,
   clear: false, // Disabled by default (opt-in)
   textColor: true,
+  fontSize: true,
   separator: true,
 };
 
@@ -52,6 +53,7 @@ export const ATE_DEFAULT_BUBBLE_MENU_CONFIG: AteBubbleMenuConfig = {
   highlight: false,
   highlightPicker: true,
   textColor: true,
+  fontSize: true,
   link: true,
   separator: true,
 };

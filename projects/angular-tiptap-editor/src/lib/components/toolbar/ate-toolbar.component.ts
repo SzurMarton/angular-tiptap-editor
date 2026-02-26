@@ -96,6 +96,23 @@ import { AteToolbarConfig } from "../../models/ate-toolbar.model";
       @if (config().textColor) {
         <ate-color-picker mode="text" [editor]="editor()" [disabled]="!state().can.setColor" />
       }
+      @if (config().fontSize) {
+        <div class="font-size-control">
+          <ate-button
+            icon="remove"
+            [title]="t().fontSizeDecrease"
+            [disabled]="!canDecreaseFontSize()"
+            (buttonClick)="onCommand('decreaseFontSize')" />
+          <span class="font-size-display" [attr.aria-label]="t().fontSizeDisplay">
+            {{ currentFontSize() }}px
+          </span>
+          <ate-button
+            icon="add"
+            [title]="t().fontSizeIncrease"
+            [disabled]="!canIncreaseFontSize()"
+            (buttonClick)="onCommand('increaseFontSize')" />
+        </div>
+      }
 
       @if (config().separator && (config().heading1 || config().heading2 || config().heading3)) {
         <ate-separator />
@@ -347,10 +364,28 @@ import { AteToolbarConfig } from "../../models/ate-toolbar.model";
       .ate-toolbar {
         animation: toolbarSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
+
+      .font-size-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .font-size-display {
+        min-width: 48px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ate-text-secondary);
+        user-select: none;
+      }
     `,
   ],
 })
 export class AteToolbarComponent {
+  private static readonly FONT_SIZE_MIN = 8;
+  private static readonly FONT_SIZE_MAX = 72;
+
   editor = input.required<Editor>();
   config = input.required<AteToolbarConfig>();
   imageUpload = input<Record<string, unknown>>({});
@@ -362,11 +397,41 @@ export class AteToolbarComponent {
   readonly t = this.i18nService.toolbar;
   readonly state = this.editorCommands.editorState;
 
+  currentFontSize(): number {
+    return this.resolveFontSize(this.state().marks.fontSize ?? this.state().marks.computedFontSize);
+  }
+
+  canDecreaseFontSize(): boolean {
+    return this.state().can.setFontSize && this.currentFontSize() > AteToolbarComponent.FONT_SIZE_MIN;
+  }
+
+  canIncreaseFontSize(): boolean {
+    return this.state().can.setFontSize && this.currentFontSize() < AteToolbarComponent.FONT_SIZE_MAX;
+  }
+
   onCommand(command: string, ...args: unknown[]) {
     const editor = this.editor();
     if (!editor) {
       return;
     }
     this.editorCommands.execute(editor, command, ...args);
+  }
+
+  private resolveFontSize(value: string | null): number {
+    if (!value) {
+      return 16;
+    }
+
+    const match = value.trim().match(/^(\d+(?:\.\d+)?)px$/i) || value.trim().match(/^(\d+(?:\.\d+)?)$/);
+    if (!match) {
+      return 16;
+    }
+
+    const parsed = Number.parseFloat(match[1]);
+    if (!Number.isFinite(parsed)) {
+      return 16;
+    }
+
+    return Math.round(parsed);
   }
 }

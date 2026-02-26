@@ -98,6 +98,23 @@ import { AteBaseBubbleMenu } from "../base/ate-base-bubble-menu";
           [disabled]="!state().can.setColor"
           [anchorToText]="true" />
       }
+      @if (bubbleMenuConfig().fontSize) {
+        <div class="font-size-control">
+          <ate-button
+            icon="remove"
+            [title]="t().fontSizeDecrease"
+            [disabled]="!canDecreaseFontSize()"
+            (buttonClick)="onCommand('decreaseFontSize', $event)"></ate-button>
+          <span class="font-size-display" [attr.aria-label]="t().fontSizeDisplay">
+            {{ currentFontSize() }}px
+          </span>
+          <ate-button
+            icon="add"
+            [title]="t().fontSizeIncrease"
+            [disabled]="!canIncreaseFontSize()"
+            (buttonClick)="onCommand('increaseFontSize', $event)"></ate-button>
+        </div>
+      }
       @if (bubbleMenuConfig().link) {
         <ate-button
           icon="link"
@@ -116,8 +133,29 @@ import { AteBaseBubbleMenu } from "../base/ate-base-bubble-menu";
       }
     </div>
   `,
+  styles: [
+    `
+      .font-size-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .font-size-display {
+        min-width: 48px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ate-text-secondary);
+        user-select: none;
+      }
+    `,
+  ],
 })
 export class AteBubbleMenuComponent extends AteBaseBubbleMenu implements OnInit, OnDestroy {
+  private static readonly FONT_SIZE_MIN = 8;
+  private static readonly FONT_SIZE_MAX = 72;
+
   readonly t = this.i18nService.bubbleMenu;
 
   ngOnInit() {
@@ -181,6 +219,40 @@ export class AteBubbleMenuComponent extends AteBaseBubbleMenu implements OnInit,
 
   protected override executeCommand(editor: Editor, command: string, ...args: unknown[]): void {
     this.editorCommands.execute(editor, command, ...args);
+  }
+
+  currentFontSize(): number {
+    return this.resolveFontSize(this.state().marks.fontSize ?? this.state().marks.computedFontSize);
+  }
+
+  canDecreaseFontSize(): boolean {
+    return (
+      this.state().can.setFontSize && this.currentFontSize() > AteBubbleMenuComponent.FONT_SIZE_MIN
+    );
+  }
+
+  canIncreaseFontSize(): boolean {
+    return (
+      this.state().can.setFontSize && this.currentFontSize() < AteBubbleMenuComponent.FONT_SIZE_MAX
+    );
+  }
+
+  private resolveFontSize(value: string | null): number {
+    if (!value) {
+      return 16;
+    }
+
+    const match = value.trim().match(/^(\d+(?:\.\d+)?)px$/i) || value.trim().match(/^(\d+(?:\.\d+)?)$/);
+    if (!match) {
+      return 16;
+    }
+
+    const parsed = Number.parseFloat(match[1]);
+    if (!Number.isFinite(parsed)) {
+      return 16;
+    }
+
+    return Math.round(parsed);
   }
 
   protected override onTippyHide() {

@@ -277,6 +277,7 @@ export interface AppTranslations {
     table: string;
     clear: string;
     textColor: string;
+    fontSize: string;
 
     // Configuration hauteur
     fixedHeight: string;
@@ -565,6 +566,7 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     table: "Table",
     clear: "Clear",
     textColor: "Text Color",
+    fontSize: "Font Size",
 
     // Height configuration
     fixedHeight: "Fixed height",
@@ -855,6 +857,7 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     table: "Tableau",
     clear: "Effacer",
     textColor: "Couleur du texte",
+    fontSize: "Taille de police",
 
     // Height configuration
     fixedHeight: "Hauteur fixe",

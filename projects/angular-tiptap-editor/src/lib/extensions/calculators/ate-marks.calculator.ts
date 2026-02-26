@@ -38,8 +38,16 @@ export const AteMarksCalculator: AteStateCalculator = editor => {
     const val = computedStyle.getPropertyValue(prop);
     return normalizeColor(val);
   };
+  const getRawStyle = (prop: string): string | null => {
+    if (!computedStyle) {
+      return null;
+    }
+    const val = computedStyle.getPropertyValue(prop).trim();
+    return val || null;
+  };
 
   const colorMark = editor.getAttributes("textStyle")["color"] || null;
+  const fontSizeMark = editor.getAttributes("textStyle")["fontSize"] || null;
   const backgroundMark = editor.getAttributes("highlight")["color"] || null;
 
   return {
@@ -56,6 +64,8 @@ export const AteMarksCalculator: AteStateCalculator = editor => {
       linkHref: editor.getAttributes("link")["href"] || null,
       color: colorMark,
       computedColor: colorMark || getStyle("color"),
+      fontSize: fontSizeMark,
+      computedFontSize: fontSizeMark || getRawStyle("font-size"),
       background: backgroundMark,
       computedBackground: backgroundMark || getStyle("background-color"),
       linkOpenOnClick:
@@ -76,6 +86,8 @@ export const AteMarksCalculator: AteStateCalculator = editor => {
       toggleSuperscript: marksAllowed && !isInsideInlineCode && editor.can().toggleSuperscript(),
       toggleSubscript: marksAllowed && !isInsideInlineCode && editor.can().toggleSubscript(),
       setColor: marksAllowed && !isInsideInlineCode && editor.can().setColor(""),
+      setFontSize:
+        marksAllowed && !isInsideInlineCode && editor.can().setMark("textStyle", { fontSize: "16px" }),
       setHighlight: marksAllowed && !isInsideInlineCode && editor.can().setHighlight(),
       undo: editor.can().undo(),
       redo: editor.can().redo(),

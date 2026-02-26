@@ -71,4 +71,41 @@ test.describe("Editor Toolbar", () => {
 
     await expect(editor).toContainText("MagicUndo");
   });
+
+  test("should increase and decrease font size from toolbar", async ({ page }) => {
+    const editor = page.locator(".ProseMirror");
+    await editor.focus();
+    await page.keyboard.type("GrowMe", { delay: 10 });
+    await page.keyboard.press("Control+a");
+
+    const toolbar = page.locator(".ate-toolbar").first();
+    const sizeDisplay = toolbar.locator(".font-size-display").first();
+    await expect(sizeDisplay).toBeVisible();
+
+    const initialSizeText = (await sizeDisplay.innerText()).trim();
+    const initialSize = Number.parseInt(initialSizeText, 10);
+    expect(Number.isNaN(initialSize)).toBeFalsy();
+
+    const increaseBtn = toolbar.getByRole("button", { name: /increase font size/i }).first();
+    await expect(increaseBtn).toBeEnabled();
+    await increaseBtn.click();
+
+    const increasedSizeText = (await sizeDisplay.innerText()).trim();
+    const increasedSize = Number.parseInt(increasedSizeText, 10);
+    expect(increasedSize).toBe(initialSize + 2);
+
+    const styledText = editor.locator('span[style*="font-size"]').filter({ hasText: "GrowMe" });
+    await expect(styledText).toHaveAttribute(
+      "style",
+      new RegExp(`font-size:\\s*${increasedSize}px`, "i")
+    );
+
+    const decreaseBtn = toolbar.getByRole("button", { name: /decrease font size/i }).first();
+    await expect(decreaseBtn).toBeEnabled();
+    await decreaseBtn.click();
+
+    const decreasedSizeText = (await sizeDisplay.innerText()).trim();
+    const decreasedSize = Number.parseInt(decreasedSizeText, 10);
+    expect(decreasedSize).toBe(initialSize);
+  });
 });

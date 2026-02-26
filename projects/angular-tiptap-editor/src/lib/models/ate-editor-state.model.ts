@@ -37,6 +37,8 @@ export interface AteEditorStateSnapshot {
     linkHref: string | null;
     color: string | null;
     computedColor: string | null;
+    fontSize: string | null;
+    computedFontSize: string | null;
     background: string | null;
     computedBackground: string | null;
     linkOpenOnClick: boolean;
@@ -54,6 +56,7 @@ export interface AteEditorStateSnapshot {
     toggleSuperscript: boolean;
     toggleSubscript: boolean;
     setColor: boolean;
+    setFontSize: boolean;
     setHighlight: boolean;
     undo: boolean;
     redo: boolean;
@@ -151,6 +154,8 @@ export const ATE_INITIAL_EDITOR_STATE: AteEditorStateSnapshot = {
     linkHref: null,
     color: null,
     computedColor: null,
+    fontSize: null,
+    computedFontSize: null,
     background: null,
     computedBackground: null,
     linkOpenOnClick: false,
@@ -166,6 +171,7 @@ export const ATE_INITIAL_EDITOR_STATE: AteEditorStateSnapshot = {
     toggleSuperscript: false,
     toggleSubscript: false,
     setColor: false,
+    setFontSize: false,
     setHighlight: false,
     undo: false,
     redo: false,

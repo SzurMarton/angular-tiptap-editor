@@ -8,6 +8,11 @@ import { AteImageUploadHandler, AteImageUploadOptions } from "../models/ate-imag
 
 @Injectable()
 export class AteEditorCommandsService {
+  private static readonly FONT_SIZE_MIN = 8;
+  private static readonly FONT_SIZE_MAX = 72;
+  private static readonly FONT_SIZE_STEP = 2;
+  private static readonly DEFAULT_FONT_SIZE = 16;
+
   private imageService = inject(AteImageService);
   private colorPickerSvc = inject(AteColorPickerService);
   private linkSvc = inject(AteLinkService);
@@ -183,6 +188,12 @@ export class AteEditorCommandsService {
       case "toggleHighlight":
         this.toggleHighlight(editor, args[0] as string);
         break;
+      case "increaseFontSize":
+        this.increaseFontSize(editor);
+        break;
+      case "decreaseFontSize":
+        this.decreaseFontSize(editor);
+        break;
       case "undo":
         this.undo(editor);
         break;
@@ -331,6 +342,76 @@ export class AteEditorCommandsService {
     } else {
       editor.chain().focus().toggleHighlight().run();
     }
+  }
+
+  increaseFontSize(editor: Editor): void {
+    this.adjustFontSize(editor, AteEditorCommandsService.FONT_SIZE_STEP);
+  }
+
+  decreaseFontSize(editor: Editor): void {
+    this.adjustFontSize(editor, -AteEditorCommandsService.FONT_SIZE_STEP);
+  }
+
+  private adjustFontSize(editor: Editor, delta: number): void {
+    if (!editor) {
+      return;
+    }
+
+    const currentSize = this.getCurrentFontSize(editor);
+    const nextSize = Math.min(
+      AteEditorCommandsService.FONT_SIZE_MAX,
+      Math.max(AteEditorCommandsService.FONT_SIZE_MIN, currentSize + delta)
+    );
+
+    if (nextSize === currentSize) {
+      return;
+    }
+
+    editor.chain().focus().setFontSize(`${nextSize}px`).run();
+  }
+
+  private getCurrentFontSize(editor: Editor): number {
+    const markSize = editor.getAttributes("textStyle")["fontSize"];
+    const parsedMarkSize = this.parseFontSize(markSize);
+    if (parsedMarkSize !== null) {
+      return parsedMarkSize;
+    }
+
+    if (typeof window !== "undefined" && editor.view?.dom) {
+      try {
+        const { from } = editor.state.selection;
+        const { node } = editor.view.domAtPos(from);
+        const target = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+        const fontSize = target ? window.getComputedStyle(target).fontSize : null;
+        const parsedComputedSize = this.parseFontSize(fontSize);
+        if (parsedComputedSize !== null) {
+          return parsedComputedSize;
+        }
+      } catch (_e) {
+        // Ignore and fallback to default
+      }
+    }
+
+    return AteEditorCommandsService.DEFAULT_FONT_SIZE;
+  }
+
+  private parseFontSize(value: unknown): number | null {
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    const trimmed = value.trim();
+    const match = trimmed.match(/^(\d+(?:\.\d+)?)px$/i) || trimmed.match(/^(\d+(?:\.\d+)?)$/);
+    if (!match) {
+      return null;
+    }
+
+    const parsed = Number.parseFloat(match[1]);
+    if (!Number.isFinite(parsed)) {
+      return null;
+    }
+
+    return Math.round(parsed);
   }
 
   // --- Structure Commands ---
