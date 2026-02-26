@@ -40,6 +40,9 @@ export * from "./lib/config/ate-global-config.token";
 // Utility functions for slash commands
 export * from "./lib/config/ate-slash-commands.config";
 
+// Optional extensions
+export * from "./lib/extensions/pagination-plus";
+
 // Translations
 export type { SupportedLocale } from "./lib/services/ate-i18n.service";
 
