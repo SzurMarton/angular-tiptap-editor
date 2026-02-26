@@ -294,6 +294,8 @@ export interface AppTranslations {
     inspectorDesc: string;
     task: string;
     taskDesc: string;
+    paginationPlus: string;
+    paginationPlusDesc: string;
     customAi: string;
     customAiDesc: string;
     counter: string;
@@ -580,6 +582,8 @@ const ENGLISH_APP_TRANSLATIONS: AppTranslations = {
     inspectorDesc: "Real-time reactive monitor",
     task: "Task List",
     taskDesc: "Interactive checklist with completion tracking",
+    paginationPlus: "Pagination Plus",
+    paginationPlusDesc: "Page-like layout with automatic page breaks",
     customAi: "AI Assistant",
     customAiDesc: "Transform text with real-time AI (Demo)",
     counter: "Interactive Counter",
@@ -868,6 +872,8 @@ const FRENCH_APP_TRANSLATIONS: AppTranslations = {
     inspectorDesc: "Moniteur réactif en temps réel",
     task: "Liste de tâches",
     taskDesc: "Liste de contrôle interactive avec suivi de progression",
+    paginationPlus: "Pagination Plus",
+    paginationPlusDesc: "Mise en page paginée avec sauts de page automatiques",
     customAi: "Assistant IA",
     customAiDesc: "Transformation de texte par IA en temps réel (Démo)",
     counter: "Compteur Interactif",

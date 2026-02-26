@@ -54,6 +54,7 @@ export class EditorConfigurationService {
     activePanel: "none",
     showInspector: false,
     enableTaskExtension: false,
+    enablePaginationPlusExtension: false,
     maxCharacters: undefined,
     editable: true,
     seamless: false,
@@ -608,6 +609,13 @@ export class EditorConfigurationService {
     }));
   }
 
+  toggleEnablePaginationPlusExtension() {
+    this._editorState.update(state => ({
+      ...state,
+      enablePaginationPlusExtension: !state.enablePaginationPlusExtension,
+    }));
+  }
+
   // Menu closing methods
   closeAllMenus() {
     this._menuState.set({
@@ -638,6 +646,7 @@ export class EditorConfigurationService {
       showWordCount: true,
       enableSlashCommands: true,
       enableTaskExtension: false,
+      enablePaginationPlusExtension: false,
       maxCharacters: undefined,
       editable: true,
       seamless: false,

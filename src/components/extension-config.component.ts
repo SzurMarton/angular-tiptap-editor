@@ -1,4 +1,4 @@
-import { Component, inject, input } from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { SectionHeaderComponent, StatusBadgeComponent } from "./ui";
 import { EditorConfigurationService } from "../services/editor-configuration.service";
@@ -12,22 +12,15 @@ import { AppI18nService } from "../services/app-i18n.service";
     <div class="config-section" [class.is-disabled]="disabled()">
       <app-section-header icon="extension" [title]="appI18n.translations().config.extensions">
         <app-status-badge
-          [label]="
-            editorState().enableTaskExtension
-              ? appI18n.currentLocale() === 'fr'
-                ? 'Actif'
-                : 'Active'
-              : appI18n.currentLocale() === 'fr'
-                ? 'Inactif'
-                : 'Inactive'
-          "
-          [active]="editorState().enableTaskExtension" />
+          [label]="statusLabel()"
+          [active]="isAnyExtensionEnabled()" />
       </app-section-header>
 
       <div class="extension-grid">
         <!-- Task Extension Toggle -->
         <div
           class="extension-card"
+          data-testid="extension-task-toggle"
           [class.active]="editorState().enableTaskExtension"
           tabindex="0"
           (click)="toggleTask()"
@@ -39,6 +32,29 @@ import { AppI18nService } from "../services/app-i18n.service";
           <div class="card-content">
             <div class="card-title">{{ appI18n.translations().items.task }}</div>
             <div class="card-desc">{{ appI18n.translations().items.taskDesc }}</div>
+          </div>
+          <div class="card-toggle">
+            <div class="toggle-track">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination Plus Extension Toggle -->
+        <div
+          class="extension-card"
+          data-testid="extension-pagination-plus-toggle"
+          [class.active]="editorState().enablePaginationPlusExtension"
+          tabindex="0"
+          (click)="togglePaginationPlus()"
+          (keydown.enter)="togglePaginationPlus()"
+          (keydown.space)="$event.preventDefault(); togglePaginationPlus()">
+          <div class="card-icon">
+            <span class="material-symbols-outlined">article</span>
+          </div>
+          <div class="card-content">
+            <div class="card-title">{{ appI18n.translations().items.paginationPlus }}</div>
+            <div class="card-desc">{{ appI18n.translations().items.paginationPlusDesc }}</div>
           </div>
           <div class="card-toggle">
             <div class="toggle-track">
@@ -163,7 +179,24 @@ export class ExtensionConfigComponent {
 
   disabled = input<boolean>(false);
 
+  readonly isAnyExtensionEnabled = computed(() => {
+    const state = this.editorState();
+    return state.enableTaskExtension || state.enablePaginationPlusExtension;
+  });
+
+  readonly statusLabel = computed(() => {
+    const isFrench = this.appI18n.currentLocale() === "fr";
+    if (this.isAnyExtensionEnabled()) {
+      return isFrench ? "Actif" : "Active";
+    }
+    return isFrench ? "Inactif" : "Inactive";
+  });
+
   toggleTask() {
     this.configService.toggleEnableTaskExtension();
+  }
+
+  togglePaginationPlus() {
+    this.configService.toggleEnablePaginationPlusExtension();
   }
 }

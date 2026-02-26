@@ -63,11 +63,19 @@ export class CodeGeneratorService {
   angularNodes: AteAngularNode[] = [${angularNodes.join(", ")}];`);
     }
 
+    const tiptapExtensions: string[] = [];
     if (editorState.enableTaskExtension) {
+      tiptapExtensions.push("TaskList", "TaskItem");
+    }
+    if (editorState.enablePaginationPlusExtension) {
+      tiptapExtensions.push("PaginationPlus");
+    }
+
+    if (tiptapExtensions.length > 0) {
       sections.push(`// ============================================================================
   // TIPTAP EXTENSIONS
   // ============================================================================
-  tiptapExtensions = [TaskList, TaskItem];`);
+  tiptapExtensions = [${tiptapExtensions.join(", ")}];`);
     }
 
     // 3. Editor Config
@@ -80,6 +88,7 @@ export class CodeGeneratorService {
 
     return `${this.generateImports(
       editorState.enableTaskExtension,
+      editorState.enablePaginationPlusExtension,
       aiActive,
       isAiBlockEnabled,
       isCounterEnabled,
@@ -277,6 +286,7 @@ export class AiLoadingNodeComponent {}
 
   private generateImports(
     hasTaskExtension: boolean,
+    hasPaginationPlusExtension: boolean,
     hasAi: boolean,
     hasAiBlock: boolean,
     hasCounter: boolean,
@@ -288,6 +298,9 @@ export class AiLoadingNodeComponent {}
       "AteAngularNode",
       "provideAteEditor",
     ];
+    if (hasPaginationPlusExtension) {
+      baseImports.push("PaginationPlus");
+    }
 
     const importsLines = [
       "import { Component } from '@angular/core';",
@@ -452,7 +465,7 @@ ${importsLines.join("\n")}`;
     }
 
     // TipTap Extensions (Option B)
-    if (editorState.enableTaskExtension) {
+    if (editorState.enableTaskExtension || editorState.enablePaginationPlusExtension) {
       configItems.push(`    tiptapExtensions: this.tiptapExtensions,`);
     }
 

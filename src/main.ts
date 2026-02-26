@@ -8,6 +8,8 @@ import {
   AteEditorConfig,
   AteAngularNode,
   AteI18nService,
+  PAGE_SIZES,
+  PaginationPlus,
   provideAteEditor,
 } from "angular-tiptap-editor";
 
@@ -61,7 +63,9 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
           editorState().activePanel === 'config' || editorState().isTransitioning
         ">
         <!-- Main editor -->
-        <main class="editor-main">
+        <main
+          class="editor-main"
+          [class.pagination-plus-active]="editorState().enablePaginationPlusExtension">
           <!-- Editor actions - Always visible -->
           <app-editor-actions />
 
@@ -144,7 +148,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
       /* Main editor */
       .editor-main {
         width: var(--editor-width);
-        max-width: 800px;
+        max-width: var(--editor-max-width);
         margin: 0 auto;
         padding: 2rem;
         background: var(--app-bg);
@@ -154,18 +158,30 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
         transform: translateX(0);
       }
 
+      .editor-main.pagination-plus-active {
+        max-width: var(--editor-max-width-pagination);
+      }
+
       /* Adjust editor when config panel (right) is open */
       .config-panel-open .editor-main {
         width: var(--editor-width-with-panel);
-        max-width: 800px;
+        max-width: var(--editor-max-width);
         transform: translateX(calc((-2 * var(--panel-width)) + 50%));
+      }
+
+      .config-panel-open .editor-main.pagination-plus-active {
+        max-width: var(--editor-max-width-pagination);
       }
 
       /* Adjust editor when theme panel (left) is open */
       .theme-panel-open .editor-main {
         width: var(--editor-width-with-panel);
-        max-width: 800px;
+        max-width: var(--editor-max-width);
         transform: translateX(calc((2 * var(--panel-width)) - 50%));
+      }
+
+      .theme-panel-open .editor-main.pagination-plus-active {
+        max-width: var(--editor-max-width-pagination);
       }
 
       /* Adjust editor for medium screens */
@@ -304,6 +320,25 @@ export class App {
       const exts: (Extension | Node | Mark)[] = [];
       if (this.editorState().enableTaskExtension) {
         exts.push(TaskList, TaskItem);
+      }
+      if (this.editorState().enablePaginationPlusExtension) {
+        exts.push(
+          PaginationPlus.configure({
+            pageHeight: PAGE_SIZES.A4.pageHeight - 40,
+            pageWidth: PAGE_SIZES.A4.pageWidth,
+            marginTop: 25,
+            marginBottom: 25,
+            marginLeft: 45,
+            marginRight: 45,
+            contentMarginTop: 6,
+            contentMarginBottom: 6,
+            headerLeft: "",
+            headerRight: "",
+            footerLeft: "",
+            footerRight: "",
+            pageBreakBackground: "var(--app-bg)",
+          })
+        );
       }
       return exts;
     },
