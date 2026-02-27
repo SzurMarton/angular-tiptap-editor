@@ -159,6 +159,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
       }
 
       .editor-main.pagination-plus-active {
+        width: var(--editor-width-pagination);
         max-width: var(--editor-max-width-pagination);
       }
 
@@ -170,6 +171,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
       }
 
       .config-panel-open .editor-main.pagination-plus-active {
+        width: var(--editor-width-with-panel-pagination);
         max-width: var(--editor-max-width-pagination);
       }
 
@@ -181,6 +183,7 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
       }
 
       .theme-panel-open .editor-main.pagination-plus-active {
+        width: var(--editor-width-with-panel-pagination);
         max-width: var(--editor-max-width-pagination);
       }
 
@@ -211,6 +214,12 @@ import { EditorConfigurationService } from "./services/editor-configuration.serv
           margin: 0 auto;
           transform: none;
           transition-delay: 0s;
+        }
+
+        .config-panel-open .editor-main.pagination-plus-active,
+        .theme-panel-open .editor-main.pagination-plus-active {
+          width: var(--editor-width);
+          max-width: 100%;
         }
       }
 

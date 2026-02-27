@@ -20,6 +20,8 @@ export const updateCssVariables = (targetNode: HTMLElement, config: PaginationPl
     "rm-page-gap-border-color": `${config.pageGapBorderColor}`,
     // Prevent page layout overflow when host editor is narrower than configured page width.
     "rm-page-width": `min(${config.pageWidth}px, 100%)`,
+    // Pixel-only page width for max-width calculations (content margin cap).
+    "rm-page-width-px": `${config.pageWidth}px`,
   };
 
   Object.entries(cssVariables).forEach(([key, value]) => {

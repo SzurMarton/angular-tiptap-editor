@@ -198,7 +198,7 @@ export const PaginationPlus = Extension.create<PaginationPlusOptions, Pagination
     targetNode.style.paddingLeft = `var(--rm-margin-left)`;
     targetNode.style.paddingRight = `var(--rm-margin-right)`;
     targetNode.style.width =
-      "max(0px, calc(100% - var(--rm-margin-left) - var(--rm-margin-right)))";
+      "min(max(0px, calc(100% - var(--rm-margin-left) - var(--rm-margin-right))), var(--rm-page-width-px))";
 
     updateCssVariables(targetNode, this.options);
 

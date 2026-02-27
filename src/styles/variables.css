@@ -44,10 +44,16 @@
   --panel-left-offset: 1.5rem;
   --panel-height: calc(100vh - 6rem);
   --editor-max-width: 980px;
-  --editor-max-width-pagination: 1040px;
+  /* Wider when pagination is active to showcase A4 content width cap (content stays centered) */
+  --editor-max-width-pagination: 1400px;
   --editor-width: min(var(--editor-max-width), calc(100vw - 2rem));
+  --editor-width-pagination: min(var(--editor-max-width-pagination), calc(100vw - 2rem));
   --editor-width-with-panel: min(
     var(--editor-max-width),
+    calc(100vw - var(--panel-width) - var(--panel-right-offset) - 2rem)
+  );
+  --editor-width-with-panel-pagination: min(
+    var(--editor-max-width-pagination),
     calc(100vw - var(--panel-width) - var(--panel-right-offset) - 2rem)
   );
   --editor-margin-right-with-panel: calc(var(--panel-width) + var(--panel-right-offset));
